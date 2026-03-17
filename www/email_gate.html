@@ -2,18 +2,30 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="השף הירוק">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0d1a0f">
 <title>השף הירוק — המתכון שלך!</title>
 <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
+html {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; }
 body {
   font-family: 'Varela Round', Arial, sans-serif;
   direction: rtl;
   min-height: 100vh;
   background: linear-gradient(160deg, #1a5e35, #2d8a4e, #57c97a);
   display: flex; align-items: center; justify-content: center;
-  padding: 20px;
+  padding: 20px; padding-bottom: calc(20px + var(--sab));
+  overscroll-behavior: none;
 }
 
 .modal {
@@ -150,7 +162,7 @@ body {
 #pdfViewer {
   display:none; position:fixed; inset:0; z-index:100;
   background:rgba(0,0,0,0.85);
-  flex-direction:column;
+  flex-direction:column; overflow:hidden;
 }
 #pdfViewer.show { display:flex; }
 .viewer-header {
@@ -166,10 +178,17 @@ body {
   transition:all 0.2s;
 }
 .btn-close:hover { background:rgba(255,255,255,0.3); }
-iframe {
-  flex:1; border:none; background:white;
+#pdfPages {
+  flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;
+  background:#525659; display:flex; flex-direction:column; align-items:center;
+  gap:8px; padding:8px; width:100%; box-sizing:border-box;
+}
+#pdfPages canvas {
+  width:100%; height:auto; display:block;
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
 
@@ -268,7 +287,7 @@ iframe {
     <span class="viewer-title" id="viewerTitle">מתכון</span>
     <button class="btn-close" onclick="closePDF()">✕</button>
   </div>
-  <iframe id="pdfFrame" src=""></iframe>
+  <div id="pdfPages"></div>
 </div>
 
 <script>
@@ -310,25 +329,54 @@ function showRecipes() {
   document.getElementById('recipeStep').style.display = 'block';
 }
 
-function viewPDF(key, title) {
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+function b64toBytes(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+async function viewPDF(key, title) {
   const pdf = PDFS[key];
-  const url = 'data:application/pdf;base64,' + pdf.b64;
-  document.getElementById('pdfFrame').src = url;
+  const container = document.getElementById('pdfPages');
+  container.innerHTML = '';
   document.getElementById('viewerTitle').textContent = title;
   document.getElementById('pdfViewer').classList.add('show');
+  const data = b64toBytes(pdf.b64);
+  const doc = await pdfjsLib.getDocument({ data }).promise;
+  const dpr = window.devicePixelRatio || 2;
+  const containerWidth = container.clientWidth - 16;
+  for (let i = 1; i <= doc.numPages; i++) {
+    const page = await doc.getPage(i);
+    const baseViewport = page.getViewport({ scale: 1 });
+    const scale = (containerWidth / baseViewport.width) * dpr;
+    const viewport = page.getViewport({ scale });
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    canvas.style.width = containerWidth + 'px';
+    canvas.style.height = (containerWidth * baseViewport.height / baseViewport.width) + 'px';
+    container.appendChild(canvas);
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+  }
 }
 
 function closePDF() {
   document.getElementById('pdfViewer').classList.remove('show');
-  document.getElementById('pdfFrame').src = '';
+  document.getElementById('pdfPages').innerHTML = '';
 }
 
 function downloadPDF(key, filename) {
   const pdf = PDFS[key];
+  const blob = new Blob([b64toBytes(pdf.b64)], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = 'data:application/pdf;base64,' + pdf.b64;
+  a.href = url;
   a.download = filename;
   a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 </script>
 </body>

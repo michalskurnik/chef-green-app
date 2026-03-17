@@ -2,10 +2,21 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="השף הירוק">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0d1a0f">
 <title>ביטו משדר — משימה 1</title>
 <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 <style>
+html {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
 :root {
   --green: #2d8a4e;
   --green-light: #57c97a;
@@ -16,7 +27,7 @@
   --screen-green: #00ff88;
   --screen-dim: #00aa55;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; }
 body {
   font-family: 'Varela Round', Arial, sans-serif;
   background: var(--bg);
@@ -25,6 +36,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overscroll-behavior: none;
 }
 
 /* BG */
@@ -63,7 +75,7 @@ body {
 .main {
   position:relative; z-index:5;
   width:100%; max-width:520px;
-  padding:16px 20px;
+  padding:16px 20px; padding-bottom: calc(16px + var(--sab));
   display:flex; flex-direction:column; align-items:center; gap:14px;
 }
 

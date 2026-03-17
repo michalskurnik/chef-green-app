@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Capacitor Serve",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["cap", "serve"],
+      "port": 8080
+    },
+    {
+      "name": "Live Server (auto-reload)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["live-server", "www", "--port=3000"],
+      "port": 3000
+    },
+    {
+      "name": "HTTP Server (static)",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["http-server", "www", "-p", "8080"],
+      "port": 8080
+    },
+    {
+      "name": "Python HTTP Server",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8001", "-d", "www"],
+      "port": 8001
+    }
+  ]
+}
