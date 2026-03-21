@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>עלילות השף הירוק וביטו הרובוט - סיפור 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Varela Round', Arial, sans-serif; direction: rtl; overflow: hidden; height: 100vh; background: #0d1a0f; }
+#videoScreen { position:fixed; inset:0; background:linear-gradient(160deg,#0a1a10,#0d2e18); display:flex; flex-direction:column; align-items:center; }
+.video-topbar { width:100%; display:flex; align-items:center; justify-content:space-between; padding:12px 20px; flex-shrink:0; }
+.greeting-chip { background:rgba(247,201,72,0.15); border:1px solid rgba(247,201,72,0.3); border-radius:20px; padding:6px 14px; font-size:13px; font-weight:700; color:#f7c948; }
+.btn-skip-top { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:20px; padding:7px 16px; font-family:inherit; font-size:13px; font-weight:700; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s; }
+.btn-skip-top:hover { background:rgba(255,255,255,0.15); color:white; }
+.tv-outer { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 14px; width:100%; }
+.tv-frame { position:relative; max-width:480px; width:100%; }
+.tv-body { background:linear-gradient(145deg,#2a2a2a,#1a1a1a); border-radius:22px 22px 18px 18px; padding:14px 18px 10px; box-shadow:0 0 0 3px #444,0 0 0 5px #222,0 15px 40px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.08); }
+.tv-screen-bezel { background:#111; border-radius:10px; padding:7px; box-shadow:inset 0 2px 8px rgba(0,0,0,0.8),0 0 0 2px #333; position:relative; overflow:hidden; }
+.tv-screen-bezel::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px); pointer-events:none; z-index:5; border-radius:6px; }
+.tv-video-area { position:relative; width:100%; padding-bottom:56.25%; background:#000; border-radius:5px; overflow:hidden; }
+.tv-video-area video { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#000; }
+.tv-knobs { display:flex; gap:8px; margin-top:7px; padding:0 4px; }
+.knob { width:10px; height:10px; border-radius:50%; box-shadow:inset 0 1px 2px rgba(0,0,0,0.5); }
+.knob.red { background:#c0392b; } .knob.green { background:#27ae60; }
+.knob.amber { background:#f39c12; animation:knobBlink 1.5s ease-in-out infinite; }
+@keyframes knobBlink { 0%,100%{opacity:1;box-shadow:inset 0 1px 2px rgba(0,0,0,0.5),0 0 4px #f39c12;} 50%{opacity:0.4;} }
+.tv-stand { display:flex; flex-direction:column; align-items:center; }
+.tv-neck { width:38px; height:13px; background:linear-gradient(180deg,#333,#222); }
+.tv-base { width:110px; height:11px; background:linear-gradient(180deg,#2a2a2a,#1a1a1a); border-radius:0 0 8px 8px; box-shadow:0 4px 12px rgba(0,0,0,0.4),0 0 0 1px #333; }
+.video-bottom { width:100%; max-width:480px; padding:8px 16px 14px; display:flex; flex-direction:column; align-items:center; gap:9px; flex-shrink:0; }
+.btn-watch-again { background:none; border:1px solid rgba(255,255,255,0.15); border-radius:20px; padding:6px 20px; font-family:inherit; font-size:12px; font-weight:700; color:rgba(255,255,255,0.45); cursor:pointer; transition:all 0.2s; }
+.btn-watch-again:hover { border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.7); }
+.btn-ready { background:linear-gradient(135deg,#f7c948,#ff9f2f); color:#1a1a1a; border:none; border-radius:50px; padding:14px 44px; font-family:inherit; font-size:18px; font-weight:900; cursor:pointer; transition:all 0.25s; box-shadow:0 6px 22px rgba(247,201,72,0.5); opacity:0; pointer-events:none; }
+.btn-ready.show { opacity:1; pointer-events:auto; animation:readyPulse 2.5s ease-in-out infinite; }
+@keyframes readyPulse { 0%,100%{box-shadow:0 6px 22px rgba(247,201,72,0.5);} 50%{box-shadow:0 8px 32px rgba(247,201,72,0.8);transform:scale(1.02);} }
+.btn-ready:hover { transform:scale(1.07) !important; } .btn-ready:active { transform:scale(0.96) !important; }
+#transOverlay { position:fixed; inset:0; z-index:999; background:radial-gradient(circle at center,#1a5e35,#0a1a10); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; opacity:0; pointer-events:none; transition:opacity 0.4s; }
+#transOverlay.show { opacity:1; pointer-events:auto; }
+.trans-emoji { font-size:64px; animation:transBounce 0.6s ease-in-out infinite alternate; }
+@keyframes transBounce { from{transform:scale(1);} to{transform:scale(1.15);} }
+.trans-title { font-size:26px; font-weight:900; color:white; text-align:center; }
+.trans-name  { font-size:18px; font-weight:700; color:#f7c948; text-align:center; }
+</style>
+</head>
+<body>
+<div id="videoScreen">
+  <div class="video-topbar">
+    <div class="greeting-chip" id="greetingChip">🌿 המשך העלילה</div>
+    <button class="btn-skip-top" onclick="skipToMissions()">דלג ←</button>
+  </div>
+  <div class="tv-outer">
+    <div class="tv-frame">
+      <div class="tv-body">
+        <div class="tv-screen-bezel">
+          <div class="tv-video-area">
+            <video id="mainVideo" playsinline>
+              <source src="culinery_adventure2.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <div class="tv-knobs">
+          <div class="knob red"></div>
+          <div class="knob amber"></div>
+          <div class="knob green"></div>
+        </div>
+      </div>
+      <div class="tv-stand">
+        <div class="tv-neck"></div>
+        <div class="tv-base"></div>
+      </div>
+    </div>
+  </div>
+  <div class="video-bottom">
+    <button class="btn-watch-again" onclick="watchAgain()">🔁 צפו שוב</button>
+    <button class="btn-ready" id="btnReady" onclick="skipToMissions()">🚀 קדימה למשימה!</button>
+  </div>
+</div>
+<div id="transOverlay">
+  <div class="trans-emoji">🌿</div>
+  <div class="trans-title">משימה 1 של סיפור 2 מתחילה!</div>
+  <div class="trans-name" id="transName">בהצלחה! 🍳</div>
+</div>
+<script>
+const userName = localStorage.getItem('userName') || 'חבר';
+document.getElementById('greetingChip').textContent = `🌿 שלום ${userName}!`;
+document.getElementById('transName').textContent = `${userName}, בהצלחה! 🌿`;
+const video = document.getElementById('mainVideo');
+video.play().catch(() => { video.addEventListener('click', () => video.play(), { once: true }); });
+video.addEventListener('ended', () => { document.getElementById('btnReady').classList.add('show'); });
+function watchAgain() { video.currentTime = 0; video.play(); document.getElementById('btnReady').classList.remove('show'); }
+function skipToMissions() { video.pause(); document.getElementById('transOverlay').classList.add('show'); setTimeout(() => { window.location.href = 'story2_mission1.html'; }, 1600); }
+</script>
+</body>
+</html>
