@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>משימה 2 - גינת הירקות</title>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Varela Round', Arial, sans-serif;
+  direction: rtl; overflow: hidden; height: 100vh;
+  background: linear-gradient(180deg, #87CEEB 0%, #98D8C8 40%, #5a9e3a 40%);
+  color: white;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 20px; position:relative; z-index:10;
+}
+.mission-badge {
+  background:rgba(247,201,72,0.15); border:1px solid rgba(247,201,72,0.35);
+  border-radius:20px; padding:6px 16px;
+  font-size:13px; font-weight:700; color:#f7c948;
+}
+.btn-skip {
+  background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3);
+  border-radius:20px; padding:7px 16px;
+  font-family:inherit; font-size:13px; font-weight:700;
+  color:white; cursor:pointer; transition:all 0.2s;
+}
+
+/* ── INSTRUCTION ── */
+.instruction {
+  text-align:center; padding:0 20px 8px;
+  position:relative; z-index:10;
+}
+.instruction h2 {
+  font-size:17px; font-weight:900; color:white;
+  text-shadow:0 2px 8px rgba(0,0,0,0.3);
+  line-height:1.4;
+}
+.instruction h2 span { color:#f7c948; }
+.instruction p {
+  font-size:13px; color:rgba(255,255,255,0.85);
+  margin-top:4px; text-shadow:0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ── FOUND COUNTER ── */
+.counter {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  padding:4px 0 8px; position:relative; z-index:10;
+}
+.counter-slot {
+  width:44px; height:44px; border-radius:50%;
+  border:2.5px dashed rgba(255,255,255,0.5);
+  background:rgba(255,255,255,0.1);
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px; transition:all 0.4s;
+}
+.counter-slot.filled {
+  border-color:#f7c948; background:rgba(247,201,72,0.2);
+  animation:slotPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slotPop { 0%{transform:scale(0.5);} 100%{transform:scale(1);} }
+
+/* ── GARDEN ── */
+.garden {
+  position:relative;
+  width:100%; height:calc(100vh - 170px);
+  overflow:hidden;
+}
+
+/* Sky */
+.sky {
+  position:absolute; top:0; left:0; right:0;
+  height:30%; background:transparent;
+}
+/* Sun */
+.sun {
+  position:absolute; top:10px; left:20px;
+  width:50px; height:50px; border-radius:50%;
+  background:radial-gradient(circle, #FFE44D, #FFB300);
+  box-shadow:0 0 20px rgba(255,200,0,0.6);
+  animation:sunPulse 3s ease-in-out infinite;
+}
+@keyframes sunPulse { 0%,100%{box-shadow:0 0 20px rgba(255,200,0,0.6);} 50%{box-shadow:0 0 35px rgba(255,200,0,0.9);} }
+
+/* Cloud */
+.cloud {
+  position:absolute; background:white; border-radius:50px;
+  opacity:0.85;
+}
+.cloud::before, .cloud::after {
+  content:''; position:absolute; background:white; border-radius:50%;
+}
+
+/* Grass strip */
+.grass {
+  position:absolute; top:28%; left:0; right:0; height:16%;
+  background:linear-gradient(180deg, #6abf3a 0%, #4e9e28 100%);
+  border-radius:0;
+}
+.grass::before {
+  content:'';
+  position:absolute; top:-10px; left:0; right:0; height:20px;
+  background:repeating-linear-gradient(
+    90deg,
+    transparent 0px, transparent 12px,
+    #6abf3a 12px, #6abf3a 14px
+  );
+  clip-path:polygon(0 100%,2% 0,4% 100%,6% 0,8% 100%,10% 0,12% 100%,14% 0,16% 100%,18% 0,20% 100%,22% 0,24% 100%,26% 0,28% 100%,30% 0,32% 100%,34% 0,36% 100%,38% 0,40% 100%,42% 0,44% 100%,46% 0,48% 100%,50% 0,52% 100%,54% 0,56% 100%,58% 0,60% 100%,62% 0,64% 100%,66% 0,68% 100%,70% 0,72% 100%,74% 0,76% 100%,78% 0,80% 100%,82% 0,84% 100%,86% 0,88% 100%,90% 0,92% 100%,94% 0,96% 100%,98% 0,100% 100%);
+}
+
+/* Soil */
+.soil {
+  position:absolute; top:42%; left:0; right:0; bottom:0;
+  background:linear-gradient(180deg, #8B5E3C 0%, #6B3F20 40%, #5a3118 100%);
+}
+/* soil texture dots */
+.soil::after {
+  content:'';
+  position:absolute; inset:0;
+  background:radial-gradient(circle at 20% 30%, rgba(0,0,0,0.15) 2px, transparent 2px),
+             radial-gradient(circle at 60% 60%, rgba(0,0,0,0.1) 3px, transparent 3px),
+             radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 2px, transparent 2px),
+             radial-gradient(circle at 40% 80%, rgba(0,0,0,0.12) 2px, transparent 2px);
+  background-size:80px 60px, 120px 90px, 100px 70px, 90px 80px;
+}
+
+/* ── PLANT SPOTS ── */
+.plant-spot {
+  position:absolute;
+  display:flex; flex-direction:column; align-items:center;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+
+/* Sign (שלט) */
+.plant-sign {
+  background:#D4A853; border:2px solid #8B6914;
+  border-radius:6px; padding:3px 8px;
+  font-size:11px; font-weight:900; color:#3d2200;
+  margin-bottom:2px; white-space:nowrap;
+  box-shadow:0 2px 4px rgba(0,0,0,0.3);
+  position:relative; z-index:5;
+}
+.plant-sign::after {
+  content:''; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%);
+  width:3px; height:8px; background:#8B6914;
+}
+
+/* Leaves above ground */
+.plant-leaves {
+  font-size:32px; line-height:1;
+  transition:transform 0.15s;
+  position:relative; z-index:4;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+}
+.plant-spot:hover .plant-leaves { transform:scale(1.1) rotate(-5deg); }
+.plant-spot:active .plant-leaves { transform:scale(0.9) translateY(4px); }
+
+/* Underground (hidden veggie) */
+.plant-underground {
+  position:absolute;
+  font-size:28px;
+  top:calc(100% - 10px);
+  transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
+  transform:translateY(0px);
+  opacity:0; z-index:3;
+  pointer-events:none;
+}
+
+/* Pull animation */
+.plant-spot.pulling .plant-leaves { animation:wiggle 0.3s ease-in-out 3; }
+@keyframes wiggle { 0%,100%{transform:rotate(0deg);} 33%{transform:rotate(-8deg) scale(1.1);} 66%{transform:rotate(8deg) scale(1.1);} }
+
+.plant-spot.pulled .plant-leaves { transform:translateY(-30px) scale(1.15); }
+.plant-spot.pulled .plant-underground {
+  opacity:1;
+  transform:translateY(-55px);
+}
+
+/* CORRECT flash */
+.plant-spot.correct-pull .plant-leaves { filter:drop-shadow(0 0 8px #f7c948); }
+
+/* Above-ground plants — different heights based on type */
+.plant-spot.above-ground .plant-sign {
+  background:#c8e6a0; border-color:#5a9e3a; color:#1a3d00;
+}
+
+/* Tree (תפוז) */
+.plant-tree {
+  display:flex; flex-direction:column; align-items:center;
+  position:relative;
+}
+.tree-crown {
+  font-size:44px; line-height:1;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  transition:transform 0.15s;
+}
+.tree-trunk {
+  width:8px; height:22px;
+  background:linear-gradient(180deg,#8B5E3C,#6B3F20);
+  border-radius:3px; margin-top:-4px;
+}
+.plant-spot:hover .tree-crown { transform:scale(1.08) rotate(-3deg); }
+.plant-spot:active .tree-crown { transform:scale(0.92); }
+
+/* Vine (דלעת) */
+.plant-vine {
+  display:flex; flex-direction:column; align-items:center;
+  position:relative;
+}
+.vine-body {
+  line-height:1;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  transition:transform 0.15s;
+}
+.vine-stem {
+  width:4px; height:18px;
+  background:linear-gradient(180deg,#4a9e28,#2d6b15);
+  border-radius:2px; margin-top:-2px;
+  position:relative;
+}
+.vine-stem::before {
+  content:'🌿';
+  position:absolute; left:4px; top:2px; font-size:14px;
+}
+.vine-stem::after {
+  content:'🌿';
+  position:absolute; right:4px; top:8px; font-size:12px;
+  transform:scaleX(-1);
+}
+.plant-spot:hover .vine-body { transform:scale(1.08) rotate(4deg); }
+.plant-spot:active .vine-body { transform:scale(0.92); }
+
+/* CSS Pumpkin */
+.css-pumpkin { display:flex; flex-direction:column; align-items:center; }
+.pumpkin-body {
+  width:38px; height:30px;
+  background:radial-gradient(ellipse at 30% 30%, #ff9f2f, #e06000);
+  border-radius:50%;
+  position:relative;
+  box-shadow:inset -4px -3px 0 rgba(0,0,0,0.15), 2px 2px 6px rgba(0,0,0,0.3);
+}
+.pumpkin-body::before {
+  content:'';
+  position:absolute; top:2px; left:10px;
+  width:18px; height:26px;
+  border-radius:50%;
+  border-right:3px solid rgba(0,0,0,0.12);
+  border-left:3px solid rgba(0,0,0,0.12);
+}
+.pumpkin-stem {
+  width:4px; height:8px;
+  background:#4a7c20;
+  border-radius:2px; margin-top:-2px;
+}
+
+/* Bush (פלפל) */
+.plant-bush {
+  display:flex; flex-direction:column; align-items:center;
+  position:relative;
+}
+.bush-body {
+  font-size:38px; line-height:1;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  transition:transform 0.15s;
+  position:relative;
+}
+.bush-base {
+  font-size:28px; margin-top:-8px; line-height:1;
+}
+.plant-spot:hover .bush-body { transform:scale(1.08) rotate(-4deg); }
+.plant-spot:active .bush-body { transform:scale(0.92); }
+
+/* above-ground wrong: bounce up instead of shake */
+.plant-spot.above-ground.wrong-pull { animation: bounceWrong 0.5s; }
+@keyframes bounceWrong { 0%,100%{transform:translateY(0);} 40%{transform:translateY(-12px);} 70%{transform:translateY(-5px);} }
+
+/* ── FEEDBACK TOAST ── */
+.toast {
+  position:fixed; bottom:80px; left:50%; transform:translateX(-50%);
+  background:rgba(20,20,20,0.85); border-radius:20px; padding:10px 22px;
+  font-size:14px; font-weight:700; color:white; z-index:100;
+  opacity:0; transition:opacity 0.3s; pointer-events:none;
+  white-space:nowrap;
+}
+.toast.show { opacity:1; }
+.toast.good { background:rgba(40,140,60,0.9); }
+.toast.bad  { background:rgba(180,40,40,0.85); }
+
+/* ── SUCCESS SCREEN ── */
+#successScreen {
+  position:fixed; inset:0; z-index:200;
+  background:radial-gradient(circle at center, #1a5e35, #0a1a10);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:12px;
+  opacity:0; pointer-events:none; transition:opacity 0.5s;
+  padding:20px;
+}
+#successScreen.show { opacity:1; pointer-events:auto; }
+.success-veggies { font-size:64px; animation:bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes bounceIn { 0%{transform:scale(0);} 100%{transform:scale(1);} }
+.success-title { font-size:26px; font-weight:900; color:white; text-align:center; }
+.success-sub {
+  font-size:14px; color:rgba(255,255,255,0.8); text-align:center;
+  line-height:1.7; max-width:300px;
+  background:rgba(255,255,255,0.07); border-radius:16px; padding:14px 18px;
+}
+.success-sub strong { color:#f7c948; }
+.btn-continue {
+  margin-top:8px;
+  background:linear-gradient(135deg,#f7c948,#ff9f2f);
+  color:#1a1a1a; border:none; border-radius:50px;
+  padding:15px 50px; font-family:inherit; font-size:18px; font-weight:900;
+  cursor:pointer; box-shadow:0 6px 22px rgba(247,201,72,0.5);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{box-shadow:0 6px 22px rgba(247,201,72,0.5);} 50%{box-shadow:0 8px 32px rgba(247,201,72,0.8);transform:scale(1.03);} }
+
+/* Vitamin A float animation */
+.vitamin-pop {
+  position:fixed; pointer-events:none; z-index:150;
+  font-size:18px; font-weight:900;
+  color:#f7c948;
+  text-shadow:0 0 8px rgba(247,201,72,0.8);
+  animation:vitaminFly 1.4s ease-out forwards;
+}
+@keyframes vitaminFly {
+  0%   { opacity:1; transform:translate(0,0) scale(1); }
+  60%  { opacity:1; transform:translate(var(--tx), -80px) scale(1.2); }
+  100% { opacity:0; transform:translate(var(--tx), -140px) scale(0.7); }
+}
+.star-p { position:absolute; font-size:22px; animation:starFly 1.3s ease-out forwards; }
+@keyframes starFly { 0%{opacity:1;transform:translate(0,0) scale(1);} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0.2) rotate(360deg);} }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="mission-badge">🥕 משימה 2 מתוך 3</div>
+  <button class="btn-skip" onclick="goNext()">דלג ←</button>
+</div>
+
+<div class="instruction">
+  <h2>🌱 <span>שלפו</span> מהאדמה רק את הירקות הכתומים שבמתכון!</h2>
+  <p>לחצו על הצמחים כדי לשלוף אותם — רק הירקות הכתומים עשירים בויטמין A 🍊</p>
+</div>
+
+<div class="counter">
+  <div class="counter-slot" id="slot0"></div>
+  <div class="counter-slot" id="slot1"></div>
+</div>
+
+<div class="garden" id="garden">
+  <!-- Sky elements -->
+  <div class="sky">
+    <div class="sun"></div>
+  </div>
+  <div class="grass"></div>
+  <div class="soil"></div>
+  <!-- Plants injected by JS -->
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div id="successScreen">
+  <div class="stars-burst" id="starsBurst"></div>
+  <div class="success-veggies">🥕🍠</div>
+  <div class="success-title">מצאתם את הירקות! 🎉</div>
+  <div class="success-sub">
+    <strong>גזר 🥕</strong> ו<strong>בטטה 🍠</strong> הם הירקות הכתומים במתכון!<br>
+    שניהם עשירים בוויטמין A 🌟<br>
+    ובמנה הם מוחבאים כך שלא מרגישים אותם 😄
+  </div>
+  <button class="btn-continue" onclick="goNext()">המשך למשימה 3 →</button>
+</div>
+
+<script>
+const PLANTS = [
+  // underground — correct
+  { id:'carrot', label:'גזר',    leaves:'🌿', veggie:'🥕', correct:true,  above:false },
+  { id:'sweet',  label:'בטטה',   leaves:'🍃', veggie:'🍠', correct:true,  above:false },
+  // underground — wrong
+  { id:'potato', label:'תפו"א',  leaves:'🌿', veggie:'🥔', correct:false, above:false },
+  { id:'beet',   label:'סלק',    leaves:'🌱', veggie:'🟣', correct:false, above:false },
+  { id:'radish', label:'צנון',   leaves:'🌿', veggie:'⚪', correct:false, above:false },
+  // above-ground — wrong (orange but not in recipe)
+  { id:'orange', label:'תפוז',   leaves:'🍊', veggie:'🍊', correct:false, above:true  },
+  { id:'pumpkin',label:'דלעת',   leaves:'🎃', veggie:'🎃', correct:false, above:true  },
+  { id:'pepper', label:'פלפל',   leaves:'🫑', veggie:'🧡', correct:false, above:true  },
+];
+
+// Underground positions
+const UNDERGROUND_POS = [
+  { left:8,  top:48 },
+  { left:26, top:52 },
+  { left:46, top:47 },
+  { left:65, top:51 },
+  { left:84, top:48 },
+];
+// Above-ground positions — tree higher, vine/bush lower on grass
+const ABOVE_POS = [
+  { left:15, top:14 }, // תפוז — עץ גבוה
+  { left:50, top:22 }, // דלעת — מטפס
+  { left:80, top:20 }, // פלפל — שיח
+];
+
+// Shuffle underground and above-ground separately
+const underground = PLANTS.filter(p => !p.above).sort(() => Math.random() - 0.5);
+const aboveGround = PLANTS.filter(p => p.above).sort(() => Math.random() - 0.5);
+
+let found = 0;
+const TOTAL = 2;
+
+function buildPlant(plant, pos) {
+  const el = document.createElement('div');
+  el.className = 'plant-spot' + (plant.above ? ' above-ground' : '');
+  el.id = 'plant_' + plant.id;
+  el.style.cssText = `left:${pos.left}%;top:${pos.top}%;`;
+
+  if (plant.above) {
+    let visual = '';
+    if (plant.id === 'orange') {
+      visual = `<div class="plant-tree">
+        <div class="tree-crown">🌳🍊</div>
+        <div class="tree-trunk"></div>
+      </div>`;
+    } else if (plant.id === 'pumpkin') {
+      visual = `<div class="plant-vine">
+        <div class="vine-body">
+          <div class="css-pumpkin">
+            <div class="pumpkin-body"></div>
+            <div class="pumpkin-stem"></div>
+          </div>
+        </div>
+        <div class="vine-stem"></div>
+      </div>`;
+    } else if (plant.id === 'pepper') {
+      visual = `<div class="plant-bush">
+        <div class="bush-body">🌶️🧡</div>
+        <div class="bush-base">🌿🌿</div>
+      </div>`;
+    }
+    el.innerHTML = `<div class="plant-sign">${plant.label}</div>${visual}`;
+  } else {
+    el.innerHTML = `
+      <div class="plant-sign">${plant.label}</div>
+      <div class="plant-leaves">${plant.leaves}</div>
+      <div class="plant-underground">${plant.veggie}</div>
+    `;
+  }
+  el.addEventListener('click', () => handlePull(el, plant));
+  document.getElementById('garden').appendChild(el);
+}
+
+underground.forEach((p, i) => buildPlant(p, UNDERGROUND_POS[i]));
+aboveGround.forEach((p, i) => buildPlant(p, ABOVE_POS[i]));
+
+function handlePull(el, plant) {
+  if (el.dataset.done) return;
+
+  // wiggle first
+  el.classList.add('pulling');
+  setTimeout(() => {
+    el.classList.remove('pulling');
+    el.classList.add('pulled');
+
+    setTimeout(() => {
+      if (plant.correct) {
+        el.dataset.done = '1';
+        el.classList.add('correct-pull');
+        fillSlot(plant.veggie);
+        showToast(plant.id === 'carrot' ? '🥕 גזר! כתום ועשיר בויטמין A!' : '🍠 בטטה! כתומה ומתוקה!', 'good');
+        launchVitaminA(el);
+        found++;
+        if (found >= TOTAL) {
+          setTimeout(() => { launchStars(); document.getElementById('successScreen').classList.add('show'); }, 1000);
+        }
+      } else {
+        el.classList.add('wrong-pull');
+        const wrongMsg = plant.above
+          ? `${plant.veggie} ${plant.label} כתום אבל לא במתכון שלנו! 😅`
+          : 'לא זה! זה לא ירק כתום במתכון 😅';
+        showToast(wrongMsg, 'bad');
+        setTimeout(() => {
+          el.classList.remove('pulled', 'wrong-pull');
+        }, 600);
+      }
+    }, 400);
+  }, 350);
+}
+
+function fillSlot(emoji) {
+  const slot = document.getElementById('slot' + found);
+  if (slot) { slot.textContent = emoji; slot.classList.add('filled'); }
+}
+
+let toastTimer;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function launchVitaminA(el) {
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top;
+  const labels = ['ויטמין A!', '🌟A', '💊A', 'ויטמין A'];
+  labels.forEach((text, i) => {
+    const el2 = document.createElement('div');
+    el2.className = 'vitamin-pop';
+    el2.textContent = text;
+    const tx = (Math.random() - 0.5) * 80;
+    el2.style.cssText = `left:${cx}px;top:${cy}px;--tx:${tx}px;animation-delay:${i * 0.15}s;`;
+    document.body.appendChild(el2);
+    setTimeout(() => el2.remove(), 1800);
+  });
+}
+
+function launchStars() {
+  const burst = document.getElementById('starsBurst');
+  ['⭐','✨','🌟','🥕','🍠','💫'].forEach(e => {
+    for (let j = 0; j < 3; j++) {
+      const s = document.createElement('span');
+      s.className = 'star-p'; s.textContent = e;
+      const angle = Math.random()*360, dist = 120+Math.random()*160;
+      s.style.cssText = `left:50%;top:50%;--tx:${Math.cos(angle*Math.PI/180)*dist}px;--ty:${Math.sin(angle*Math.PI/180)*dist}px;animation-delay:${Math.random()*0.4}s;`;
+      burst.appendChild(s);
+    }
+  });
+}
+
+function goNext() { window.location.href = 'story2_mission3.html'; }
+</script>
+</body>
+</html>
