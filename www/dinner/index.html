@@ -84,12 +84,20 @@ body{
 
 <script>
 const RECIPES=[
-  {name:'רובוט טורטייה 🤖', unlocked:true,  color:'#FF6B35', href:'game1.html'},
-  {name:'מתכון מסתורי',     unlocked:false, color:'#B2BEC3'},
-  {name:'מתכון מסתורי',     unlocked:false, color:'#B2BEC3'},
-  {name:'מתכון מסתורי',     unlocked:false, color:'#B2BEC3'},
-  {name:'מתכון מסתורי',     unlocked:false, color:'#B2BEC3'},
+  {name:'רובוט טורטייה 🤖', color:'#FF6B35', href:'game1.html', games:[0,1,2]},
+  {name:'ארנבת ביצה 🐰',    color:'#C2185B', href:'game4.html', games:[3,4]},
+  {name:'קאסדייה בצורות 🫓', color:'#B2BEC3', href:'game6.html', games:[5,6]},
+  {name:'שבלולי פיצה 🍕',   color:'#B2BEC3', href:'game8.html', games:[7,8]},
+  {name:'פסטה בזוקה 🍝',    color:'#B2BEC3', href:'game10.html',games:[9,10]},
 ];
+
+function isUnlocked(recipeIdx){
+  if(recipeIdx===0) return true; // ראשון תמיד פתוח
+  // מתכון פתוח אם המתכון הקודם הושלם (לפחות משחק אחד עם כוכב)
+  const d=JSON.parse(localStorage.getItem('dinner_stars_detail')||'[]');
+  const prevGames=RECIPES[recipeIdx-1].games;
+  return prevGames.some(i=>d[i]>0);
+}
 
 function getTotalStars(){
   const d=JSON.parse(localStorage.getItem('dinner_stars_detail')||'[0,0,0]');
@@ -101,56 +109,49 @@ function buildMenu(){
   const list=document.getElementById('recipe-list');
   list.innerHTML='';
   RECIPES.forEach((r,i)=>{
+    const unlocked=isUnlocked(i);
     const btn=document.createElement('button');
-    btn.disabled=!r.unlocked;
+    btn.disabled=!unlocked;
     Object.assign(btn.style,{
-      background: r.unlocked
+      background: unlocked
         ? `linear-gradient(135deg,${r.color} 0%,${r.color}CC 100%)`
         : '#F5F6FA',
-      border: r.unlocked ? 'none' : `2px dashed ${r.color}`,
+      border: unlocked ? 'none' : `2px dashed ${r.color}`,
       borderRadius:'18px', padding:'16px 20px',
-      cursor: r.unlocked ? 'pointer' : 'not-allowed',
+      cursor: unlocked ? 'pointer' : 'not-allowed',
       display:'flex', justifyContent:'space-between', alignItems:'center',
-      boxShadow: r.unlocked ? `0 6px 20px ${r.color}50` : 'none',
+      boxShadow: unlocked ? `0 6px 20px ${r.color}50` : 'none',
       transition:'transform .15s', width:'100%',
       fontFamily:"'Assistant',sans-serif", direction:'rtl',
-      marginBottom:'0',
     });
-    if(r.unlocked){
+    if(unlocked){
       btn.classList.add('recipe-btn');
       btn.onmouseover=()=>btn.style.transform='translateY(-2px)';
       btn.onmouseout=()=>btn.style.transform='';
       if(r.href) btn.onclick=()=>window.location.href=r.href;
     }
-
     const left=document.createElement('div');
     left.style.cssText='display:flex;align-items:center;gap:12px';
-
     const num=document.createElement('div');
     Object.assign(num.style,{
       width:'36px',height:'36px',borderRadius:'50%',
-      background: r.unlocked?'rgba(255,255,255,.3)':'#E0E0E0',
+      background: unlocked?'rgba(255,255,255,.3)':'#E0E0E0',
       display:'flex',alignItems:'center',justifyContent:'center',
-      fontWeight:'900',color:r.unlocked?'white':'#B2BEC3',fontSize:'16px',flexShrink:'0'
+      fontWeight:'900',color:unlocked?'white':'#B2BEC3',fontSize:'16px',flexShrink:'0'
     });
     num.textContent=i+1;
-
     const label=document.createElement('span');
     Object.assign(label.style,{
-      fontWeight:'800', fontSize: r.unlocked?'17px':'15px',
-      color: r.unlocked?'white':'#95A5A6',
-      fontFamily: r.unlocked?"'Fredoka One',cursive":"inherit",
+      fontWeight:'800', fontSize: unlocked?'17px':'15px',
+      color: unlocked?'white':'#95A5A6',
+      fontFamily: unlocked?"'Fredoka One',cursive":"inherit",
     });
-    label.textContent=r.unlocked?r.name:'???';
-
+    label.textContent=unlocked?r.name:'???';
     const icon=document.createElement('span');
     icon.style.fontSize='20px';
-    icon.textContent=r.unlocked?'▶️':'🔒';
-
-    left.appendChild(num);
-    left.appendChild(label);
-    btn.appendChild(left);
-    btn.appendChild(icon);
+    icon.textContent=unlocked?'▶️':'🔒';
+    left.appendChild(num);left.appendChild(label);
+    btn.appendChild(left);btn.appendChild(icon);
     list.appendChild(btn);
   });
 }
