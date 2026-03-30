@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>חבילת ארוחות ערב 🍽️</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  background:linear-gradient(160deg,#FFF8E1 0%,#FFF3CD 50%,#FFE0B2 100%);
+  min-height:100vh;font-family:'Assistant','Segoe UI',sans-serif;
+  direction:rtl;display:flex;flex-direction:column;align-items:center;padding:20px 12px 40px;
+}
+.screen{
+  background:white;border-radius:28px;
+  box-shadow:0 12px 48px rgba(0,0,0,.13),0 2px 8px rgba(0,0,0,.07);
+  width:100%;max-width:420px;overflow:hidden;padding-bottom:20px;
+  animation:slideUp .4s cubic-bezier(.22,1,.36,1);
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes sparkle{0%,100%{transform:scale(1) rotate(0deg);opacity:1}50%{transform:scale(1.3) rotate(180deg);opacity:.7}}
+.bounce{animation:bounce 2s ease-in-out infinite}
+.sparkle{animation:sparkle 2.5s ease-in-out infinite}
+.big-btn{
+  background:linear-gradient(135deg,#FF6B35 0%,#FF8C42 100%);
+  color:white;border:none;border-radius:18px;
+  padding:15px 28px;font-size:17px;font-weight:800;cursor:pointer;
+  box-shadow:0 5px 18px rgba(255,107,53,.4);
+  transition:transform .15s,box-shadow .15s;
+  font-family:'Assistant',sans-serif;direction:rtl;width:100%;
+}
+.big-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,53,.5)}
+.big-btn:active{transform:translateY(0)}
+.recipe-btn:hover{transform:translateY(-2px)!important}
+::-webkit-scrollbar{width:0}
+</style>
+</head>
+<body>
+
+<!-- ── INTRO ────────────────────────────────────────────────── -->
+<div class="screen" id="intro-screen">
+  <div style="background:linear-gradient(135deg,#FF6B35 0%,#F7C948 100%);border-radius:28px 28px 0 0;padding:32px 24px 24px;position:relative;overflow:hidden;text-align:center">
+    <div class="sparkle" style="position:absolute;top:10px;left:16px;font-size:28px;opacity:.4">✨</div>
+    <div class="sparkle" style="position:absolute;top:30px;right:20px;font-size:20px;opacity:.4">⭐</div>
+    <div class="sparkle" style="position:absolute;bottom:10px;left:40px;font-size:22px;opacity:.3">🌟</div>
+    <div class="bounce" style="font-size:80px;line-height:1">🤖</div>
+    <h1 style="color:white;font-size:30px;font-weight:900;margin:12px 0 4px;font-family:'Fredoka One',cursive;letter-spacing:1px">
+      חבילת ארוחות ערב 🍽️
+    </h1>
+    <p style="color:rgba(255,255,255,.9);font-size:16px;margin:0">5 מתכונים כיפיים לגלות!</p>
+  </div>
+
+  <div style="padding:20px 20px 0">
+    <div onclick="goMenu()" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:20px;padding:36px 24px;cursor:pointer;position:relative;overflow:hidden;text-align:center;margin-bottom:20px">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 70% 30%,rgba(255,255,255,.15),transparent 60%)"></div>
+      <div style="font-size:56px">▶️</div>
+      <p style="color:white;font-weight:800;font-size:20px;margin:8px 0 4px">סרטון פתיחה</p>
+      <p style="color:rgba(255,255,255,.75);font-size:14px;margin:0">לחצו להתחיל את ההרפתקה!</p>
+    </div>
+    <button class="big-btn" onclick="goMenu()">🍽️ בואו נתחיל לבשל!</button>
+  </div>
+</div>
+
+<!-- ── MENU ─────────────────────────────────────────────────── -->
+<div class="screen" id="menu-screen" style="display:none">
+  <div style="padding:20px 20px 0;text-align:center">
+    <div style="font-size:48px;margin-bottom:4px">👨‍🍳</div>
+    <h2 style="font-size:26px;font-weight:900;color:#2C3E50;margin:0 0 4px;font-family:'Fredoka One',cursive">
+      בחרו מתכון
+    </h2>
+    <p style="color:#7F8C8D;font-size:14px;margin-bottom:16px">5 מתכונים מחכים לכם לגלות!</p>
+
+    <div style="background:linear-gradient(135deg,#FFF9E6,#FFF3CD);border:2px solid #F7C948;border-radius:16px;padding:10px 16px;display:inline-flex;align-items:center;gap:8px;margin-bottom:20px">
+      <span style="font-size:22px">⭐</span>
+      <span id="stars-count" style="font-weight:800;color:#F39C12;font-size:18px">0</span>
+      <span style="font-weight:600;color:#856404;font-size:14px">כוכבים שנצברו</span>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px;padding:0 20px 0" id="recipe-list"></div>
+</div>
+
+<script>
+const RECIPES=[
+  {name:'רובוט טורטייה 🤖', unlocked:true,  color:'#FF6B35', href:'game1.html'},
+  {name:'מתכון מסתורי',     unlocked:false, color:'#B2BEC3'},
+  {name:'מתכון מסתורי',     unlocked:false, color:'#B2BEC3'},
+  {name:'מתכון מסתורי',     unlocked:false, color:'#B2BEC3'},
+  {name:'מתכון מסתורי',     unlocked:false, color:'#B2BEC3'},
+];
+
+function getTotalStars(){
+  const d=JSON.parse(localStorage.getItem('dinner_stars_detail')||'[0,0,0]');
+  return d.reduce((a,b)=>a+b,0);
+}
+
+function buildMenu(){
+  document.getElementById('stars-count').textContent=getTotalStars();
+  const list=document.getElementById('recipe-list');
+  list.innerHTML='';
+  RECIPES.forEach((r,i)=>{
+    const btn=document.createElement('button');
+    btn.disabled=!r.unlocked;
+    Object.assign(btn.style,{
+      background: r.unlocked
+        ? `linear-gradient(135deg,${r.color} 0%,${r.color}CC 100%)`
+        : '#F5F6FA',
+      border: r.unlocked ? 'none' : `2px dashed ${r.color}`,
+      borderRadius:'18px', padding:'16px 20px',
+      cursor: r.unlocked ? 'pointer' : 'not-allowed',
+      display:'flex', justifyContent:'space-between', alignItems:'center',
+      boxShadow: r.unlocked ? `0 6px 20px ${r.color}50` : 'none',
+      transition:'transform .15s', width:'100%',
+      fontFamily:"'Assistant',sans-serif", direction:'rtl',
+      marginBottom:'0',
+    });
+    if(r.unlocked){
+      btn.classList.add('recipe-btn');
+      btn.onmouseover=()=>btn.style.transform='translateY(-2px)';
+      btn.onmouseout=()=>btn.style.transform='';
+      if(r.href) btn.onclick=()=>window.location.href=r.href;
+    }
+
+    const left=document.createElement('div');
+    left.style.cssText='display:flex;align-items:center;gap:12px';
+
+    const num=document.createElement('div');
+    Object.assign(num.style,{
+      width:'36px',height:'36px',borderRadius:'50%',
+      background: r.unlocked?'rgba(255,255,255,.3)':'#E0E0E0',
+      display:'flex',alignItems:'center',justifyContent:'center',
+      fontWeight:'900',color:r.unlocked?'white':'#B2BEC3',fontSize:'16px',flexShrink:'0'
+    });
+    num.textContent=i+1;
+
+    const label=document.createElement('span');
+    Object.assign(label.style,{
+      fontWeight:'800', fontSize: r.unlocked?'17px':'15px',
+      color: r.unlocked?'white':'#95A5A6',
+      fontFamily: r.unlocked?"'Fredoka One',cursive":"inherit",
+    });
+    label.textContent=r.unlocked?r.name:'???';
+
+    const icon=document.createElement('span');
+    icon.style.fontSize='20px';
+    icon.textContent=r.unlocked?'▶️':'🔒';
+
+    left.appendChild(num);
+    left.appendChild(label);
+    btn.appendChild(left);
+    btn.appendChild(icon);
+    list.appendChild(btn);
+  });
+}
+
+function goMenu(){
+  document.getElementById('intro-screen').style.display='none';
+  const m=document.getElementById('menu-screen');
+  m.style.display='block';
+  buildMenu();
+}
+</script>
+</body>
+</html>
