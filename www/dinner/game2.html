@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36px;font-family:'Assistant',sans-serif;direction:rtl;min-height:100vh}
+#app{width:100%;max-width:360px;background:#fff;border-radius:26px;box-shadow:0 12px 40px rgba(0,0,0,.13);overflow:hidden;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes starPop{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pop{0%{transform:scale(0.2);opacity:0}65%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+
+#hdr{padding:12px 18px 14px;color:#fff;text-align:center;background:linear-gradient(135deg,#388E3C,#81C784);transition:background .6s}
+#hdr.done{background:linear-gradient(135deg,#FF6B35,#F7C948)}
+#badge{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:2px 13px;font-size:12px;font-weight:700;margin-bottom:6px}
+#htitle{font-family:'Fredoka One',cursive;font-size:20px;margin-bottom:4px}
+#hsub{font-size:12px;opacity:.9;font-weight:700;line-height:1.5}
+
+/* counter */
+#counter-row{display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 16px 4px}
+#counter-bubbles{display:flex;gap:7px}
+.cbub{width:22px;height:22px;border-radius:50%;border:2px dashed #CCC;transition:all .35s;display:flex;align-items:center;justify-content:center;font-size:11px}
+.cbub.on{border:2px solid #4CAF50;background:#E8F5E9;animation:pop .4s ease}
+#counter-txt{font-size:13px;font-weight:800;color:#888}
+
+#cw{display:flex;justify-content:center}
+canvas{display:block;touch-action:none}
+
+#pantry-label{text-align:center;font-size:12px;font-weight:800;color:#5D4037;padding:5px 0 2px;background:#FFF8EE;border-top:1.5px dashed #E8D8B0}
+#pantry{display:flex;gap:0;background:#FFF8EE;padding:8px 6px 12px}
+.pitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:grab;border-radius:12px;padding:6px 2px 4px;transition:background .15s}
+.pitem:active{background:rgba(0,0,0,.06)}
+.pitem canvas{display:block;border-radius:50%;pointer-events:none}
+.pitem span{font-size:10px;font-weight:800;color:#7D5A3C;text-align:center;line-height:1.2}
+
+#done-panel{display:none;flex-direction:column;align-items:center;padding:10px 20px 24px;background:#fff}
+#stars{display:flex;gap:12px;padding:4px 0 10px}
+.str{font-size:40px;filter:drop-shadow(0 2px 6px gold)}
+#dmsg{font-size:14px;font-weight:700;color:#636e72;text-align:center;line-height:1.65;margin-bottom:18px}
+#nbtn{background:linear-gradient(135deg,#5C6BC0,#7B1FA2);color:#fff;border:none;border-radius:18px;padding:14px 44px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(92,107,192,.42)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hdr">
+    <div id="badge">🎨 משחק 2 מתוך 3</div>
+    <h2 id="htitle">🤖 עצבו את הרובוט!</h2>
+    <p id="hsub">גרור 10 מרכיבים מהמחסן לרובוט כדי לעצב אותו 🎨</p>
+  </div>
+
+  <div id="counter-row">
+    <span id="counter-txt">0 / 10 מרכיבים</span>
+    <div id="counter-bubbles">
+      <div class="cbub" id="b0"></div><div class="cbub" id="b1"></div><div class="cbub" id="b2"></div><div class="cbub" id="b3"></div><div class="cbub" id="b4"></div><div class="cbub" id="b5"></div><div class="cbub" id="b6"></div><div class="cbub" id="b7"></div><div class="cbub" id="b8"></div><div class="cbub" id="b9"></div>
+    </div>
+  </div>
+
+  <div id="cw"><canvas id="c"></canvas></div>
+
+  <div id="pantry-label">🏪 מחסן הירקות — גרור לרובוט</div>
+  <div id="pantry"></div>
+
+  <div id="done-panel">
+    <div id="stars">
+      <span class="str" style="animation:starPop .5s 0s both">⭐</span>
+      <span class="str" style="animation:starPop .5s .18s both">⭐</span>
+      <span class="str" style="animation:starPop .5s .36s both">⭐</span>
+    </div>
+    <p id="dmsg">🎉 כל הכבוד! עיצבתם רובוט טורטייה מדהים!<br>עכשיו נלמד לסדר את שלבי ההכנה 🧩</p>
+    <button id="nbtn">המשחק הבא ▶</button>
+  </div>
+</div>
+
+<script>
+const DPR = Math.min(window.devicePixelRatio||1,2);
+const CW=320, CH=330;
+const canvas=document.getElementById('c');
+canvas.width=CW*DPR; canvas.height=CH*DPR;
+canvas.style.width=CW+'px'; canvas.style.height=CH+'px';
+const ctx=canvas.getContext('2d');
+ctx.scale(DPR,DPR);
+
+// ── Plate & robot layout ───────────────────────────────────────
+const PCX=160, PCY=170, PCR=140;
+const ROBOT=[
+  {id:'head', x:116,y:42,  w:88, h:58},
+  {id:'body', x:106,y:108, w:108,h:90},
+  {id:'armL', x:37, y:116, w:69, h:24},
+  {id:'armR', x:214,y:116, w:69, h:24},
+  {id:'legL', x:118,y:198, w:34, h:82},
+  {id:'legR', x:168,y:198, w:34, h:82},
+];
+
+// ── Ingredients ────────────────────────────────────────────────
+const INGR=[
+  {id:'olive',    label:'זית',     emoji:'🫒'},
+  {id:'cuke',     label:'מלפפון',  emoji:'🥒'},
+  {id:'corn',     label:'תירס',    emoji:'🌽'},
+  {id:'carrot',   label:'גזר',     emoji:'🥕'},
+  {id:'tomato',   label:'עגבנייה', emoji:'🍅'},
+];
+
+// ── State ──────────────────────────────────────────────────────
+let placed=[];  // [{type,x,y, anim:0..1}]
+let drag=null;  // {type, curX, curY}
+let animT=0;
+let done=false;
+
+// ── Draw ingredient sprite (32×32) ────────────────────────────
+function drawIngr(ctx2,type,cx,cy,r){
+  ctx2.save();
+  if(type==='olive'){
+    // dark purple-black oval
+    const g=ctx2.createRadialGradient(cx-r*.28,cy-r*.28,r*.08,cx,cy,r);
+    g.addColorStop(0,'#5C4A5E');g.addColorStop(1,'#1A0D1A');
+    ctx2.fillStyle=g;
+    ctx2.beginPath();ctx2.ellipse(cx,cy,r,r*.75,0,0,Math.PI*2);ctx2.fill();
+    // hole
+    ctx2.fillStyle='#3C2A3E';
+    ctx2.beginPath();ctx2.arc(cx,cy,r*.28,0,Math.PI*2);ctx2.fill();
+    // highlight
+    ctx2.fillStyle='rgba(255,255,255,.18)';
+    ctx2.beginPath();ctx2.ellipse(cx-r*.3,cy-r*.3,r*.22,r*.16,-.4,0,Math.PI*2);ctx2.fill();
+  } else if(type==='cuke'){
+    // cucumber slice — green ring with seeds
+    const g=ctx2.createRadialGradient(cx,cy,r*.25,cx,cy,r);
+    g.addColorStop(0,'#BEEA72');g.addColorStop(.55,'#7DBF2E');g.addColorStop(1,'#4A8B10');
+    ctx2.fillStyle=g;
+    ctx2.beginPath();ctx2.arc(cx,cy,r,0,Math.PI*2);ctx2.fill();
+    // inner flesh
+    ctx2.fillStyle='#D9F5A0';
+    ctx2.beginPath();ctx2.arc(cx,cy,r*.62,0,Math.PI*2);ctx2.fill();
+    // seeds
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3;
+      ctx2.fillStyle='#A8D455';
+      ctx2.beginPath();ctx2.ellipse(cx+Math.cos(a)*r*.38,cy+Math.sin(a)*r*.38,r*.1,r*.06,a,0,Math.PI*2);ctx2.fill();
+    }
+    // rim
+    ctx2.strokeStyle='#3E7810';ctx2.lineWidth=1.2;
+    ctx2.beginPath();ctx2.arc(cx,cy,r,0,Math.PI*2);ctx2.stroke();
+  } else if(type==='corn'){
+    // corn kernel — yellow oval
+    const g=ctx2.createRadialGradient(cx-r*.25,cy-r*.3,r*.05,cx,cy,r);
+    g.addColorStop(0,'#FFEE70');g.addColorStop(.5,'#F5C518');g.addColorStop(1,'#C08C00');
+    ctx2.fillStyle=g;
+    ctx2.beginPath();ctx2.ellipse(cx,cy,r*.72,r,0,0,Math.PI*2);ctx2.fill();
+    // center crease
+    ctx2.strokeStyle='rgba(160,100,0,.3)';ctx2.lineWidth=.8;
+    ctx2.beginPath();ctx2.moveTo(cx,cy-r*.7);ctx2.lineTo(cx,cy+r*.7);ctx2.stroke();
+    ctx2.beginPath();ctx2.moveTo(cx-r*.5,cy);ctx2.lineTo(cx+r*.5,cy);ctx2.stroke();
+    // highlight
+    ctx2.fillStyle='rgba(255,255,200,.35)';
+    ctx2.beginPath();ctx2.ellipse(cx-r*.2,cy-r*.28,r*.28,r*.18,-.5,0,Math.PI*2);ctx2.fill();
+  } else if(type==='carrot'){
+    // carrot disc — orange circle
+    const g=ctx2.createRadialGradient(cx-r*.25,cy-r*.28,r*.06,cx,cy,r);
+    g.addColorStop(0,'#FFB560');g.addColorStop(.5,'#FF7B1A');g.addColorStop(1,'#C04800');
+    ctx2.fillStyle=g;
+    ctx2.beginPath();ctx2.arc(cx,cy,r,0,Math.PI*2);ctx2.fill();
+    // ring lines (cross-section)
+    [.38,.65,.88].forEach(f=>{
+      ctx2.strokeStyle=`rgba(180,70,0,${.18+f*.1})`;ctx2.lineWidth=.9;
+      ctx2.beginPath();ctx2.arc(cx,cy,r*f,0,Math.PI*2);ctx2.stroke();
+    });
+    // highlight
+    ctx2.fillStyle='rgba(255,220,140,.32)';
+    ctx2.beginPath();ctx2.ellipse(cx-r*.22,cy-r*.28,r*.26,r*.18,-.4,0,Math.PI*2);ctx2.fill();
+  } else if(type==='tomato'){
+    // cherry tomato — red circle
+    const g=ctx2.createRadialGradient(cx-r*.28,cy-r*.3,r*.06,cx,cy,r);
+    g.addColorStop(0,'#FF8070');g.addColorStop(.55,'#E52222');g.addColorStop(1,'#8B0000');
+    ctx2.fillStyle=g;
+    ctx2.beginPath();ctx2.arc(cx,cy,r,0,Math.PI*2);ctx2.fill();
+    // stem indent
+    ctx2.fillStyle='#4A1A00';
+    ctx2.beginPath();ctx2.arc(cx,cy-r*.82,r*.18,0,Math.PI*2);ctx2.fill();
+    // highlight
+    ctx2.fillStyle='rgba(255,255,255,.28)';
+    ctx2.beginPath();ctx2.ellipse(cx-r*.22,cy-r*.22,r*.26,r*.2,-.5,0,Math.PI*2);ctx2.fill();
+  }
+  ctx2.restore();
+}
+
+// ── Build pantry ───────────────────────────────────────────────
+const pantryDiv=document.getElementById('pantry');
+INGR.forEach(ig=>{
+  const wrap=document.createElement('div');
+  wrap.className='pitem'; wrap.dataset.id=ig.id;
+  const pc=document.createElement('canvas');
+  const PS=52;
+  pc.width=PS*DPR; pc.height=PS*DPR;
+  pc.style.width=PS+'px'; pc.style.height=PS+'px';
+  const p2=pc.getContext('2d'); p2.scale(DPR,DPR);
+  drawIngr(p2,ig.id,PS/2,PS/2,PS/2-3);
+  const lbl=document.createElement('span'); lbl.textContent=ig.label;
+  wrap.appendChild(pc); wrap.appendChild(lbl);
+  pantryDiv.appendChild(wrap);
+});
+
+// ── Tortilla ───────────────────────────────────────────────────
+function pr(n){return((Math.sin(n*127.1)*43758.5)%1+1)%1;}
+function rr(c,x,y,w,h,r){
+  c.beginPath();
+  c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w,y+h-r);c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r,y+h);c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x,y+r);c.arcTo(x,y,x+r,y,r);
+  c.closePath();
+}
+function drawTort(x,y,w,h){
+  const g=ctx.createLinearGradient(x,y,x+w*.7,y+h);
+  g.addColorStop(0,'#FFFBD0');g.addColorStop(.4,'#EED060');
+  g.addColorStop(.78,'#D2A830');g.addColorStop(1,'#B08818');
+  ctx.save();
+  rr(ctx,x,y,w,h,4);ctx.fillStyle=g;ctx.fill();
+  const n=Math.max(2,Math.floor(w*h/260));
+  const s=x*3.7+y*1.3;
+  for(let i=0;i<n;i++){
+    ctx.fillStyle=`rgba(88,46,0,${.1+pr(s+i*.9)*.2})`;
+    ctx.beginPath();
+    ctx.ellipse(x+4+pr(s+i*1.7)*(w-8),y+3+pr(s+i*3.1)*(h-6),
+      1.4+pr(s+i*5.3)*2,(.9+pr(s+i*5.3))*.55,pr(s+i*2.2)*Math.PI,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.strokeStyle='#9C7215';ctx.lineWidth=1.4;
+  rr(ctx,x,y,w,h,4);ctx.stroke();
+  ctx.restore();
+}
+
+// ── Plate ──────────────────────────────────────────────────────
+function drawPlate(){
+  ctx.save();
+  ctx.shadowColor='rgba(0,0,0,.16)';ctx.shadowBlur=20;ctx.shadowOffsetY=7;
+  ctx.beginPath();ctx.arc(PCX,PCY,PCR+18,0,Math.PI*2);
+  ctx.fillStyle='#80B4CC';ctx.fill();
+  ctx.restore();
+  ctx.beginPath();ctx.arc(PCX,PCY,PCR+11,0,Math.PI*2);
+  ctx.fillStyle='#A8CCDF';ctx.fill();
+  ctx.beginPath();ctx.arc(PCX,PCY,PCR+4,0,Math.PI*2);
+  ctx.fillStyle='#C8E4F4';ctx.fill();
+  ctx.beginPath();ctx.arc(PCX,PCY,PCR+4,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=2;ctx.stroke();
+}
+
+// ── Per-ingredient display radius ─────────────────────────────
+const IRADIUS={olive:7, corn:7};
+function irad(type){return IRADIUS[type]||13;}
+function idrad(type){return IRADIUS[type]?10:16;}
+
+// ── Placed ingredient on canvas ────────────────────────────────
+function drawPlacedIngr(p){
+  const a=Math.min(1,p.anim);
+  ctx.save();
+  ctx.globalAlpha=a;
+  ctx.translate(p.x,p.y);
+  ctx.scale(a*1.0,a*1.0);
+  drawIngr(ctx,p.type,0,0,irad(p.type));
+  ctx.restore();
+}
+
+// ── Highlight zone on plate ────────────────────────────────────
+function drawHint(t){
+  const pulse=.35+Math.sin(t*.08)*.2;
+  ctx.save();
+  ctx.strokeStyle=`rgba(60,160,60,${pulse})`;ctx.lineWidth=2;
+  ctx.setLineDash([5,4]);ctx.lineDashOffset=-(t*.38)%12;
+  ctx.beginPath();ctx.arc(PCX,PCY,PCR+1,0,Math.PI*2);ctx.stroke();
+  ctx.restore();
+}
+
+// ── Main draw ──────────────────────────────────────────────────
+function draw(){
+  animT++;
+  ctx.clearRect(0,0,CW,CH);
+  drawPlate();
+
+  // Robot parts
+  ctx.save();
+  ctx.beginPath();ctx.arc(PCX,PCY,PCR,0,Math.PI*2);ctx.clip();
+  ROBOT.forEach(p=>drawTort(p.x,p.y,p.w,p.h));
+  ctx.restore();
+
+  // Hint ring when no ingredients placed yet
+  if(placed.length===0) drawHint(animT);
+
+  // Placed ingredients
+  placed.forEach(p=>{ p.anim=Math.min(1,(p.anim||0)+.08); drawPlacedIngr(p); });
+
+  // Dragging
+  if(drag) drawIngr(ctx,drag.type,drag.curX,drag.curY,idrad(drag.type));
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ── Pointer handling ───────────────────────────────────────────
+function ptOf(e){
+  const r=canvas.getBoundingClientRect();
+  const s=e.touches?.[0]||e;
+  return{x:(s.clientX-r.left)*(CW/r.width),y:(s.clientY-r.top)*(CH/r.height)};
+}
+
+function onPlate(x,y){
+  return (x-PCX)**2+(y-PCY)**2<(PCR)*(PCR);
+}
+
+// Drag starts from pantry
+pantryDiv.addEventListener('pointerdown',e=>{
+  if(done)return;
+  const item=e.target.closest('.pitem');
+  if(!item)return;
+  e.preventDefault();
+  const type=item.dataset.id;
+  const r=canvas.getBoundingClientRect();
+  // start from pantry item center
+  drag={type, curX:r.left+CW/2, curY:r.top+CH-30};
+  pantryDiv.setPointerCapture(e.pointerId);
+  const pt=ptOf(e);
+  drag.curX=pt.x; drag.curY=pt.y;
+},{passive:false});
+
+pantryDiv.addEventListener('pointermove',e=>{
+  if(!drag)return; e.preventDefault();
+  const pt=ptOf(e); drag.curX=pt.x; drag.curY=pt.y;
+},{passive:false});
+
+pantryDiv.addEventListener('pointerup',e=>{
+  if(!drag)return; e.preventDefault();
+  const pt=ptOf(e);
+  if(onPlate(pt.x,pt.y) && placed.length<10){
+    placed.push({type:drag.type,x:pt.x,y:pt.y,anim:0});
+    aud();
+    updateCounter();
+    if(placed.length===10) setTimeout(onDone,700);
+  }
+  drag=null;
+},{passive:false});
+
+// Also allow drag on canvas for iOS compat
+canvas.addEventListener('pointerdown',e=>{
+  if(done)return; e.preventDefault();
+},{passive:false});
+
+// ── Counter ─────────────────────────────────────────────────────
+function updateCounter(){
+  const n=placed.length;
+  document.getElementById('counter-txt').textContent=`${n} / 10 מרכיבים`;
+  for(let i=0;i<10;i++){
+    const b=document.getElementById('b'+i);
+    if(b && i<n){
+      const last=placed[i];
+      const em=INGR.find(ig=>ig.id===last.type)?.emoji||'✅';
+      b.textContent=em; b.classList.add('on');
+      b.style.fontSize='11px';
+    }
+  }
+}
+
+// ── Done ─────────────────────────────────────────────────────────
+function onDone(){
+  done=true;
+  document.getElementById('hdr').classList.add('done');
+  document.getElementById('htitle').textContent='🤖 רובוט מעוצב!';
+  document.getElementById('hsub').textContent='כל הכבוד — עיצבתם רובוט יפהפה! 🎉';
+  document.getElementById('pantry').style.display='none';
+  document.getElementById('pantry-label').style.display='none';
+  document.getElementById('done-panel').style.display='flex';
+}
+
+// ── Sound ─────────────────────────────────────────────────────
+function aud(){
+  try{
+    const a=new(window.AudioContext||window.webkitAudioContext)();
+    const o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.type='sine';
+    o.frequency.setValueAtTime(440,a.currentTime);
+    o.frequency.exponentialRampToValueAtTime(660,a.currentTime+.08);
+    g.gain.setValueAtTime(.14,a.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.22);
+    o.start();o.stop(a.currentTime+.25);
+  }catch(e){}
+}
+</script>
+</body>
+</html>
