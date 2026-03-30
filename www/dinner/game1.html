@@ -7,128 +7,179 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
 body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36px;font-family:'Assistant',sans-serif;direction:rtl;min-height:100vh}
-#app{width:100%;max-width:360px;background:#fff;border-radius:26px;box-shadow:0 12px 40px rgba(0,0,0,.13);overflow:hidden;animation:fadeUp .4s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+#app{width:100%;max-width:360px;background:#fff;border-radius:26px;box-shadow:0 12px 40px rgba(0,0,0,.13);overflow:hidden}
+@keyframes slideUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
 @keyframes starPop{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1);opacity:1}}
-#hdr{padding:12px 18px 14px;color:#fff;text-align:center;transition:background .6s;background:linear-gradient(135deg,#5C6BC0,#7B1FA2)}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+#app{animation:slideUp .4s ease}
+
+#hdr{background:linear-gradient(135deg,#5C6BC0,#7B1FA2);padding:13px 18px 15px;color:#fff;text-align:center}
 #hdr.done{background:linear-gradient(135deg,#FF6B35,#F7C948)}
-#badge{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:2px 13px;font-size:12px;font-weight:700;margin-bottom:6px}
-#htitle{font-family:'Fredoka One',cursive;font-size:20px;margin-bottom:4px}
-#hsub{font-size:12px;opacity:.9;font-weight:700;line-height:1.5}
-#prog{display:flex;align-items:center;gap:5px;padding:7px 16px 5px;justify-content:center}
-.dot{width:11px;height:11px;border-radius:50%;background:#E0E0E0;transition:all .3s;flex-shrink:0}
-.dot.on{background:#4CAF50;box-shadow:0 1px 6px rgba(76,175,80,.55)}
-#ptxt{font-size:12px;font-weight:800;color:#888;min-width:26px}
-#cw{display:flex;justify-content:center}
+#badge{display:inline-block;background:rgba(255,255,255,.2);border-radius:20px;padding:2px 12px;font-size:12px;margin-bottom:6px;font-weight:700}
+#title{font-family:'Fredoka One',cursive;font-size:20px;margin-bottom:5px}
+#instr{font-size:12px;opacity:.88;font-weight:700;line-height:1.5}
+
+#progress{display:flex;gap:6px;padding:8px 16px;justify-content:center;align-items:center}
+.dot{width:12px;height:12px;border-radius:50%;background:#E0E0E0;transition:all .35s}
+.dot.on{background:#4CAF50;box-shadow:0 1px 6px rgba(76,175,80,.6)}
+#prog-txt{font-size:12px;font-weight:800;color:#888;margin-right:6px}
+
+#cw{display:flex;justify-content:center;padding:4px 0 0}
 canvas{display:block;touch-action:none}
-#hint{text-align:center;padding:5px 16px 7px;font-size:13px;font-weight:700;color:#666;min-height:26px}
-#done-panel{display:none;flex-direction:column;align-items:center;padding:10px 20px 22px;background:#fff}
-#stars{display:flex;gap:12px;padding:4px 0 10px}
-.str{font-size:40px;filter:drop-shadow(0 2px 6px gold)}
-#dmsg{font-size:14px;font-weight:700;color:#636e72;text-align:center;line-height:1.65;margin-bottom:18px}
-#nbtn{background:linear-gradient(135deg,#4CAF50,#66BB6A);color:#fff;border:none;border-radius:18px;padding:14px 44px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(76,175,80,.42)}
+
+#tray-label{text-align:center;font-size:12px;font-weight:800;color:#A0855A;padding:6px 0 2px;background:#FAF4E8;border-top:1.5px dashed #E8D8B0}
+#tray{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:10px 14px 14px;background:#FAF4E8;min-height:80px}
+.t-piece{border-radius:10px;cursor:grab;transition:transform .15s,box-shadow .15s;border:2px solid transparent}
+.t-piece:hover{transform:scale(1.07);box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.t-piece.used{opacity:.28;pointer-events:none;filter:grayscale(1)}
+
+#done-panel{display:none;flex-direction:column;align-items:center;padding:14px 20px 24px;background:#fff;animation:slideUp .45s ease}
+#stars-row{display:flex;gap:12px;padding:4px 0 12px}
+.star{font-size:40px;filter:drop-shadow(0 2px 6px gold)}
+#done-msg{font-size:14px;font-weight:700;color:#636e72;text-align:center;line-height:1.65;margin-bottom:18px}
+#next-btn{background:linear-gradient(135deg,#4CAF50,#66BB6A);color:#fff;border:none;border-radius:18px;padding:14px 44px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(76,175,80,.42)}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="hdr">
-    <div id="badge">✂️ שלב 1 מתוך 2 — גזירה</div>
-    <h2 id="htitle">🫓 גזרו את הטורטייה!</h2>
-    <p id="hsub">גרור לאורך כל קו מקווקוו כדי לגזור</p>
+    <div id="badge">✂️ משחק 1 מתוך 3</div>
+    <h2 id="title">🤖 בנו את רובוט הטורטייה!</h2>
+    <p id="instr">גררו כל חלק למקומו הנכון על הצלחת 👆</p>
   </div>
-  <div id="prog"><span id="ptxt">0/5</span></div>
+
+  <div id="progress">
+    <span id="prog-txt">0/6</span>
+    <div class="dot" id="d0"></div><div class="dot" id="d1"></div><div class="dot" id="d2"></div>
+    <div class="dot" id="d3"></div><div class="dot" id="d4"></div><div class="dot" id="d5"></div>
+  </div>
+
   <div id="cw"><canvas id="c"></canvas></div>
-  <div id="hint">✂️ גרור לאורך הקווים המקווקווים</div>
+
+  <div id="tray-label">🫓 חלקי הרובוט — גרור לצלחת</div>
+  <div id="tray"></div>
+
   <div id="done-panel">
-    <div id="stars">
-      <span class="str" style="animation:starPop .5s 0s both">⭐</span>
-      <span class="str" style="animation:starPop .5s .18s both">⭐</span>
-      <span class="str" style="animation:starPop .5s .36s both">⭐</span>
+    <div id="stars-row">
+      <span class="star" style="animation:starPop .5s 0s both">⭐</span>
+      <span class="star" style="animation:starPop .5s .18s both">⭐</span>
+      <span class="star" style="animation:starPop .5s .36s both">⭐</span>
     </div>
-    <p id="dmsg">🎉 כל הכבוד! בניתם רובוט טורטייה!<br>עכשיו נלמד על הרכיבים הבריאותיים 🥗</p>
-    <button id="nbtn">המשחק הבא ▶</button>
+    <p id="done-msg">🎉 כל הכבוד! בניתם רובוט מטורטייה!<br>עכשיו נלמד על הרכיבים הבריאותיים 🥗</p>
+    <button id="next-btn" onclick="window.location.href='game2.html'">המשחק הבא ▶</button>
   </div>
 </div>
 
 <script>
-// ── Canvas ────────────────────────────────────────────────────
 const DPR = Math.min(window.devicePixelRatio||1,2);
-const CW=320, CH=400;
+const CW=320, CH=300;
 const canvas=document.getElementById('c');
 canvas.width=CW*DPR; canvas.height=CH*DPR;
 canvas.style.width=CW+'px'; canvas.style.height=CH+'px';
 const ctx=canvas.getContext('2d');
 ctx.scale(DPR,DPR);
 
-// ── Plate geometry ────────────────────────────────────────────
-const PCX=160, PCY=152, PCR=116;
+// ─── Plate ────────────────────────────────────────────────────────────────────
+const PLX=160, PLY=155, PLR=138;
 
-// ── Cut lines ─────────────────────────────────────────────────
-// At y=95: xSpan ≈ sqrt(116²-(95-152)²)=sqrt(13456-3249)=sqrt(10207)≈101 → x:59–261
-// At y=196: xSpan ≈ sqrt(116²-(196-152)²)=sqrt(13456-1936)=sqrt(11520)≈107 → x:53–267
-// At x=112: ySpan ≈ sqrt(116²-48²)=sqrt(13456-2304)=sqrt(11152)≈106 → y:46–258 (we use 95–196)
-// At x=208: same (symmetric)
-// legV at x=160: from y=196 to bottom ≈ y=268
-const CUTS = [
-  {id:'topH',  axis:'h', pos:95,  x1:60, y1:95,  x2:260,y2:95},
-  {id:'botH',  axis:'h', pos:196, x1:54, y1:196, x2:266,y2:196},
-  {id:'leftV', axis:'v', pos:112, x1:112,y1:95,  x2:112,y2:196},
-  {id:'rightV',axis:'v', pos:208, x1:208,y1:95,  x2:208,y2:196},
-  {id:'legV',  axis:'v', pos:160, x1:160,y1:196, x2:160,y2:268},
+// ─── Robot layout on plate ────────────────────────────────────────────────────
+// Each slot: {id, label, x,y,w,h,  kind:'tort'|'cheese'|'cuke'}
+const SLOTS=[
+  {id:'head',  label:'ראש',      x:134,y:22,  w:52, h:36, kind:'tort'},
+  {id:'body',  label:'גוף',      x:106,y:80,  w:108,h:90, kind:'cheese'},
+  {id:'armL',  label:'יד שמאל', x:36, y:88,  w:70, h:28, kind:'tort_cuke'},
+  {id:'armR',  label:'יד ימין', x:214,y:88,  w:70, h:28, kind:'tort_cuke'},
+  {id:'legL',  label:'רגל שמאל',x:118,y:170, w:34, h:90, kind:'tort_cuke_v'},
+  {id:'legR',  label:'רגל ימין',x:168,y:170, w:34, h:90, kind:'tort_cuke_v'},
 ];
 
-// ── Robot pieces ──────────────────────────────────────────────
-// cutClip: rect to clip when showing piece during separation animation
-// slot:    where piece goes on plate in phase 2
-// sep:     direction to move during separation
-// trayCol/Row: position in 3×2 tray grid
-// tdw/tdh: display size in tray cell
-const PIECES = [
-  {id:'head',  label:'ראש',
-   cutClip:{x:112,y:36, w:96, h:59},
-   slot:{x:134,y:60, w:52,h:35},
-   sep:[ 0,-14], trayCol:1,trayRow:0, tdw:52,tdh:35},
-  {id:'armL',  label:'יד שמאל',
-   cutClip:{x:46, y:95, w:66, h:101},
-   slot:{x:57, y:108,w:53,h:22},
-   sep:[-13, 0], trayCol:0,trayRow:0, tdw:53,tdh:22},
-  {id:'armR',  label:'יד ימין',
-   cutClip:{x:208,y:95, w:66, h:101},
-   slot:{x:212,y:108,w:53,h:22},
-   sep:[ 13, 0], trayCol:2,trayRow:0, tdw:53,tdh:22},
-  {id:'body',  label:'גוף',
-   cutClip:{x:112,y:95, w:96, h:101},
-   slot:{x:110,y:95, w:100,h:101},
-   sep:[ 0,  0], trayCol:1,trayRow:1, tdw:54,tdh:44},
-  {id:'legL',  label:'רגל שמאל',
-   cutClip:{x:112,y:196,w:48, h:72},
-   slot:{x:116,y:198,w:44,h:62},
-   sep:[-6,  14], trayCol:0,trayRow:1, tdw:30,tdh:44},
-  {id:'legR',  label:'רגל ימין',
-   cutClip:{x:160,y:196,w:48, h:72},
-   slot:{x:162,y:198,w:44,h:62},
-   sep:[ 6,  14], trayCol:2,trayRow:1, tdw:30,tdh:44},
-];
-
-// Tray layout (phase 2)
-const TRAY_Y=282;
-const trayCX=col => 10 + col*100 + (100-62)/2;  // centers in 100px columns: 24,124,224
-const trayCY=row => TRAY_Y+22 + row*52;          // row0:304  row1:356
-
-// ── State ─────────────────────────────────────────────────────
-let phase='cut';          // 'cut' | 'arrange' | 'done'
-const doneCuts=new Set();
-const placed={};
-let drag=null;            // {pieceId, offX, offY, curX, curY}
+// ─── State ────────────────────────────────────────────────────────────────────
+const placed={}; // id -> true
+let drag=null;   // {slotId, startX, startY, curX, curY, pieceEl}
 let animT=0;
-let flashFX=[];           // [{x1,y1,x2,y2,age}]
-let dragPath=[];
-let isDown=false;
-let separating=false, sepProgress=0, sepStartT=0, sepDone=false;
+let doneFlag=false;
 
-// ── Helpers ───────────────────────────────────────────────────
-function pr(n){ return ((Math.sin(n*127.1)*43758.5)%1+1)%1; }
-function rr(x,y,w,h,r){
+// ─── Draw plate ───────────────────────────────────────────────────────────────
+function drawPlate(){
+  // Shadow
+  ctx.save();
+  ctx.shadowColor='rgba(0,0,0,.18)';ctx.shadowBlur=22;ctx.shadowOffsetY=8;
+  ctx.beginPath();ctx.arc(PLX,PLY,PLR,0,Math.PI*2);ctx.fillStyle='#95C5DE';ctx.fill();
+  ctx.restore();
+  // Rim
+  ctx.beginPath();ctx.arc(PLX,PLY,PLR,0,Math.PI*2);ctx.fillStyle='#B5D8ED';ctx.fill();
+  // Surface
+  ctx.beginPath();ctx.arc(PLX,PLY,PLR-6,0,Math.PI*2);ctx.fillStyle='#D6EEFA';ctx.fill();
+  ctx.beginPath();ctx.arc(PLX,PLY,PLR-6,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=2;ctx.stroke();
+}
+
+// ─── Draw a robot piece by kind ───────────────────────────────────────────────
+function drawPiece(ctx,x,y,w,h,kind,alpha=1){
+  ctx.save();ctx.globalAlpha=alpha;
+
+  if(kind==='cheese'){
+    // Yellow cheese square
+    const g=ctx.createLinearGradient(x,y,x+w,y+h);
+    g.addColorStop(0,'#FFF176');g.addColorStop(.5,'#F9D03E');g.addColorStop(1,'#E6B810');
+    ctx.fillStyle=g;
+    rr(ctx,x,y,w,h,6);ctx.fill();
+    ctx.strokeStyle='#C8A010';ctx.lineWidth=1.8;rr(ctx,x,y,w,h,6);ctx.stroke();
+    // Texture dots
+    for(let i=0;i<4;i++){
+      ctx.save();ctx.fillStyle='rgba(180,130,0,.15)';
+      ctx.beginPath();ctx.arc(x+12+i*22,y+h/2,4,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+  }
+  else if(kind==='tort'){
+    // Beige tortilla strip horizontal
+    tortRect(ctx,x,y,w,h);
+  }
+  else if(kind==='tort_cuke'){
+    // horizontal: tortilla body + green cucumber ends
+    const cw=Math.round(w*.22);
+    // cuke left
+    cukeRect(ctx,x,y,cw,h);
+    // tortilla middle
+    tortRect(ctx,x+cw,y,w-cw*2,h);
+    // cuke right
+    cukeRect(ctx,x+w-cw,y,cw,h);
+  }
+  else if(kind==='tort_cuke_v'){
+    // vertical: tortilla body + green cucumber bottom
+    const ch_=Math.round(h*.2);
+    tortRect(ctx,x,y,w,h-ch_);
+    cukeRect(ctx,x,y+h-ch_,w,ch_);
+  }
+
+  ctx.restore();
+}
+
+function tortRect(ctx,x,y,w,h){
+  const g=ctx.createLinearGradient(x,y,x,y+h);
+  g.addColorStop(0,'#F5E8C4');g.addColorStop(.45,'#E8D090');g.addColorStop(1,'#C9A850');
+  ctx.fillStyle=g;rr(ctx,x,y,w,h,5);ctx.fill();
+  ctx.strokeStyle='#A8882A';ctx.lineWidth=1.5;rr(ctx,x,y,w,h,5);ctx.stroke();
+  // Sesame-like dots
+  const dotCount=Math.floor(w*h/160);
+  const seed=x*7+y*3;
+  for(let i=0;i<dotCount;i++){
+    const dx=((seed*i*17+13)%1000)/1000;
+    const dy=((seed*i*23+7)%1000)/1000;
+    ctx.save();ctx.fillStyle='rgba(100,70,10,.25)';
+    ctx.beginPath();ctx.ellipse(x+4+dx*(w-8),y+3+dy*(h-6),2.5,1.5,Math.PI/4,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+}
+
+function cukeRect(ctx,x,y,w,h){
+  const g=ctx.createLinearGradient(x,y,x+w,y+h);
+  g.addColorStop(0,'#A5D63E');g.addColorStop(1,'#5B9E18');
+  ctx.fillStyle=g;rr(ctx,x,y,w,h,4);ctx.fill();
+  ctx.strokeStyle='#4A8012';ctx.lineWidth=1.5;rr(ctx,x,y,w,h,4);ctx.stroke();
+}
+
+function rr(ctx,x,y,w,h,r){
   ctx.beginPath();
   ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
   ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
@@ -137,365 +188,182 @@ function rr(x,y,w,h,r){
   ctx.closePath();
 }
 
-// ── Tortilla rectangle ────────────────────────────────────────
-function drawTort(x,y,w,h){
-  const s=x*3.7+y*1.3;
-  const g=ctx.createLinearGradient(x,y,x+w*.7,y+h);
-  g.addColorStop(0,'#FFF8D2');g.addColorStop(.35,'#EDD05E');
-  g.addColorStop(.72,'#D4AA32');g.addColorStop(1,'#B08A18');
+// ─── Draw slot outline (ghost) ────────────────────────────────────────────────
+function drawSlotGhost(slot,t){
+  if(placed[slot.id])return;
+  const pulse=.4+Math.sin(t*.07)*.25;
   ctx.save();
-  rr(x,y,w,h,4); ctx.fillStyle=g; ctx.fill();
-  const n=Math.max(3,Math.floor(w*h/240));
-  for(let i=0;i<n;i++){
-    ctx.fillStyle=`rgba(92,50,0,${.1+pr(s+i*.9)*.2})`;
-    ctx.beginPath();
-    ctx.ellipse(x+3+pr(s+i*1.7)*(w-6),y+3+pr(s+i*3.1)*(h-6),
-                1.4+pr(s+i*5.3)*2.2,(1.4+pr(s+i*5.3)*2.2)*.55,
-                pr(s+i*2.2)*Math.PI,0,Math.PI*2);
-    ctx.fill();
-  }
-  ctx.strokeStyle='#9C7215'; ctx.lineWidth=1.5;
-  rr(x,y,w,h,4); ctx.stroke();
+  ctx.setLineDash([7,5]);ctx.lineDashOffset=-(t*.4)%16;
+  ctx.strokeStyle=`rgba(80,140,220,${pulse})`;ctx.lineWidth=2.2;
+  rr(ctx,slot.x,slot.y,slot.w,slot.h,6);ctx.stroke();
+  ctx.restore();
+  // Label
+  ctx.save();ctx.fillStyle=`rgba(60,120,200,${pulse*.9})`;
+  ctx.font=`700 11px 'Assistant',sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(slot.label,slot.x+slot.w/2,slot.y+slot.h/2);
   ctx.restore();
 }
 
-// ── Full tortilla circle texture ──────────────────────────────
-function drawTortCircle(offX,offY){
-  const g=ctx.createRadialGradient(PCX+offX-20,PCY+offY-22,10,PCX+offX,PCY+offY,PCR);
-  g.addColorStop(0,'#FFFBE0');g.addColorStop(.42,'#EDD060');
-  g.addColorStop(.82,'#D0A828');g.addColorStop(1,'#9A7010');
-  ctx.fillStyle=g;
-  ctx.beginPath();ctx.arc(PCX+offX,PCY+offY,PCR,0,Math.PI*2);ctx.fill();
-  for(let i=0;i<62;i++){
-    const sx=(PCX+offX-PCR+8)+pr(i*1.7)*(PCR*2-16);
-    const sy=(PCY+offY-PCR+8)+pr(i*3.1)*(PCR*2-16);
-    if((sx-PCX-offX)**2+(sy-PCY-offY)**2>(PCR-6)**2) continue;
-    ctx.fillStyle=`rgba(88,46,0,${.09+pr(i*.9)*.22})`;
-    ctx.beginPath();
-    ctx.ellipse(sx,sy,2.5+pr(i*2.2)*3,1.1+pr(i*5.3),pr(i*7.7)*Math.PI,0,Math.PI*2);
-    ctx.fill();
-  }
+// ─── Robot face (drawn after body placed) ─────────────────────────────────────
+function drawRobotFace(){
+  const hs=SLOTS[0]; // head slot
+  if(!placed['head'])return;
+  const cx=hs.x+hs.w/2, cy=hs.y+hs.h/2;
+  // Eyes
+  [[cx-11,cy-4],[cx+11,cy-4]].forEach(([ex,ey])=>{
+    ctx.fillStyle='#263238';rr(ctx,ex-7,ey-6,14,12,2);ctx.fill();
+    ctx.fillStyle='#64B5F6';ctx.beginPath();ctx.arc(ex,ey,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='white';ctx.beginPath();ctx.arc(ex-2,ey-2,1.8,0,Math.PI*2);ctx.fill();
+  });
+  // Mouth
+  ctx.fillStyle='#263238';rr(ctx,cx-10,cy+6,20,5,2);ctx.fill();
+  ['#E53935','#FDD835','#43A047'].forEach((c,i)=>{ctx.fillStyle=c;ctx.fillRect(cx-9+i*7,cy+6,6,5);});
+  // Antenna
+  ctx.strokeStyle='#90A4AE';ctx.lineWidth=2;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(cx,hs.y);ctx.lineTo(cx,hs.y-16);ctx.stroke();
+  ctx.fillStyle='#FF5722';ctx.beginPath();ctx.arc(cx,hs.y-20,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='white';ctx.beginPath();ctx.arc(cx,hs.y-20,2,0,Math.PI*2);ctx.fill();
 }
 
-// ── Plate ─────────────────────────────────────────────────────
-function drawPlate(){
-  ctx.save();
-  ctx.shadowColor='rgba(0,0,0,.18)';ctx.shadowBlur=22;ctx.shadowOffsetY=8;
-  ctx.beginPath();ctx.arc(PCX,PCY,PCR+20,0,Math.PI*2);
-  ctx.fillStyle='#82B6CE';ctx.fill();
-  ctx.restore();
-  ctx.beginPath();ctx.arc(PCX,PCY,PCR+13,0,Math.PI*2);
-  ctx.fillStyle='#A5CEE5';ctx.fill();
-  ctx.beginPath();ctx.arc(PCX,PCY,PCR+5,0,Math.PI*2);
-  ctx.fillStyle='#C8E6F5';ctx.fill();
-  // Inner highlight ring
-  ctx.beginPath();ctx.arc(PCX,PCY,PCR+5,0,Math.PI*2);
-  ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=2;ctx.stroke();
+function drawBodyDeco(){
+  if(!placed['body'])return;
+  const bs=SLOTS[1];
+  const cx=bs.x+bs.w/2, cy=bs.y+bs.h/2;
+  const btns=['#E53935','#FDD835','#43A047','#1E88E5','#AB47BC','#FF7043'];
+  btns.forEach((c,i)=>{
+    const col=i%3, row=Math.floor(i/3);
+    const bx=cx-22+col*22, by=cy-20+row*26;
+    ctx.save();ctx.shadowColor=c;ctx.shadowBlur=6;
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(bx,by,7,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle='rgba(0,0,0,.2)';ctx.lineWidth=1;ctx.stroke();
+  });
+  // Speaker
+  ctx.fillStyle='#263238';rr(ctx,cx-22,cy+22,44,10,5);ctx.fill();
+  for(let i=0;i<5;i++){ctx.fillStyle=i%2?'#37474F':'#455A64';rr(ctx,cx-21+i*9,cy+23,8,8,2);ctx.fill();}
 }
 
-// ── PHASE 1: Cut screen ───────────────────────────────────────
-function drawCutScreen(){
+// ─── Full redraw ──────────────────────────────────────────────────────────────
+function redraw(){
+  animT++;
+  ctx.clearRect(0,0,CW,CH);
   drawPlate();
 
-  if(!separating){
-    // Whole tortilla
-    ctx.save();
-    ctx.beginPath();ctx.arc(PCX,PCY,PCR,0,Math.PI*2);ctx.clip();
-    drawTortCircle(0,0);
-    ctx.restore();
-  } else {
-    // Each piece flies apart
-    PIECES.forEach(p=>{
-      const dx=p.sep[0]*sepProgress, dy=p.sep[1]*sepProgress;
-      ctx.save();
-      ctx.beginPath();ctx.arc(PCX+dx,PCY+dy,PCR,0,Math.PI*2);ctx.clip();
-      ctx.beginPath();
-      ctx.rect(p.cutClip.x+dx,p.cutClip.y+dy,p.cutClip.w,p.cutClip.h);
-      ctx.clip();
-      drawTortCircle(dx,dy);
-      ctx.restore();
-    });
-  }
-
-  // Dashed cut lines (only uncut)
-  const dOff=-(animT*.4)%16;
-  CUTS.forEach(cl=>{
-    if(doneCuts.has(cl.id)) return;
-    const pulse=.52+Math.sin(animT*.088)*.36;
-    ctx.save();
-    ctx.setLineDash([9,5]);ctx.lineDashOffset=dOff;
-    ctx.strokeStyle=`rgba(44,118,218,${pulse})`;
-    ctx.lineWidth=2.6;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(cl.x1,cl.y1);ctx.lineTo(cl.x2,cl.y2);ctx.stroke();
-    ctx.restore();
-    // scissors icon
-    const ix=cl.axis==='h'?cl.x1-14:cl.x1+1;
-    const iy=cl.axis==='h'?cl.y1+1:cl.y1-14;
-    ctx.save();ctx.translate(ix,iy);
-    if(cl.axis==='v')ctx.rotate(-Math.PI/2);
-    ctx.globalAlpha=pulse;ctx.font='14px serif';
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText('✂',0,0);ctx.restore();
+  // Placed pieces
+  SLOTS.forEach(s=>{
+    if(placed[s.id]) drawPiece(ctx,s.x,s.y,s.w,s.h,s.kind);
   });
 
-  // Flash FX
-  flashFX.forEach(fx=>{
-    const p=1-fx.age/22;
-    ctx.save();ctx.globalAlpha=p*.88;
-    ctx.strokeStyle='#FFF060';ctx.lineWidth=16*p;ctx.lineCap='round';
-    ctx.shadowColor='white';ctx.shadowBlur=28*p;
-    ctx.beginPath();ctx.moveTo(fx.x1,fx.y1);ctx.lineTo(fx.x2,fx.y2);ctx.stroke();
-    ctx.restore(); fx.age++;
-  });
-  flashFX=flashFX.filter(f=>f.age<22);
+  // Decorations on top of pieces
+  drawBodyDeco();
+  drawRobotFace();
 
-  // Drag trail
-  if(dragPath.length>1){
-    ctx.save();ctx.strokeStyle='rgba(255,65,15,.62)';
-    ctx.lineWidth=3.5;ctx.lineCap='round';ctx.lineJoin='round';
-    ctx.beginPath();ctx.moveTo(dragPath[0].x,dragPath[0].y);
-    dragPath.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));
-    ctx.stroke();ctx.restore();
-  }
-}
+  // Ghost outlines for empty slots
+  SLOTS.forEach(s=>drawSlotGhost(s,animT));
 
-// ── PHASE 2: Arrange screen ───────────────────────────────────
-function drawArrangeScreen(){
-  drawPlate();
-
-  // Ghost outlines for unplaced slots
-  const dOff2=-(animT*.32)%14;
-  PIECES.forEach(p=>{
-    if(placed[p.id]) return;
-    const{x,y,w,h}=p.slot;
-    const pulse=.38+Math.sin(animT*.07)*.24;
-    ctx.save();
-    ctx.setLineDash([6,4]);ctx.lineDashOffset=dOff2;
-    ctx.strokeStyle=`rgba(55,115,195,${pulse})`;ctx.lineWidth=1.8;
-    rr(x,y,w,h,4);ctx.stroke();
-    ctx.fillStyle=`rgba(55,115,195,${pulse*.7})`;
-    ctx.font=`700 10px 'Assistant',sans-serif`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(p.label,x+w/2,y+h/2);
-    ctx.restore();
-  });
-
-  // Placed pieces (clipped to plate)
-  PIECES.forEach(p=>{
-    if(!placed[p.id]) return;
-    const{x,y,w,h}=p.slot;
-    ctx.save();
-    ctx.beginPath();ctx.arc(PCX,PCY,PCR,0,Math.PI*2);ctx.clip();
-    drawTort(x,y,w,h);
-    ctx.restore();
-  });
-
-  // Tray background
-  ctx.save();
-  ctx.fillStyle='#F9F2E3';
-  ctx.beginPath();ctx.rect(0,TRAY_Y,CW,CH-TRAY_Y);ctx.fill();
-  ctx.strokeStyle='#DDD0A8';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(0,TRAY_Y);ctx.lineTo(CW,TRAY_Y);ctx.stroke();
-  ctx.fillStyle='#9B7B3A';ctx.font=`800 11px 'Assistant',sans-serif`;
-  ctx.textAlign='center';
-  ctx.fillText('🫓 גרור כל חלק למקומו על הצלחת',CW/2,TRAY_Y+14);
-  ctx.restore();
-
-  // Tray pieces
-  PIECES.forEach(p=>{
-    if(placed[p.id]) return;
-    if(drag&&drag.pieceId===p.id) return;
-    const cx=trayCX(p.trayCol), cy=trayCY(p.trayRow);
-    // draw centered within 62×42 cell
-    const tx=cx+(62-p.tdw)/2, ty=cy+(42-p.tdh)/2;
-    ctx.save();
-    // subtle cell bg
-    ctx.fillStyle='rgba(210,190,140,.22)';
-    rr(cx,cy,62,42,8);ctx.fill();
-    ctx.strokeStyle='rgba(160,120,50,.2)';ctx.lineWidth=1;
-    rr(cx,cy,62,42,8);ctx.stroke();
-    ctx.restore();
-    drawTort(tx,ty,p.tdw,p.tdh);
-    // label
-    ctx.save();
-    ctx.fillStyle='rgba(80,52,10,.55)';
-    ctx.font=`700 9px 'Assistant',sans-serif`;
-    ctx.textAlign='center';
-    ctx.fillText(p.label,cx+31,cy+53);
-    ctx.restore();
-  });
-
-  // Dragging piece follows pointer
+  // Dragging piece follows cursor
   if(drag){
-    const p=PIECES.find(pp=>pp.id===drag.pieceId);
-    ctx.save();
-    ctx.shadowColor='rgba(0,0,0,.3)';ctx.shadowBlur=14;ctx.globalAlpha=.88;
-    drawTort(drag.curX-drag.offX,drag.curY-drag.offY,p.slot.w,p.slot.h);
-    ctx.restore();
+    const s=SLOTS.find(sl=>sl.id===drag.slotId);
+    drawPiece(ctx,drag.curX-drag.offX,drag.curY-drag.offY,s.w,s.h,s.kind,.82);
   }
+
+  requestAnimationFrame(redraw);
 }
+redraw();
 
-// ── Input ─────────────────────────────────────────────────────
-function ptOf(e){
-  const r=canvas.getBoundingClientRect();
-  const s=e.touches?.[0]||e;
-  return{x:(s.clientX-r.left)*(CW/r.width),y:(s.clientY-r.top)*(CH/r.height)};
-}
-
-canvas.addEventListener('pointerdown',e=>{
-  e.preventDefault(); isDown=true;
-  const p=ptOf(e); canvas.setPointerCapture(e.pointerId);
-  if(phase==='cut'){
-    dragPath=[p];
-  } else if(phase==='arrange'){
-    for(const pc of PIECES){
-      if(placed[pc.id]||( drag&&drag.pieceId===pc.id)) continue;
-      const cx=trayCX(pc.trayCol),cy=trayCY(pc.trayRow);
-      if(p.x>=cx&&p.x<=cx+62&&p.y>=cy&&p.y<=cy+42){
-        drag={pieceId:pc.id,offX:pc.slot.w/2,offY:pc.slot.h/2,curX:p.x,curY:p.y};
-        break;
-      }
-    }
-  }
-},{passive:false});
-
-canvas.addEventListener('pointermove',e=>{
-  if(!isDown)return; e.preventDefault();
-  const p=ptOf(e);
-  if(phase==='cut'){ dragPath.push(p); checkCuts(); }
-  else if(drag){ drag.curX=p.x; drag.curY=p.y; }
-},{passive:false});
-
-canvas.addEventListener('pointerup',e=>{
-  isDown=false;
-  if(phase==='arrange'&&drag){ tryPlace(ptOf(e)); drag=null; }
-  dragPath=[];
+// ─── Build tray ───────────────────────────────────────────────────────────────
+const trayCanvas={};
+SLOTS.forEach(s=>{
+  const tc=document.createElement('canvas');
+  const tw=s.w*DPR*0.8|0, th=s.h*DPR*0.8|0;
+  tc.width=tw;tc.height=th;
+  tc.style.width=(tw/DPR)+'px';tc.style.height=(th/DPR)+'px';
+  tc.className='t-piece';tc.dataset.id=s.id;
+  const tc2=tc.getContext('2d');tc2.scale(DPR*0.8,DPR*0.8);
+  drawPiece(tc2,0,0,s.w,s.h,s.kind);
+  trayCanvas[s.id]=tc;
+  document.getElementById('tray').appendChild(tc);
 });
-canvas.addEventListener('pointercancel',()=>{ isDown=false; drag=null; dragPath=[]; });
 
-// ── Cut detection ─────────────────────────────────────────────
-function checkCuts(){
-  if(dragPath.length<2)return;
-  const a=dragPath[dragPath.length-2], b=dragPath[dragPath.length-1];
-  CUTS.forEach(cl=>{
-    if(doneCuts.has(cl.id))return;
-    let hit=false;
-    if(cl.axis==='h'){
-      if((a.y-cl.pos)*(b.y-cl.pos)<0){
-        const xc=a.x+(b.x-a.x)*(cl.pos-a.y)/(b.y-a.y);
-        if(xc>=cl.x1-20&&xc<=cl.x2+20) hit=true;
-      }
-    } else {
-      if((a.x-cl.pos)*(b.x-cl.pos)<0){
-        const yc=a.y+(b.y-a.y)*(cl.pos-a.x)/(b.x-a.x);
-        if(yc>=cl.y1-14&&yc<=cl.y2+14) hit=true;
-      }
-    }
-    if(hit){
-      doneCuts.add(cl.id);
-      flashFX.push({x1:cl.x1,y1:cl.y1,x2:cl.x2,y2:cl.y2,age:0});
-      aud(880,.13,.18);
-      updateCutProg();
-      if(doneCuts.size===CUTS.length) beginSeparate();
-    }
-  });
+// ─── Pointer events ───────────────────────────────────────────────────────────
+function canvasXY(e){
+  const r=canvas.getBoundingClientRect();
+  const cx=(e.clientX||e.touches[0].clientX)-r.left;
+  const cy=(e.clientY||e.touches[0].clientY)-r.top;
+  return{x:cx*(CW/r.width),y:cy*(CH/r.height)};
 }
 
-function beginSeparate(){
-  separating=true; sepStartT=animT; dragPath=[];
-}
+// Start drag from tray
+document.getElementById('tray').addEventListener('pointerdown',e=>{
+  const el=e.target.closest('.t-piece');
+  if(!el||el.classList.contains('used'))return;
+  e.preventDefault();
+  const id=el.dataset.id;
+  const s=SLOTS.find(sl=>sl.id===id);
+  // Map tray piece center to canvas start point = slot center
+  const cr=canvas.getBoundingClientRect();
+  const startX=s.x+s.w/2, startY=s.y+s.h/2;
+  drag={slotId:id, offX:s.w/2, offY:s.h/2, curX:startX, curY:startY, pieceEl:el};
+  el.style.opacity='0.3';
+},{passive:false});
 
-// ── Place detection ───────────────────────────────────────────
-function tryPlace(p){
+window.addEventListener('pointermove',e=>{
   if(!drag)return;
-  const pc=PIECES.find(pp=>pp.id===drag.pieceId);
-  const{x,y,w,h}=pc.slot;
-  const dropCX=drag.curX-drag.offX+w/2, dropCY=drag.curY-drag.offY+h/2;
-  if(Math.hypot(dropCX-(x+w/2),dropCY-(y+h/2))<Math.max(w,h)*.72+16){
-    placed[pc.id]=true;
-    aud(640,.07,.22);
-    updateArrangeProg();
-    if(Object.keys(placed).length===PIECES.length) setTimeout(onDone,700);
+  e.preventDefault();
+  const{x,y}=canvasXY(e);
+  drag.curX=x;drag.curY=y;
+},{passive:false});
+
+window.addEventListener('pointerup',e=>{
+  if(!drag)return;
+  const{x,y}=canvasXY(e);
+  const s=SLOTS.find(sl=>sl.id===drag.slotId);
+  // Check if dropped near target slot center
+  const cx=s.x+s.w/2, cy=s.y+s.h/2;
+  const dist=Math.hypot(x-drag.offX-cx, y-drag.offY-cy);
+  if(dist<Math.max(s.w,s.h)*.65 && !placed[s.id]){
+    placed[s.id]=true;
+    drag.pieceEl.classList.add('used');
+    playSnap();
+    updateProgress();
+    if(Object.keys(placed).length===SLOTS.length) setTimeout(onDone,700);
+  }else{
+    drag.pieceEl.style.opacity='';
   }
-}
+  drag=null;
+});
 
-// ── Transitions ───────────────────────────────────────────────
-function goArrange(){
-  phase='arrange';
-  document.getElementById('badge').textContent='🤖 שלב 2 מתוך 2 — הרכבה';
-  document.getElementById('htitle').textContent='🤖 סדרו את הרובוט!';
-  document.getElementById('hsub').textContent='גרור כל חלק למקומו על הצלחת 👆';
-  document.getElementById('hint').textContent='👆 גרור מהמגש למקום המתאים';
-  // Rebuild dots for 6 pieces
-  document.getElementById('prog').innerHTML='<span id="ptxt">0/6</span>'+
-    PIECES.map((_,i)=>`<div class="dot" id="d${i}"></div>`).join('');
-}
-
-function onDone(){
-  phase='done';
-  document.getElementById('hdr').classList.add('done');
-  document.getElementById('htitle').textContent='🤖 הרובוט מוכן!';
-  document.getElementById('hsub').textContent='כל הכבוד — רובוט טורטייה אמיתי! 🎉';
-  document.getElementById('hint').style.display='none';
-  document.getElementById('done-panel').style.display='flex';
-}
-
-// ── Progress ──────────────────────────────────────────────────
-function updateCutProg(){
-  const n=doneCuts.size;
-  const ptxt=document.getElementById('ptxt');
-  if(ptxt) ptxt.textContent=`${n}/${CUTS.length}`;
-  for(let i=0;i<CUTS.length;i++)
-    document.getElementById('d'+i)?.classList.toggle('on',i<n);
-}
-
-function updateArrangeProg(){
-  const n=Object.keys(placed).length;
-  const ptxt=document.getElementById('ptxt');
-  if(ptxt) ptxt.textContent=`${n}/${PIECES.length}`;
-  PIECES.forEach((_,i)=>document.getElementById('d'+i)?.classList.toggle('on',i<n));
-}
-
-// Init progress dots (5 for cut phase)
-(()=>{
-  const pd=document.getElementById('prog');
-  pd.innerHTML='<span id="ptxt">0/5</span>'+
-    CUTS.map((_,i)=>`<div class="dot" id="d${i}"></div>`).join('');
-})();
-
-// ── Audio ─────────────────────────────────────────────────────
-function aud(freq,ramp,dur){
+function playSnap(){
   try{
     const a=new(window.AudioContext||window.webkitAudioContext)();
     const o=a.createOscillator(),g=a.createGain();
     o.connect(g);g.connect(a.destination);
-    o.frequency.value=freq;
-    if(ramp) o.frequency.exponentialRampToValueAtTime(freq*.22,a.currentTime+ramp);
-    g.gain.setValueAtTime(.17,a.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);
-    o.start();o.stop(a.currentTime+dur+.03);
+    o.type='sine';o.frequency.value=660;
+    o.frequency.exponentialRampToValueAtTime(880,a.currentTime+.08);
+    g.gain.setValueAtTime(.18,a.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.18);
+    o.start();o.stop(a.currentTime+.2);
   }catch(e){}
 }
 
-// ── Main loop ─────────────────────────────────────────────────
-function loop(){
-  animT++;
-
-  // Separation animation (phase 1 → arrange)
-  if(separating){
-    const t=(animT-sepStartT)/44;
-    sepProgress=Math.min(1,t);
-    if(t>=1&&!sepDone){ sepDone=true; setTimeout(goArrange,220); }
-  }
-
-  ctx.clearRect(0,0,CW,CH);
-
-  if(phase==='cut') drawCutScreen();
-  else drawArrangeScreen(); // works for both 'arrange' and 'done'
-
-  requestAnimationFrame(loop);
+function updateProgress(){
+  const n=Object.keys(placed).length;
+  document.getElementById('prog-txt').textContent=`${n}/${SLOTS.length}`;
+  SLOTS.forEach((_,i)=>{
+    if(placed[SLOTS[i].id]) document.getElementById('d'+i).classList.add('on');
+  });
 }
-loop();
+
+function onDone(){
+  doneFlag=true;
+  document.getElementById('hdr').className='done';
+  document.getElementById('title').textContent='🤖 הרובוט מוכן!';
+  document.getElementById('instr').textContent='יצרתם רובוט טורטייה אמיתי! 🎉';
+  document.getElementById('tray').style.display='none';
+  document.getElementById('tray-label').style.display='none';
+  const dp=document.getElementById('done-panel');
+  dp.style.display='flex';
+}
 </script>
 </body>
 </html>

@@ -40,6 +40,8 @@ canvas{display:block;touch-action:none}
 .str{font-size:40px;filter:drop-shadow(0 2px 6px gold)}
 #dmsg{font-size:14px;font-weight:700;color:#636e72;text-align:center;line-height:1.65;margin-bottom:18px}
 #nbtn{background:linear-gradient(135deg,#5C6BC0,#7B1FA2);color:#fff;border:none;border-radius:18px;padding:14px 44px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(92,107,192,.42)}
+#reset-btn{background:none;border:2px solid #DDD;border-radius:18px;padding:10px 28px;font-size:15px;font-family:'Assistant',sans-serif;font-weight:800;color:#888;cursor:pointer;transition:all .2s;margin-top:2px}
+#reset-btn:hover{border-color:#AAA;color:#555;background:#F5F5F5}
 </style>
 </head>
 <body>
@@ -69,7 +71,8 @@ canvas{display:block;touch-action:none}
       <span class="str" style="animation:starPop .5s .36s both">⭐</span>
     </div>
     <p id="dmsg">🎉 כל הכבוד! עיצבתם רובוט טורטייה מדהים!<br>עכשיו נלמד לסדר את שלבי ההכנה 🧩</p>
-    <button id="nbtn">המשחק הבא ▶</button>
+    <button id="nbtn" onclick="window.location.href='game3.html'">המשחק הבא ▶</button>
+    <button id="reset-btn">🔄 צור מחדש</button>
   </div>
 </div>
 
@@ -369,6 +372,28 @@ function onDone(){
   document.getElementById('pantry-label').style.display='none';
   document.getElementById('done-panel').style.display='flex';
 }
+
+// ── Reset ─────────────────────────────────────────────────────
+function onReset(){
+  placed=[];
+  done=false;
+  drag=null;
+  // Reset header
+  document.getElementById('hdr').classList.remove('done');
+  document.getElementById('htitle').textContent='🤖 עצבו את הרובוט!';
+  document.getElementById('hsub').textContent='גרור 10 מרכיבים מהמחסן לרובוט כדי לעצב אותו 🎨';
+  // Reset counter
+  document.getElementById('counter-txt').textContent='0 / 10 מרכיבים';
+  for(let i=0;i<10;i++){
+    const b=document.getElementById('b'+i);
+    if(b){b.textContent='';b.classList.remove('on');}
+  }
+  // Show pantry, hide done panel
+  document.getElementById('pantry').style.display='flex';
+  document.getElementById('pantry-label').style.display='block';
+  document.getElementById('done-panel').style.display='none';
+}
+document.getElementById('reset-btn').addEventListener('click', onReset);
 
 // ── Sound ─────────────────────────────────────────────────────
 function aud(){
