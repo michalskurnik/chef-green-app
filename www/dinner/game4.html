@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@700;800&display=swap" rel="stylesheet">
+<title>משחק 4 - איסוף מרכיבים</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36px;font-family:'Assistant',sans-serif;direction:rtl;min-height:100vh}
+#app{width:100%;max-width:360px;background:#fff;border-radius:26px;box-shadow:0 12px 40px rgba(0,0,0,.13);overflow:hidden;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes starPop{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pop{0%{transform:scale(.3);opacity:0}65%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+@keyframes correctBounce{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+
+#hdr{padding:13px 18px 15px;color:#fff;text-align:center;background:linear-gradient(135deg,#C2185B,#E91E8C);transition:background .6s}
+#hdr.done{background:linear-gradient(135deg,#FF6B35,#F7C948)}
+#badge{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:2px 13px;font-size:12px;font-weight:700;margin-bottom:6px}
+#htitle{font-family:'Fredoka One',cursive;font-size:20px;margin-bottom:4px}
+#hsub{font-size:12px;opacity:.9;font-weight:700;line-height:1.5}
+
+/* progress */
+#prog-row{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 6px}
+#prog-txt{font-size:12px;font-weight:800;color:#888}
+#check-btn{background:linear-gradient(135deg,#C2185B,#E91E8C);color:#fff;border:none;border-radius:14px;padding:6px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Assistant',sans-serif;opacity:.4;transition:all .25s;pointer-events:none}
+#check-btn.ready{opacity:1;pointer-events:auto;box-shadow:0 3px 12px rgba(194,24,91,.4)}
+
+/* grid */
+#grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:4px 14px 10px}
+
+.item{
+  border-radius:14px;padding:10px 4px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  cursor:pointer;border:2px solid #EEE;background:#FAFAFA;
+  transition:all .2s;
+}
+.item:active{transform:scale(.93)}
+.item.selected{border-color:#C2185B;background:#FCE4EC}
+.item.correct{border-color:#4CAF50;background:#E8F5E9;animation:correctBounce .35s ease}
+.item.wrong{border-color:#EF5350;background:#FFEBEE;animation:shake .35s ease}
+.item.missed{border-color:#FF9800;background:#FFF3E0}
+.item span.em{font-size:30px;line-height:1}
+.item span.lb{font-size:10px;font-weight:800;color:#555;text-align:center;line-height:1.2}
+.item.selected span.lb{color:#880E4F}
+.item.correct span.lb{color:#2E7D32}
+.item.wrong span.lb{color:#C62828}
+
+/* selected counter bubbles */
+#sel-row{display:flex;align-items:center;gap:6px;padding:0 14px 8px;flex-wrap:wrap}
+.sel-bub{width:24px;height:24px;border-radius:50%;border:2px dashed #CCC;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.sel-bub.on{border:2px solid #C2185B;background:#FCE4EC;animation:pop .35s ease}
+
+/* hint */
+#hint{text-align:center;padding:2px 16px 10px;font-size:12px;font-weight:700;color:#888;min-height:22px}
+
+/* done */
+#done-panel{display:none;flex-direction:column;align-items:center;padding:10px 20px 24px}
+#stars{display:flex;gap:12px;padding:4px 0 10px}
+.str{font-size:40px;filter:drop-shadow(0 2px 6px gold)}
+#dmsg{font-size:14px;font-weight:700;color:#636e72;text-align:center;line-height:1.65;margin-bottom:14px}
+#nbtn{background:linear-gradient(135deg,#C2185B,#E91E8C);color:#fff;border:none;border-radius:18px;padding:14px 44px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(194,24,91,.42)}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hdr">
+    <div id="badge">🐰 משחק 1 מתוך 2</div>
+    <h2 id="htitle">🛒 איספו את המרכיבים!</h2>
+    <p id="hsub">לחצו על כל המרכיבים שצריך לארנבת הביצה</p>
+  </div>
+
+  <div id="prog-row">
+    <span id="prog-txt">בחרו 7 מרכיבים</span>
+    <button id="check-btn" onclick="checkAnswers()">✅ בדקו!</button>
+  </div>
+
+  <div id="sel-row">
+    <div class="sel-bub" id="b0"></div>
+    <div class="sel-bub" id="b1"></div>
+    <div class="sel-bub" id="b2"></div>
+    <div class="sel-bub" id="b3"></div>
+    <div class="sel-bub" id="b4"></div>
+    <div class="sel-bub" id="b5"></div>
+    <div class="sel-bub" id="b6"></div>
+  </div>
+
+  <div id="grid"></div>
+  <div id="hint">☝️ לחצו על כל מה שצריך למתכון</div>
+
+  <div id="done-panel">
+    <div id="stars">
+      <span class="str" id="s0" style="animation:starPop .5s 0s both">⭐</span>
+      <span class="str" id="s1" style="animation:starPop .5s .18s both">⭐</span>
+      <span class="str" id="s2" style="animation:starPop .5s .36s both">⭐</span>
+    </div>
+    <p id="dmsg">🎉 מצאתם את כל המרכיבים!</p>
+    <button id="nbtn" onclick="window.location.href='game5.html'">המשחק הבא ▶</button>
+  </div>
+</div>
+
+<script>
+const ALL=[
+  {id:1, emoji:'🥚', label:'ביצה קשה',      correct:true},
+  {id:2, emoji:'🥕', label:'גזר',            correct:true},
+  {id:3, emoji:'🥒', label:'מלפפון',         correct:true},
+  {id:4, emoji:'🫒', label:'זיתים שחורים',   correct:true},
+  {id:5, emoji:'🍅', label:'עגבניית שרי',    correct:true},
+  {id:6, emoji:'🌿', label:'עירית',           correct:true},
+  {id:7, emoji:'🥬', label:'עלי חסה',        correct:true},
+  {id:8, emoji:'🧀', label:'גבינה',           correct:false},
+  {id:9, emoji:'🫓', label:'טורטייה',         correct:false},
+  {id:10,emoji:'🍫', label:'שוקולד',          correct:false},
+  {id:11,emoji:'🍞', label:'לחם',             correct:false},
+  {id:12,emoji:'🍝', label:'פסטה',            correct:false},
+];
+
+// shuffle
+const items=[...ALL].sort(()=>Math.random()-.5);
+const selected=new Set();
+let submitted=false;
+
+function buildGrid(){
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  items.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='item';
+    div.dataset.id=item.id;
+    div.innerHTML=`<span class="em">${item.emoji}</span><span class="lb">${item.label}</span>`;
+    div.addEventListener('click',()=>toggle(item,div));
+    grid.appendChild(div);
+  });
+}
+
+function toggle(item,el){
+  if(submitted)return;
+  if(selected.has(item.id)){
+    selected.delete(item.id);
+    el.classList.remove('selected');
+  } else {
+    selected.add(item.id);
+    el.classList.add('selected');
+  }
+  updateBubbles();
+  updateCheckBtn();
+}
+
+function updateBubbles(){
+  const sel=[...selected];
+  for(let i=0;i<7;i++){
+    const b=document.getElementById('b'+i);
+    if(i<sel.size){
+      const itm=items.find(x=>x.id===[...sel][i]);
+      b.textContent=itm?itm.emoji:'';
+      b.classList.add('on');
+    } else {
+      b.textContent='';b.classList.remove('on');
+    }
+  }
+  document.getElementById('prog-txt').textContent=
+    `${selected.size} / 7 נבחרו`;
+}
+
+function updateCheckBtn(){
+  const btn=document.getElementById('check-btn');
+  if(selected.size>0) btn.classList.add('ready');
+  else btn.classList.remove('ready');
+}
+
+function checkAnswers(){
+  if(submitted)return;
+  submitted=true;
+
+  const correctSelected=ALL.filter(i=>i.correct&&selected.has(i.id)).length;  // TP
+  const wrongSelected  =ALL.filter(i=>!i.correct&&selected.has(i.id)).length; // FP
+  const missed         =ALL.filter(i=>i.correct&&!selected.has(i.id)).length; // FN
+
+  // mark each card
+  document.querySelectorAll('.item').forEach(el=>{
+    const id=parseInt(el.dataset.id);
+    const item=ALL.find(i=>i.id===id);
+    el.classList.remove('selected');
+    if(item.correct&&selected.has(id))       el.classList.add('correct');
+    else if(!item.correct&&selected.has(id)) el.classList.add('wrong');
+    else if(item.correct&&!selected.has(id)) el.classList.add('missed');
+  });
+
+  const stars= wrongSelected===0&&missed===0 ? 3
+             : wrongSelected===0&&missed<=2  ? 2
+             : 1;
+
+  const msgs={
+    3:'🎉 מושלם! מצאתם את כל 7 המרכיבים!',
+    2:'👍 כמעט! פספסתם כמה מרכיבים — הכתומים הם שנשארו',
+    1:'💪 נסיון טוב! הירוקים נכונים, הכתומים חסרו, האדומים לא במתכון',
+  };
+  document.getElementById('hint').textContent=msgs[stars];
+
+  aud(stars===3);
+  setTimeout(()=>showDone(stars), stars===3?600:1200);
+}
+
+function showDone(stars){
+  document.getElementById('hdr').classList.add('done');
+  document.getElementById('htitle').textContent='🐰 מצאתם הכל!';
+  document.getElementById('hsub').textContent='כל הכבוד — כל המרכיבים נאספו! 🎉';
+  document.getElementById('grid').style.display='none';
+  document.getElementById('prog-row').style.display='none';
+  document.getElementById('sel-row').style.display='none';
+  document.getElementById('hint').style.display='none';
+  for(let i=stars;i<3;i++){
+    const s=document.getElementById('s'+i);
+    s.style.filter='grayscale(1) opacity(.25)';s.style.animation='none';
+  }
+  const msgs=['💪 נסו שוב בפעם הבאה!','👍 כמעט מושלם!','🎉 מצאתם את כל המרכיבים בדיוק!'];
+  document.getElementById('dmsg').textContent=msgs[stars-1];
+  document.getElementById('done-panel').style.display='flex';
+  // save
+  const d=JSON.parse(localStorage.getItem('dinner_stars_detail')||'[0,0,0,0,0]');
+  while(d.length<5) d.push(0);
+  d[3]=stars;
+  localStorage.setItem('dinner_stars_detail',JSON.stringify(d));
+  localStorage.setItem('dinner_stars',d.reduce((a,b)=>a+b,0));
+}
+
+function aud(success){
+  try{
+    const a=new(window.AudioContext||window.webkitAudioContext)();
+    const o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    if(success){
+      o.frequency.setValueAtTime(440,a.currentTime);
+      o.frequency.setValueAtTime(554,a.currentTime+.12);
+      o.frequency.setValueAtTime(660,a.currentTime+.24);
+      g.gain.setValueAtTime(.15,a.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.5);
+      o.start();o.stop(a.currentTime+.5);
+    } else {
+      o.type='sawtooth';
+      o.frequency.setValueAtTime(260,a.currentTime);
+      o.frequency.exponentialRampToValueAtTime(130,a.currentTime+.2);
+      g.gain.setValueAtTime(.1,a.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.25);
+      o.start();o.stop(a.currentTime+.28);
+    }
+  }catch(e){}
+}
+
+buildGrid();
+</script>
+</body>
+</html>
