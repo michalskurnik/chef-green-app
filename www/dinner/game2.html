@@ -29,8 +29,8 @@ body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36
 canvas{display:block;touch-action:none}
 
 #pantry-label{text-align:center;font-size:12px;font-weight:800;color:#5D4037;padding:5px 0 2px;background:#FFF8EE;border-top:1.5px dashed #E8D8B0}
-#pantry{display:flex;gap:0;background:#FFF8EE;padding:8px 6px 12px}
-.pitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:grab;border-radius:12px;padding:6px 2px 4px;transition:background .15s}
+#pantry{display:flex;gap:0;background:#FFF8EE;padding:8px 6px 12px;touch-action:none}
+.pitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:grab;border-radius:12px;padding:6px 2px 4px;transition:background .15s;touch-action:none}
 .pitem:active{background:rgba(0,0,0,.06)}
 .pitem canvas{display:block;border-radius:50%;pointer-events:none}
 .pitem span{font-size:10px;font-weight:800;color:#7D5A3C;text-align:center;line-height:1.2}
@@ -309,6 +309,11 @@ function ptOf(e){
 function onPlate(x,y){
   return (x-PCX)**2+(y-PCY)**2<(PCR)*(PCR);
 }
+
+// iOS: prevent scroll when touching pantry items
+pantryDiv.addEventListener('touchstart',e=>{
+  if(e.target.closest('.pitem')) e.preventDefault();
+},{passive:false});
 
 // Drag starts from pantry
 pantryDiv.addEventListener('pointerdown',e=>{
