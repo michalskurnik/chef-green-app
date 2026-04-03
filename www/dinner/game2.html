@@ -11,6 +11,7 @@ body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes starPop{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes pop{0%{transform:scale(0.2);opacity:0}65%{transform:scale(1.18)}100%{transform:scale(1);opacity:1}}
+#trans-panel{display:none;flex-direction:column;align-items:center;padding:22px 20px 28px;background:#fff;text-align:center}
 
 #hdr{padding:12px 18px 14px;color:#fff;text-align:center;background:linear-gradient(135deg,#388E3C,#81C784);transition:background .6s}
 #hdr.done{background:linear-gradient(135deg,#FF6B35,#F7C948)}
@@ -71,9 +72,34 @@ canvas{display:block;touch-action:none}
       <span class="str" style="animation:starPop .5s .36s both">⭐</span>
     </div>
     <p id="dmsg">🎉 כל הכבוד! עיצבתם רובוט טורטייה מדהים!<br>עכשיו נלמד לסדר את שלבי ההכנה 🧩</p>
-    <button id="nbtn" onclick="window.location.href='game3.html'">המשחק הבא ▶</button>
+    <button id="nbtn" onclick="showTrans2()">המשחק הבא ▶</button>
     <button id="reset-btn">🔄 צור מחדש</button>
   </div>
+
+  <!-- ── TRANSITION PANEL ──────────────────────────────── -->
+  <div id="trans-panel">
+    <div style="font-size:13px;font-weight:800;color:#4CAF50;letter-spacing:.3px;margin-bottom:2px">🎨 כל הכבוד! הרובוט מתחיל להיבנות!</div>
+    <div style="font-size:11px;color:#888;font-weight:700;margin-bottom:14px">עוד חלק נחשף! 🤩</div>
+    <!-- Robot body reveal — more complete than game1 -->
+    <div style="background:linear-gradient(145deg,#F1F8E9,#E8F5E9);border-radius:18px;padding:16px 28px;margin-bottom:14px;border:2px solid #A5D6A7;display:inline-block">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1">
+        <div style="font-size:32px">😶</div>
+        <div style="display:flex;gap:4px;align-items:center">
+          <span style="font-size:20px">🟩</span>
+          <span style="font-size:32px">🟩</span>
+          <span style="font-size:20px">🟩</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <span style="font-size:22px">🟩</span>
+          <span style="font-size:22px">🟩</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:15px;font-weight:800;color:#388E3C;margin-bottom:4px">עוד חלק מהרובוט נחשף! 🌱</div>
+    <div style="font-size:12px;color:#888;font-weight:700;margin-bottom:20px">כמעט סיימתם!</div>
+    <button onclick="goGame3()" style="background:linear-gradient(135deg,#E65100,#FF8F00);color:#fff;border:none;border-radius:18px;padding:14px 44px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(230,81,0,.45)">המשיכו ▶</button>
+  </div>
+
 </div>
 
 <script>
@@ -399,6 +425,18 @@ function onReset(){
   document.getElementById('done-panel').style.display='none';
 }
 document.getElementById('reset-btn').addEventListener('click', onReset);
+
+// ── Flow layer ────────────────────────────────────────────────
+function showTrans2(){
+  localStorage.setItem('game2_completed','1');
+  document.getElementById('done-panel').style.display='none';
+  const tp=document.getElementById('trans-panel');
+  tp.style.display='flex';
+  tp.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function goGame3(){
+  window.location.href='game3.html';
+}
 
 // ── Sound ─────────────────────────────────────────────────────
 function aud(){
