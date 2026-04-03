@@ -16,7 +16,7 @@
     'game8.html':  { next: 'game9.html',  station: 4, isLast: false },
     'game9.html':  { next: 'index.html',  station: 4, isLast: true  },
     'game10.html': { next: 'game11.html', station: 5, isLast: false },
-    'game11.html': { next: 'index.html',  station: 5, isLast: true  }
+    'game11.html': { next: 'final_screen.html',  station: 5, isLast: true  }
   };
 
   var page = window.location.pathname.split('/').pop() || '';
