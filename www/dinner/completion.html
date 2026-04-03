@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>פתרתם את התעלומה! 🎉</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{min-height:100vh;overflow-x:hidden}
+body{font-family:'Assistant',sans-serif;direction:rtl}
+
+/* ── Animations ─────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.12) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+@keyframes twinkle{0%,100%{opacity:.2;transform:scale(.6)}50%{opacity:1;transform:scale(1.3)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes starRain{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,107,53,.35)}50%{transform:scale(1.03);box-shadow:0 0 0 12px rgba(255,107,53,0)}}
+@keyframes badgePop{0%{transform:scale(0) rotate(-30deg);opacity:0}60%{transform:scale(1.2) rotate(5deg)}80%{transform:scale(.95)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── SCREEN 1 — FINAL DISCOVERY ─────────────────────── */
+#screen-discovery{
+  min-height:100vh;
+  background:linear-gradient(180deg,#0D1B2A 0%,#1B2E45 45%,#2E4A1E 100%);
+  display:flex;flex-direction:column;align-items:center;
+  padding:0 0 48px;position:relative;overflow:hidden;
+}
+
+/* Stars background */
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle ease-in-out infinite}
+
+/* Header */
+.disc-header{
+  width:100%;max-width:480px;
+  padding:36px 24px 20px;text-align:center;
+  position:relative;z-index:1;
+}
+.disc-emoji{font-size:52px;display:block;margin-bottom:12px;animation:float 3s ease-in-out infinite}
+.disc-title{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(22px,6vw,30px);
+  line-height:1.25;
+  background:linear-gradient(135deg,#FFD54F 0%,#FF8F00 50%,#FFD54F 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:shimmer 3s linear infinite;
+  margin-bottom:10px;
+}
+.disc-sub{
+  font-size:14px;font-weight:700;
+  color:rgba(255,255,255,.82);line-height:1.7;
+  animation:fadeUp .6s .2s both ease;
+}
+
+/* Dishes grid */
+.dishes-wrap{
+  width:100%;max-width:480px;
+  padding:0 16px;
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  position:relative;z-index:1;margin-bottom:24px;
+}
+.dish-card{
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(6px);
+  border:1.5px solid rgba(255,255,255,.15);
+  border-radius:20px;padding:18px 12px;
+  text-align:center;
+  opacity:0;
+  animation:popIn .55s ease both;
+}
+.dish-card:nth-child(1){animation-delay:.1s}
+.dish-card:nth-child(2){animation-delay:.25s}
+.dish-card:nth-child(3){animation-delay:.4s}
+.dish-card:nth-child(4){animation-delay:.55s}
+.dish-card:nth-child(5){
+  grid-column:1/-1;
+  animation-delay:.7s;
+  background:rgba(255,215,0,.12);
+  border-color:rgba(255,215,0,.3);
+}
+.dish-icon{font-size:36px;display:block;margin-bottom:8px}
+.dish-name{
+  font-family:'Fredoka One',cursive;
+  font-size:14px;color:#fff;line-height:1.3;
+}
+.dish-unlocked{
+  font-size:11px;font-weight:700;
+  color:#FFD54F;margin-top:4px;display:block;
+}
+
+/* Discover CTA */
+.disc-cta-wrap{
+  width:100%;max-width:480px;padding:0 16px;
+  position:relative;z-index:1;
+  animation:fadeUp .5s .9s both ease;
+}
+.disc-cta{
+  width:100%;background:linear-gradient(135deg,#FF6B35,#F7C948);
+  color:#fff;border:none;border-radius:20px;
+  padding:16px;font-size:18px;
+  font-family:'Fredoka One',cursive;cursor:pointer;
+  box-shadow:0 6px 22px rgba(255,107,53,.5);
+  animation:pulse 2s ease-in-out infinite;
+}
+
+/* ── SCREEN 2 — ADVENTURE FINISH ────────────────────── */
+#screen-finish{
+  display:none;
+  min-height:100vh;
+  background:linear-gradient(175deg,#FFFBF0 0%,#FFF8E1 40%,#FFF0D4 100%);
+  flex-direction:column;align-items:center;
+  padding:0 0 56px;
+}
+
+/* Finish header */
+.fin-header{
+  width:100%;max-width:480px;
+  background:linear-gradient(145deg,#2E7D32 0%,#388E3C 50%,#1B5E20 100%);
+  border-radius:0 0 32px 32px;
+  padding:28px 24px 24px;text-align:center;
+  box-shadow:0 8px 32px rgba(46,125,50,.35);
+  position:relative;overflow:hidden;
+  animation:fadeUp .5s ease;
+}
+.fin-header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.12) 0%,transparent 60%);
+}
+.fin-title{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(20px,5.5vw,26px);
+  line-height:1.3;
+  background:linear-gradient(135deg,#FFD54F 0%,#FF8F00 60%,#FFD54F 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  animation:shimmer 3s linear infinite;
+  position:relative;z-index:1;margin-bottom:8px;
+}
+.fin-sub{
+  font-size:13px;font-weight:700;
+  color:rgba(255,255,255,.85);
+  line-height:1.7;
+  position:relative;z-index:1;
+}
+
+/* Badge */
+.fin-badge-wrap{
+  width:100%;max-width:480px;
+  padding:0 16px;margin-top:20px;
+  animation:fadeUp .5s .15s both ease;
+}
+.fin-badge{
+  background:linear-gradient(135deg,#FFF8E1,#FFFDE7);
+  border:2px solid #F7C948;border-radius:22px;
+  padding:20px 16px;text-align:center;
+  box-shadow:0 6px 24px rgba(247,201,72,.25);
+  display:flex;align-items:center;gap:14px;
+}
+.fin-badge-icon{
+  font-size:52px;flex-shrink:0;
+  animation:badgePop .7s .4s both ease;
+}
+.fin-badge-text{flex:1;text-align:right}
+.fin-badge-label{
+  font-size:11px;font-weight:800;
+  color:#9B7540;letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:4px;
+}
+.fin-badge-name{
+  font-family:'Fredoka One',cursive;
+  font-size:18px;color:#E65100;line-height:1.25;
+}
+
+/* Summary */
+.fin-summary{
+  width:100%;max-width:480px;
+  padding:0 16px;margin-top:16px;
+  animation:fadeUp .5s .3s both ease;
+}
+.fin-summary-card{
+  background:#fff;border-radius:18px;
+  padding:16px;
+  box-shadow:0 3px 14px rgba(0,0,0,.06);
+}
+.fin-stat{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;border-bottom:1px solid #F5F5F5;
+}
+.fin-stat:last-child{border:none}
+.fin-stat-icon{font-size:22px;flex-shrink:0}
+.fin-stat-text{font-size:13px;font-weight:700;color:#4A3000;line-height:1.5}
+
+/* CTAs */
+.fin-ctas{
+  width:100%;max-width:480px;
+  padding:0 16px;margin-top:20px;
+  display:flex;flex-direction:column;gap:10px;
+  animation:fadeUp .5s .45s both ease;
+}
+.btn-primary{
+  width:100%;background:linear-gradient(135deg,#FF6B35,#FF8C42);
+  color:#fff;border:none;border-radius:18px;
+  padding:15px;font-size:17px;
+  font-family:'Fredoka One',cursive;cursor:pointer;
+  box-shadow:0 5px 18px rgba(255,107,53,.42);
+}
+.btn-secondary{
+  width:100%;background:#fff;
+  color:#2E7D32;border:2px solid #2E7D32;
+  border-radius:18px;padding:14px;font-size:16px;
+  font-family:'Fredoka One',cursive;cursor:pointer;
+}
+.btn-tertiary{
+  width:100%;background:none;
+  color:#888;border:2px dashed #DDD;
+  border-radius:18px;padding:13px;font-size:15px;
+  font-family:'Fredoka One',cursive;cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!--  SCREEN 1 — FINAL DISCOVERY                       -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="screen-discovery">
+
+  <!-- Animated stars -->
+  <div id="stars-container"></div>
+
+  <div class="disc-header" style="animation:fadeUp .6s ease both">
+    <span class="disc-emoji">🔍</span>
+    <div class="disc-title">חשפתם את כל המנות הסודיות!</div>
+    <p class="disc-sub">השף הירוק וביטו הצליחו להשלים את<br>אתגר ארוחת הערב — בזכותכם!</p>
+  </div>
+
+  <div class="dishes-wrap" id="dishes-grid">
+    <!-- Populated by JS -->
+  </div>
+
+  <div class="disc-cta-wrap">
+    <button class="disc-cta" onclick="showFinish()">לסיום ההרפתקה ✨</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!--  SCREEN 2 — ADVENTURE FINISH                      -->
+<!-- ══════════════════════════════════════════════════ -->
+<div id="screen-finish">
+
+  <div class="fin-header">
+    <div class="fin-title">פתרתם את תעלומת ארוחת הערב! 🎉</div>
+    <p class="fin-sub">עברתם 5 תחנות, גיליתם 5 מנות,<br>ועזרתם לשף הירוק להשלים את האתגר.</p>
+  </div>
+
+  <!-- Badge -->
+  <div class="fin-badge-wrap">
+    <div class="fin-badge">
+      <div class="fin-badge-icon">🏆</div>
+      <div class="fin-badge-text">
+        <div class="fin-badge-label">תג חדש שהרווחתם</div>
+        <div class="fin-badge-name">פותחי המנות הסודיות</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats summary -->
+  <div class="fin-summary">
+    <div class="fin-summary-card">
+      <div class="fin-stat">
+        <span class="fin-stat-icon">🗺️</span>
+        <span class="fin-stat-text">עברתם <strong>5 תחנות</strong> בהרפתקת ארוחת הערב</span>
+      </div>
+      <div class="fin-stat">
+        <span class="fin-stat-icon">🍽️</span>
+        <span class="fin-stat-text">גיליתם <strong>5 מנות סודיות</strong> של השף הירוק</span>
+      </div>
+      <div class="fin-stat">
+        <span class="fin-stat-icon">⭐</span>
+        <span class="fin-stat-text">צברתם <strong id="total-stars-display">0 כוכבים</strong> לאורך הדרך</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTAs -->
+  <div class="fin-ctas">
+    <button class="btn-primary" onclick="downloadRecipes()">📥 להורדת כל המתכונים</button>
+    <button class="btn-secondary" onclick="goHub()">🗺️ חזרו למפת ההרפתקה</button>
+    <button class="btn-tertiary" onclick="nextAdventure()">🚀 להרפתקה הבאה</button>
+  </div>
+
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────
+const DISHES=[
+  {emoji:'🤖',name:'רובוט טורטייה',color:'#FF6B35'},
+  {emoji:'🐰',name:'ארנבת ביצה',color:'#C2185B'},
+  {emoji:'🫓',name:'קאסדייה בצורות',color:'#E65100'},
+  {emoji:'🍕',name:'שבלולי פיצה',color:'#C62828'},
+  {emoji:'🍝',name:'פסטה בזוקה',color:'#6A1B9A'},
+];
+
+// ── Safety guard — only allow if adventure complete ───────────
+(function(){
+  var KEYS=['station1_completed','station2_completed','station3_completed',
+            'station4_completed','station5_completed'];
+  var LEGACY=['recipe1_completed','recipe2_completed','recipe3_completed',
+              'recipe4_completed','recipe5_completed'];
+  var done=KEYS.filter(function(k,i){
+    return localStorage.getItem(k)==='1'||localStorage.getItem(LEGACY[i])==='1';
+  }).length;
+  if(done<5){
+    // Not all complete — redirect back to hub
+    window.location.href='index.html';
+  }
+})();
+
+// ── Build stars background ────────────────────────────────────
+(function(){
+  var container=document.getElementById('stars-container');
+  container.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0';
+  for(var i=0;i<55;i++){
+    var s=document.createElement('div');
+    var size=Math.random()*3+1;
+    s.className='star';
+    s.style.cssText='width:'+size+'px;height:'+size+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;animation-duration:'+(2+Math.random()*3)+'s;animation-delay:'+(Math.random()*3)+'s';
+    container.appendChild(s);
+  }
+})();
+
+// ── Build dishes grid ─────────────────────────────────────────
+(function(){
+  var grid=document.getElementById('dishes-grid');
+  DISHES.forEach(function(d){
+    var card=document.createElement('div');
+    card.className='dish-card';
+    card.style.borderColor='rgba('+hexToRgb(d.color)+',.35)';
+    card.innerHTML=
+      '<span class="dish-icon">'+d.emoji+'</span>'+
+      '<div class="dish-name">'+d.name+'</div>'+
+      '<span class="dish-unlocked">✅ נחשף!</span>';
+    grid.appendChild(card);
+  });
+})();
+
+function hexToRgb(hex){
+  var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return r+','+g+','+b;
+}
+
+// ── Screen transitions ────────────────────────────────────────
+function showFinish(){
+  var disc=document.getElementById('screen-discovery');
+  var fin=document.getElementById('screen-finish');
+  disc.style.animation='sfOut .3s ease forwards';
+  // Update stars count
+  var stars=JSON.parse(localStorage.getItem('dinner_stars_detail')||'[]').reduce(function(a,b){return a+b;},0);
+  document.getElementById('total-stars-display').textContent=stars+' כוכבים';
+  setTimeout(function(){
+    disc.style.display='none';
+    fin.style.display='flex';
+    fin.style.animation='fadeUp .4s ease';
+    window.scrollTo(0,0);
+  },280);
+  // inject fade-out keyframe
+  if(!document.getElementById('sfOutStyle')){
+    var s=document.createElement('style');
+    s.id='sfOutStyle';
+    s.textContent='@keyframes sfOut{to{opacity:0;transform:scale(.96)}}';
+    document.head.appendChild(s);
+  }
+}
+
+// ── CTA actions ───────────────────────────────────────────────
+function downloadRecipes(){
+  // Placeholder — link to recipe PDF or page when available
+  alert('המתכונים יהיו זמינים בקרוב! 🍽️');
+}
+
+function goHub(){
+  window.location.href='index.html';
+}
+
+function nextAdventure(){
+  // Placeholder for next adventure
+  alert('ההרפתקה הבאה בדרך! 🚀');
+}
+</script>
+</body>
+</html>

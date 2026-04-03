@@ -289,6 +289,8 @@ body{
 
   <div id="recipe-list"></div>
   <button id="parents-btn" onclick="window.location.href='parents.html'">👨‍👩‍👧‍👦 מסך הורים</button>
+  <!-- Trophy CTA — shown only when all 5 stations complete and already seen completion page -->
+  <button id="adventure-trophy-btn" onclick="window.location.href='completion.html'" style="display:none;margin:0 16px 16px;width:calc(100% - 32px);background:linear-gradient(135deg,#F7C948,#FF6B35);color:#fff;border:none;border-radius:18px;padding:14px;font-size:16px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(247,201,72,.5);animation:pulse 2s ease-in-out infinite">🏆 פתרתם את התעלומה — ראו את ההישג!</button>
 </div>
 
 <script>
@@ -334,6 +336,17 @@ function getCompletedCount(){
 
 function buildMenu(){
   document.getElementById('stars-count').textContent=getTotalStars();
+
+  // ── Adventure complete check ────────────────────────────────
+  if(getCompletedCount()===RECIPES.length){
+    if(!localStorage.getItem('adventure_completed_seen')){
+      localStorage.setItem('adventure_completed_seen','1');
+      window.location.href='completion.html';
+      return;
+    }
+    // Already seen — show trophy button
+    document.getElementById('adventure-trophy-btn').style.display='block';
+  }
 
   // ── Progress indicator ──────────────────────────────────────
   const total=RECIPES.length;
