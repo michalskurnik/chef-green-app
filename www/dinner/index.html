@@ -278,7 +278,7 @@ body{
   <div id="progress-bar-wrap" style="margin:12px 16px 0;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 2px 10px rgba(0,0,0,.07)">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <span style="font-size:12px;font-weight:800;color:#636e72">התקדמות</span>
-      <span id="progress-txt" style="font-size:12px;font-weight:800;color:#FF6B35">0/4 משימות הושלמו</span>
+      <span id="progress-txt" style="font-size:12px;font-weight:800;color:#FF6B35">0/5 תחנות הושלמו</span>
     </div>
     <div style="background:#F0F0F0;border-radius:8px;height:8px;overflow:hidden">
       <div id="progress-fill" style="height:100%;border-radius:8px;background:linear-gradient(90deg,#FF6B35,#F7C948);transition:width .6s ease;width:0%"></div>
@@ -300,11 +300,13 @@ const RECIPES=[
   {name:'פסטה בזוקה 🍝',    color:'#6A1B9A', href:'game10.html',games:[9,10]},
 ];
 
-// Completion keys per recipe index
-const COMPLETION_KEYS=['recipe1_completed','recipe2_completed','recipe3_completed','recipe4_completed','recipe5_completed'];
+// Completion keys per station (new) + legacy recipe keys (backward compat)
+const COMPLETION_KEYS=['station1_completed','station2_completed','station3_completed','station4_completed','station5_completed'];
+const LEGACY_KEYS=['recipe1_completed','recipe2_completed','recipe3_completed','recipe4_completed','recipe5_completed'];
 
 function isCompleted(i){
-  return localStorage.getItem(COMPLETION_KEYS[i])==='1';
+  return localStorage.getItem(COMPLETION_KEYS[i])==='1' ||
+         localStorage.getItem(LEGACY_KEYS[i])==='1';
 }
 
 function isUnlocked(i){
@@ -336,7 +338,7 @@ function buildMenu(){
   // ── Progress indicator ──────────────────────────────────────
   const total=RECIPES.length;
   const done=getCompletedCount();
-  document.getElementById('progress-txt').textContent=`${done}/${total} משימות הושלמו`;
+  document.getElementById('progress-txt').textContent=`${done}/5 תחנות הושלמו`;
   document.getElementById('progress-fill').style.width=`${(done/total)*100}%`;
 
   // Dots
