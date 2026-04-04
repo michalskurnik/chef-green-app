@@ -7,11 +7,15 @@ async function getAccessToken() {
 }
 module.exports = async function(req,res){
   res.setHeader('Access-Control-Allow-Origin','*');
+  res.setHeader('Access-Control-Allow-Methods','POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers','Content-Type');
   if(req.method==='OPTIONS')return res.status(200).end();
+  if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
   try{
-    const {packageId}=req.body;
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    const packageId = body && body.packageId;
     const pkgs={'dinner':{amount:'35.00',name:'ארוחות ערב'},'breakfast':{amount:'35.00',name:'ארוחות בוקר'}};
-    if(!pkgs[packageId])return res.status(400).json({error:'Invalid package'});
+    if(!pkgs[packageId])return res.status(400).json({error:'Invalid package: '+packageId});
     const token=await getAccessToken();
     const r=await fetch(PAYPAL_BASE+'/v2/checkout/orders',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({intent:'CAPTURE',purchase_units:[{amount:{currency_code:'ILS',value:pkgs[packageId].amount},custom_id:packageId}]})});
     const order=await r.json();
