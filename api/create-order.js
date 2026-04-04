@@ -3,7 +3,9 @@ const PAYPAL_BASE = process.env.PAYPAL_MODE === 'sandbox' ? 'https://api-m.sandb
 async function getAccessToken() {
   const creds = Buffer.from(process.env.PAYPAL_CLIENT_ID + ':' + process.env.PAYPAL_CLIENT_SECRET).toString('base64');
   const r = await fetch(PAYPAL_BASE+'/v1/oauth2/token',{method:'POST',headers:{'Authorization':'Basic '+creds,'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=client_credentials'});
-  return (await r.json()).access_token;
+  const data = await r.json();
+  console.log('PayPal auth response:', JSON.stringify(data));
+  return data.access_token;
 }
 module.exports = async function(req,res){
   res.setHeader('Access-Control-Allow-Origin','*');
@@ -12,14 +14,18 @@ module.exports = async function(req,res){
   if(req.method==='OPTIONS')return res.status(200).end();
   if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
   try{
-    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    const packageId = body && body.packageId;
-    const pkgs={'dinner':{amount:'35.00',name:'ארוחות ערב'},'breakfast':{amount:'35.00',name:'ארוחות בוקר'}};
-    if(!pkgs[packageId])return res.status(400).json({error:'Invalid package: '+packageId});
-    const token=await getAccessToken();
-    const r=await fetch(PAYPAL_BASE+'/v2/checkout/orders',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({intent:'CAPTURE',purchase_units:[{amount:{currency_code:'ILS',value:pkgs[packageId].amount},custom_id:packageId}]})});
-    const order=await r.json();
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
+    const packageId = body.packageId || 'dinner';
+    console.log('Creating order for package:', packageId);
+    const token = await getAccessToken();
+    console.log('Got token:', token ? 'YES' : 'NO');
+    const r = await fetch(PAYPAL_BASE+'/v2/checkout/orders',{method:'POST',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({intent:'CAPTURE',purchase_units:[{amount:{currency_code:'USD',value:'9.99'},custom_id:packageId}]})});
+    const order = await r.json();
+    console.log('Order response:', JSON.stringify(order));
     if(order.id)return res.status(200).json({orderId:order.id});
     return res.status(500).json({error:'Failed',details:order});
-  }catch(e){return res.status(500).json({error:e.message});}
+  }catch(e){
+    console.error('Error:', e.message);
+    return res.status(500).json({error:e.message});
+  }
 };
