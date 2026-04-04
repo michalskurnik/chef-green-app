@@ -689,7 +689,7 @@
     <li><a href="#reviews">הורים אומרים</a></li>
     <li><a href="#pricing">חבילות</a></li>
   </ul>
-  <a href="https://hashefhayarok.netlify.app/" target="_blank" rel="noopener" class="btn-nav">נסו חינם 🎁</a>
+  <a href="free/" class="btn-nav">נסו חינם 🎁</a>
 </nav>
 
 <!-- ─── HERO ─── -->
@@ -883,19 +883,106 @@
       <div class="recipe-story fade-up">
         <div style="margin-bottom:1rem;">
           <span class="section-tag" style="font-size:0.8rem;">🎮 ככה נראה אחד המשחקים בחבילה</span>
-          <p style="font-size:0.88rem; color:var(--text-mid); margin-top:0.5rem; line-height:1.6;">סדרו את שלבי הכנת הברוסקטה בסדר הנכון — ביטו מלווה ומדריך לאורך כל הדרך.</p>
+          <p style="font-size:0.88rem; color:var(--text-mid); margin-top:0.5rem; line-height:1.6;">אספו לסל רק מזונות בריאים — ביטו מלווה ומדריך לאורך כל הדרך.</p>
         </div>
-        <div style="border-radius:20px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.15); border:3px solid var(--green-light); background:#000;">
-          <video
-            src="demonstration.mp4"
-            style="width:100%; display:block; max-height:520px; object-fit:contain;"
-            controls
-            playsinline
-            poster=""
-            preload="metadata">
-            הדפדפן שלך אינו תומך בוידאו.
-          </video>
+
+        <!-- Embedded Game -->
+        <div id="g2_wrap" style="border-radius:20px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.18);border:3px solid var(--green-light);font-family:'Varela Round',Arial,sans-serif;direction:rtl;user-select:none;">
+          <style>
+            #g2_wrap *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+            #g2_header{background:linear-gradient(135deg,#1a5e35,#2d8a4e);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;color:white;}
+            #g2_header .g2_left{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1rem;}
+            #g2_header .g2_right{font-size:0.78rem;background:rgba(255,255,255,0.15);padding:4px 10px;border-radius:20px;}
+            #g2_intro{background:linear-gradient(160deg,#1a5e35,#2d8a4e);padding:24px 20px;text-align:center;color:white;}
+            #g2_intro .g2_face{font-size:52px;margin-bottom:8px;}
+            #g2_intro .g2_badge{background:rgba(255,255,255,0.15);border-radius:20px;padding:5px 14px;font-size:0.8rem;margin-bottom:10px;display:inline-block;}
+            #g2_intro h3{font-size:1.2rem;font-weight:900;margin-bottom:8px;}
+            #g2_intro p{font-size:0.85rem;opacity:0.9;line-height:1.5;margin-bottom:14px;}
+            .g2_examples{display:flex;justify-content:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+            .g2_ex{background:rgba(255,255,255,0.15);border-radius:12px;padding:8px 12px;text-align:center;font-size:1.4rem;}
+            .g2_ex span{display:block;font-size:0.68rem;margin-top:2px;font-weight:700;}
+            .g2_ex.bad{background:rgba(229,57,53,0.25);}
+            .g2_rules{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+            .g2_rule{background:rgba(255,255,255,0.1);border-radius:10px;padding:6px 12px;font-size:0.8rem;}
+            #g2_btnPlay{background:linear-gradient(135deg,#f7c948,#e05a1a);color:white;border:none;border-radius:50px;padding:12px 28px;font-size:1rem;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,0.25);}
+            #g2_area{position:relative;height:340px;overflow:hidden;background:linear-gradient(180deg,#b8e4ff 0%,#a8d8f0 35%,#e8f5e9 65%,#c8e8c0 100%);display:none;}
+            .g2_cloud{position:absolute;background:rgba(255,255,255,0.7);border-radius:50px;pointer-events:none;animation:g2_cloudMove linear infinite;}
+            @keyframes g2_cloudMove{from{transform:translateX(-150px)}to{transform:translateX(calc(100vw + 150px))}}
+            #g2_status{position:absolute;top:8px;right:8px;left:8px;display:flex;justify-content:space-between;z-index:10;}
+            .g2_badge2{background:rgba(255,255,255,0.92);border-radius:16px;padding:4px 10px;font-size:12px;font-weight:900;color:#1a5e35;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+            #g2_basket{position:absolute;bottom:30px;display:flex;flex-direction:column;align-items:center;z-index:20;pointer-events:none;transition:left 0.05s;}
+            #g2_basket .g2_bask_ico{font-size:44px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.2));}
+            #g2_basket .g2_bask_lbl{font-size:9px;font-weight:700;color:#1a5e35;background:rgba(255,255,255,0.85);border-radius:8px;padding:1px 6px;}
+            .g2_falling{position:absolute;display:flex;flex-direction:column;align-items:center;pointer-events:none;z-index:15;}
+            .g2_falling .ico{font-size:32px;animation:g2_wob 1.5s ease-in-out infinite;}
+            .g2_falling .lbl{font-size:9px;font-weight:700;background:rgba(255,255,255,0.85);border-radius:6px;padding:1px 5px;color:#1a5e35;margin-top:2px;}
+            @keyframes g2_wob{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+            .g2_flash{position:absolute;pointer-events:none;font-size:13px;font-weight:900;animation:g2_flashAnim 0.7s forwards;z-index:30;}
+            @keyframes g2_flashAnim{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-40px) scale(1.2)}}
+            #g2_bito{position:absolute;bottom:80px;right:8px;opacity:0;transition:opacity 0.3s;z-index:25;text-align:center;}
+            #g2_bito .g2_bito_face{font-size:28px;}
+            #g2_bito .g2_bubble{background:white;border-radius:12px;padding:4px 8px;font-size:10px;font-weight:700;color:#1a5e35;box-shadow:0 2px 8px rgba(0,0,0,0.15);max-width:90px;margin-top:2px;}
+            #g2_collected{position:absolute;bottom:6px;right:50%;transform:translateX(50%);display:flex;gap:3px;z-index:15;flex-wrap:wrap;justify-content:center;max-width:80%;}
+            .g2_coll{font-size:16px;animation:g2_pop 0.3s;}
+            @keyframes g2_pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+            #g2_win{position:absolute;inset:0;background:linear-gradient(160deg,rgba(26,94,53,0.97),rgba(45,138,78,0.97));display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:50;display:none;text-align:center;padding:20px;color:white;}
+            #g2_win.show{display:flex;}
+            #g2_win .g2_trophy{font-size:52px;margin-bottom:8px;}
+            #g2_win h3{font-size:1.3rem;font-weight:900;margin-bottom:6px;}
+            #g2_win p{font-size:0.85rem;opacity:0.9;margin-bottom:16px;line-height:1.5;}
+            #g2_win button{background:linear-gradient(135deg,#f7c948,#e05a1a);color:white;border:none;border-radius:50px;padding:10px 24px;font-size:0.9rem;font-weight:900;cursor:pointer;font-family:inherit;}
+            #g2_ctrl{display:flex;justify-content:center;gap:12px;padding:8px;background:#1a5e35;}
+            .g2_ctrl_btn{background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.3rem;padding:10px 24px;border-radius:12px;cursor:pointer;font-family:inherit;touch-action:manipulation;}
+          </style>
+
+          <div id="g2_header">
+            <div class="g2_left">🛒 הסל הירוק <span style="font-size:0.75rem;opacity:0.8;margin-right:4px;">משימת איסוף מזון</span></div>
+            <div class="g2_right">🥬 משימה 2/3</div>
+          </div>
+
+          <!-- Intro -->
+          <div id="g2_intro">
+            <div class="g2_face">🤖</div>
+            <div class="g2_badge">🌟 משימת בונוס — הסל הירוק 🧺</div>
+            <h3>השף בוחר רק בריא! 🌿</h3>
+            <p>גילינו את הסוד שלו: הוא מכניס לסל<br><strong>רק מזונות בריאים ועונתיים.</strong><br>איזה מהמזונות כאן מתאים לסל שלו?</p>
+            <div class="g2_examples">
+              <div class="g2_ex">🍅<span>✅ בריא</span></div>
+              <div class="g2_ex">🥦<span>✅ בריא</span></div>
+              <div class="g2_ex bad">🍫<span>❌ לא!</span></div>
+              <div class="g2_ex bad">🍟<span>❌ לא!</span></div>
+            </div>
+            <div class="g2_rules">
+              <div class="g2_rule">✅ אספו 10 מזונות בריאים כדי להמשיך</div>
+              <div class="g2_rule">🚫 היזהרו מג'אנק פוד</div>
+            </div>
+            <button id="g2_btnPlay">יאללה, מתחילים! 🚀</button>
+          </div>
+
+          <!-- Game area -->
+          <div id="g2_area">
+            <div id="g2_status">
+              <div class="g2_badge2">🥬 <span id="g2_score">0 / 10</span></div>
+              <div class="g2_badge2" id="g2_lives">❤️❤️❤️</div>
+            </div>
+            <div id="g2_basket"><div class="g2_bask_ico">🧺</div><div class="g2_bask_lbl">הסל שלי</div></div>
+            <div id="g2_bito"><div class="g2_bito_face">🤖</div><div class="g2_bubble" id="g2_bitoTxt">👍</div></div>
+            <div id="g2_collected"></div>
+            <div id="g2_win">
+              <div class="g2_trophy">🏆</div>
+              <h3>אלופים! 🎉</h3>
+              <p>אתם בהחלט בכיוון להיות<br><strong>שפים ירוקים בעצמכם!</strong></p>
+              <button onclick="g2_restart()">🔄 שחקו שוב</button>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div id="g2_ctrl">
+            <button class="g2_ctrl_btn" id="g2_btnL">◀️</button>
+            <button class="g2_ctrl_btn" id="g2_btnR">▶️</button>
+          </div>
         </div>
+
         <p style="font-size:0.78rem; color:var(--text-mid); margin-top:0.6rem; text-align:center; opacity:0.7;">* זהו אחד מהמשחקונים שמרכיבים כל הרפתקה בחבילה</p>
       </div>
     </div>
@@ -1098,7 +1185,7 @@
   <div class="section-inner" style="text-align:center">
     <h2>המטבח מחכה לשף הקטן שלכם 👨‍🍳</h2>
     <p>התחלו עם 2 עלילות ו-2 מתכונים – חינם לגמרי, ללא התחייבות</p>
-    <a href="#" class="btn-primary" style="font-size:1.1rem; padding:1rem 2.8rem;">🌿 נסו חינם עכשיו</a>
+    <a href="free/" class="btn-primary" style="font-size:1.1rem; padding:1rem 2.8rem;">🌿 נסו חינם עכשיו</a>
   </div>
 </section>
 
@@ -1353,6 +1440,156 @@
   } else {
     window.addEventListener('load', renderPayPalButtons);
   }
+</script>
+<script>
+// ── Embedded Mission2 Game ──
+(function(){
+  const HEALTHY=[{emoji:'🍅',name:'עגבנייה'},{emoji:'🥦',name:'ברוקולי'},{emoji:'🥕',name:'גזר'},{emoji:'🌿',name:'בזיליקום'},{emoji:'⚪',name:'מוצרלה'},{emoji:'🫒',name:'זית'},{emoji:'🍋',name:'לימון'},{emoji:'🧅',name:'בצל'},{emoji:'🥑',name:'אבוקדו'}];
+  const JUNK=[{emoji:'🍫',name:'שוקולד'},{emoji:'🍟',name:"צ'יפס"},{emoji:'🍭',name:'סוכרייה'},{emoji:'🥤',name:'קולה'},{emoji:'🍪',name:'עוגייה'}];
+  const GOOD_R=['כל הכבוד! 🌿','בריא! ✅','השף יאהב! 🍴','מושלם! 👨‍🍳','ירוק ובריא! 💚'];
+  const BAD_R=["ג'אנק פוד! ❌",'השף לא יאשר! 🚫','לא בריא! ⚠️'];
+
+  let basketX=0,gameW=0,gameH=0,score=0,lives=3,items=[],animFrame,moveDir=0,gameRunning=false,spawnTimer=0;
+  const BASKET_W=70, BASKET_SPEED=7;
+
+  document.getElementById('g2_btnPlay').addEventListener('click', startGame);
+
+  function startGame() {
+    document.getElementById('g2_intro').style.display='none';
+    const area=document.getElementById('g2_area');
+    area.style.display='block';
+    gameW=area.clientWidth||320;
+    gameH=area.clientHeight||340;
+    basketX=gameW/2-BASKET_W/2;
+    gameRunning=true;
+    updateBasket();
+    addClouds();
+    gameLoop();
+  }
+
+  function addClouds() {
+    const area=document.getElementById('g2_area');
+    [15,45,72].forEach((top,i)=>{
+      const c=document.createElement('div'); c.className='g2_cloud';
+      const w=60+Math.random()*60;
+      c.style.cssText=`width:${w}px;height:${w*0.4}px;top:${top}px;animation-duration:${18+i*7}s;animation-delay:${-i*6}s`;
+      area.appendChild(c);
+    });
+  }
+
+  function gameLoop() {
+    if(!gameRunning) return;
+    spawnTimer++;
+    if(moveDir!==0){ basketX+=moveDir*BASKET_SPEED; basketX=Math.max(0,Math.min(gameW-BASKET_W,basketX)); updateBasket(); }
+    if(spawnTimer%90===0) spawnItem();
+    const basketEl=document.getElementById('g2_basket');
+    const areaEl=document.getElementById('g2_area');
+    const aRect=areaEl.getBoundingClientRect();
+    const bRect=basketEl.getBoundingClientRect();
+    const bTop=bRect.top-aRect.top;
+    const bLeft=bRect.left-aRect.left;
+    items.forEach(item=>{
+      item.y+=item.speed; item.el.style.top=item.y+'px';
+      const cx=item.x+20;
+      if(item.y+55>=bTop && item.y+55<=bTop+55 && cx>=bLeft && cx<=bLeft+BASKET_W+20){ catchItem(item); return; }
+      if(item.y>gameH){ item.alive=false; item.el.remove(); }
+    });
+    items=items.filter(i=>i.alive);
+    animFrame=requestAnimationFrame(gameLoop);
+  }
+
+  function spawnItem() {
+    const area=document.getElementById('g2_area');
+    const isH=Math.random()<0.6;
+    const pool=isH?HEALTHY:JUNK;
+    const data=pool[Math.floor(Math.random()*pool.length)];
+    const el=document.createElement('div'); el.className='g2_falling';
+    const x=20+Math.random()*(gameW-70);
+    el.style.left=x+'px'; el.style.top='-65px';
+    el.innerHTML=`<span class="ico">${data.emoji}</span><span class="lbl">${data.name}</span>`;
+    area.appendChild(el);
+    items.push({el,x,y:-65,speed:2+Math.random()*1.5,healthy:isH,data,alive:true});
+  }
+
+  function catchItem(item) {
+    item.alive=false; item.el.remove();
+    if(item.healthy){
+      score++;
+      document.getElementById('g2_score').textContent=score+' / 10';
+      const bar=document.getElementById('g2_collected');
+      const s=document.createElement('span'); s.className='g2_coll'; s.textContent=item.data.emoji; bar.appendChild(s);
+      showFlash(item.x,'✅ '+item.data.name,'#2d8a4e');
+      showBito(GOOD_R[Math.floor(Math.random()*GOOD_R.length)]);
+      if(score>=10) setTimeout(showWin,600);
+    } else {
+      lives--; updateLives();
+      showFlash(item.x,'❌ '+item.data.name,'#e53935');
+      showBito(BAD_R[Math.floor(Math.random()*BAD_R.length)]);
+      if(lives<=0) setTimeout(g2_restart,700);
+    }
+  }
+
+  function showFlash(x,text,color) {
+    const area=document.getElementById('g2_area');
+    const el=document.createElement('div'); el.className='g2_flash';
+    el.style.cssText=`left:${Math.max(10,x-10)}px;bottom:90px;color:${color};`;
+    el.textContent=text; area.appendChild(el); setTimeout(()=>el.remove(),700);
+  }
+
+  function showBito(text) {
+    const el=document.getElementById('g2_bito');
+    document.getElementById('g2_bitoTxt').textContent=text;
+    el.style.opacity='1'; clearTimeout(el._t);
+    el._t=setTimeout(()=>el.style.opacity='0',1800);
+  }
+
+  function updateBasket(){ document.getElementById('g2_basket').style.left=basketX+'px'; }
+
+  function updateLives(){ document.getElementById('g2_lives').textContent='❤️'.repeat(lives)+'🖤'.repeat(Math.max(0,3-lives)); }
+
+  function showWin(){ gameRunning=false; cancelAnimationFrame(animFrame); document.getElementById('g2_win').classList.add('show'); }
+
+  window.g2_restart=function(){
+    score=0; lives=3; items=[]; spawnTimer=0; gameRunning=false;
+    cancelAnimationFrame(animFrame);
+    document.getElementById('g2_score').textContent='0 / 10';
+    document.getElementById('g2_collected').innerHTML='';
+    document.getElementById('g2_win').classList.remove('show');
+    updateLives();
+    const area=document.getElementById('g2_area');
+    area.querySelectorAll('.g2_falling,.g2_cloud,.g2_flash').forEach(e=>e.remove());
+    gameW=area.clientWidth||320; gameH=area.clientHeight||340;
+    basketX=gameW/2-BASKET_W/2; gameRunning=true;
+    updateBasket(); addClouds(); gameLoop();
+  };
+
+  // Mouse
+  document.getElementById('g2_area').addEventListener('mousemove',e=>{
+    if(!gameRunning) return;
+    const r=document.getElementById('g2_area').getBoundingClientRect();
+    basketX=e.clientX-r.left-BASKET_W/2;
+    basketX=Math.max(0,Math.min(gameW-BASKET_W,basketX));
+    updateBasket();
+  });
+
+  // Touch on game area
+  document.getElementById('g2_area').addEventListener('touchmove',e=>{
+    if(!gameRunning) return;
+    e.preventDefault();
+    const r=document.getElementById('g2_area').getBoundingClientRect();
+    basketX=e.touches[0].clientX-r.left-BASKET_W/2;
+    basketX=Math.max(0,Math.min(gameW-BASKET_W,basketX));
+    updateBasket();
+  },{passive:false});
+
+  // Arrow buttons
+  const btnL=document.getElementById('g2_btnL');
+  const btnR=document.getElementById('g2_btnR');
+  btnL.addEventListener('mousedown',()=>moveDir=-1); btnL.addEventListener('mouseup',()=>moveDir=0);
+  btnR.addEventListener('mousedown',()=>moveDir=1);  btnR.addEventListener('mouseup',()=>moveDir=0);
+  btnL.addEventListener('touchstart',()=>moveDir=-1,{passive:true}); btnL.addEventListener('touchend',()=>moveDir=0);
+  btnR.addEventListener('touchstart',()=>moveDir=1, {passive:true}); btnR.addEventListener('touchend',()=>moveDir=0);
+})();
 </script>
 </body>
 </html>
