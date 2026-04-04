@@ -676,6 +676,8 @@
   }
 </style>
 
+<!-- PayPal SDK -->
+<script src="https://www.paypal.com/sdk/js?client-id=Af_6nJRdl_yPf54SzhVD&currency=ILS&locale=he_IL" data-sdk-integration-source="button-factory"></script>
 </head>
 <body>
 
@@ -1094,7 +1096,7 @@
           <div style="margin-bottom:1rem;"><span style="background:#e8f5e9;color:#2a5c1a;border-radius:50px;padding:0.3rem 0.9rem;font-size:0.78rem;font-weight:800;">👧👦 גיל 6-10</span></div>
           <div style="display:flex; align-items:center; justify-content:space-between;">
             <div style="font-size:1.8rem; font-weight:900; color:var(--green-deep);">35 ₪</div>
-            <button onclick="window.location.href='dinner/index.html'" style="background:linear-gradient(135deg,#2E7D32,#4CAF50);color:white;border:none;border-radius:16px;padding:12px 24px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(46,125,50,.4);width:100%">🍽️ כניסה לחבילה</button>
+            <div id="paypal-btn-dinner"></div>
           </div>
         </div>
       </div>
@@ -1505,7 +1507,82 @@
   }
 </script>
 <script>
-// ── Embedded Mission2 Game ──
+// ── PayPal Payment Integration ──
+(function() {
+
+  function initPayPalButton(containerId, packageId, packagePath) {
+    if (!document.getElementById(containerId)) return;
+
+    paypal.Buttons({
+      style: {
+        layout: 'vertical',
+        color: 'gold',
+        shape: 'rect',
+        label: 'pay',
+        height: 45,
+      },
+
+      // שלב 1: יצירת הזמנה
+      createOrder: async function() {
+        try {
+          const res = await fetch('/api/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ packageId }),
+          });
+          const data = await res.json();
+          if (!data.orderId) throw new Error('No order ID');
+          return data.orderId;
+        } catch (err) {
+          alert('שגיאה ביצירת ההזמנה. נסו שוב.');
+          throw err;
+        }
+      },
+
+      // שלב 2: אישור תשלום
+      onApprove: async function(data) {
+        try {
+          const res = await fetch('/api/capture-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId: data.orderID }),
+          });
+          const result = await res.json();
+
+          if (result.success && result.accessToken) {
+            // שמירת הטוקן
+            localStorage.setItem(`access_${packageId}`, result.accessToken);
+            // מעבר לחבילה
+            window.location.href = packagePath;
+          } else {
+            alert('התשלום לא אושר. פנו לתמיכה.');
+          }
+        } catch (err) {
+          alert('שגיאה באישור התשלום. פנו לתמיכה.');
+        }
+      },
+
+      onError: function(err) {
+        console.error('PayPal error:', err);
+        alert('אירעה שגיאה. נסו שוב.');
+      },
+
+      onCancel: function() {
+        // המשתמש ביטל — לא עושים כלום
+      },
+
+    }).render('#' + containerId);
+  }
+
+  // המתן לטעינת PayPal SDK
+  window.addEventListener('load', function() {
+    if (typeof paypal === 'undefined') return;
+    initPayPalButton('paypal-btn-dinner', 'dinner', 'dinner/index.html');
+  });
+
+})();
+</script>
+</body>
 (function(){
   const HEALTHY=[{emoji:'🍅',name:'עגבנייה'},{emoji:'🥦',name:'ברוקולי'},{emoji:'🥕',name:'גזר'},{emoji:'🌿',name:'בזיליקום'},{emoji:'⚪',name:'מוצרלה'},{emoji:'🫒',name:'זית'},{emoji:'🍋',name:'לימון'},{emoji:'🧅',name:'בצל'},{emoji:'🥑',name:'אבוקדו'}];
   const JUNK=[{emoji:'🍫',name:'שוקולד'},{emoji:'🍟',name:"צ'יפס"},{emoji:'🍭',name:'סוכרייה'},{emoji:'🥤',name:'קולה'},{emoji:'🍪',name:'עוגייה'}];
