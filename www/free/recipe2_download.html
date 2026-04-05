@@ -1,1 +1,170 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>המתכון המלא – מאפה פסטה גבינות וירקות</title>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Varela Round', Arial, sans-serif;
+  direction: rtl;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at 30% 20%, #4db563 0%, #2d8a3e 40%, #1a5c28 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.card {
+  background: white;
+  border-radius: 28px;
+  padding: 36px 28px 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+  position: relative;
+  animation: cardIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes cardIn {
+  from { opacity:0; transform:translateY(28px) scale(0.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.card::before {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:5px;
+  border-radius:28px 28px 0 0;
+  background:linear-gradient(to right,#f7c948,#f97316,#4CAF50,#2d8a3e);
+}
+.sparkle { position:absolute; font-size:18px; opacity:0.55; animation:sparkle 3s ease-in-out infinite; }
+.sparkle.s1 { top:18px; right:28px; }
+.sparkle.s2 { top:28px; left:22px; animation-delay:1s; font-size:14px; }
+.sparkle.s3 { bottom:120px; right:20px; animation-delay:1.8s; font-size:13px; }
+@keyframes sparkle {
+  0%,100% { opacity:0.35; transform:scale(1) rotate(0deg); }
+  50%      { opacity:0.75; transform:scale(1.25) rotate(15deg); }
+}
+.hero { text-align:center; margin-bottom:24px; }
+.hero-emoji { font-size:64px; display:block; margin-bottom:8px; }
+.hero-title { font-size:22px; font-weight:900; color:#1a5c28; margin-bottom:4px; }
+.hero-sub { font-size:14px; color:#666; }
+.congrats-box {
+  background:linear-gradient(135deg,#e8f8ec,#f0fdf4);
+  border:2px solid #a8e6b8;
+  border-radius:18px;
+  padding:16px 20px;
+  text-align:center;
+  margin-bottom:24px;
+}
+.congrats-box .name { font-size:18px; font-weight:900; color:#1a5c28; }
+.congrats-box .msg { font-size:13px; color:#2d8a3e; margin-top:4px; }
+.recipe-preview {
+  background:#fffbf0;
+  border:2px solid #f7c948;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:24px;
+  text-align:center;
+}
+.recipe-preview .recipe-emoji { font-size:48px; margin-bottom:8px; display:block; }
+.recipe-preview .recipe-name { font-size:17px; font-weight:900; color:#1a5c28; margin-bottom:4px; }
+.recipe-preview .recipe-desc { font-size:13px; color:#666; line-height:1.5; }
+.tags { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:12px; }
+.tag {
+  background:white;
+  border:1.5px solid #d8eedd;
+  border-radius:20px;
+  padding:4px 10px;
+  font-size:12px;
+  font-weight:700;
+  color:#1a5c28;
+}
+.btn-download {
+  display:block;
+  width:100%;
+  background:linear-gradient(135deg,#2d8a3e,#4CAF50);
+  color:white;
+  border:none;
+  border-radius:50px;
+  padding:18px;
+  font-family:inherit;
+  font-size:18px;
+  font-weight:900;
+  cursor:pointer;
+  text-align:center;
+  text-decoration:none;
+  box-shadow:0 6px 20px rgba(45,138,62,0.4);
+  margin-bottom:12px;
+  transition:transform 0.2s, box-shadow 0.2s;
+  animation:pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow:0 6px 20px rgba(45,138,62,0.4); }
+  50%      { box-shadow:0 8px 30px rgba(45,138,62,0.65); transform:scale(1.02); }
+}
+.btn-download:hover { transform:scale(1.04) !important; }
+.btn-back {
+  display:block;
+  width:100%;
+  background:none;
+  border:2px solid #d8eedd;
+  border-radius:50px;
+  padding:12px;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:700;
+  color:#2d8a3e;
+  cursor:pointer;
+  text-align:center;
+  text-decoration:none;
+  transition:all 0.2s;
+}
+.btn-back:hover { background:#e8f8ec; }
+</style>
+</head>
+<body>
+<div class="card">
+  <span class="sparkle s1">⭐</span>
+  <span class="sparkle s2">✨</span>
+  <span class="sparkle s3">🌟</span>
 
+  <div class="hero">
+    <span class="hero-emoji">🎉</span>
+    <div class="hero-title">המתכון המלא שלך מוכן!</div>
+    <div class="hero-sub">הורד ושמור אצלך</div>
+  </div>
+
+  <div class="congrats-box">
+    <div class="name" id="userName">כל הכבוד, שף! 👨‍🍳</div>
+    <div class="msg">השלמת את כל 3 המשימות של סיפור 2 🎊</div>
+  </div>
+
+  <div class="recipe-preview">
+    <span class="recipe-emoji">🫕</span>
+    <div class="recipe-name">מאפה פסטה גבינות וירקות כתומים</div>
+    <div class="recipe-desc">תבנית 26 מלבנית · מתכון להכנה עם ילדים</div>
+    <div class="tags">
+      <span class="tag">🥕 גזר ובטטה</span>
+      <span class="tag">🧀 גבינה צהובה</span>
+      <span class="tag">🍝 פסטה קצרה</span>
+      <span class="tag">⏱️ 30 דקות</span>
+    </div>
+  </div>
+
+  <a href="mac_chesse.pdf" download="מאפה-פסטה-גבינות-השף-הירוק.pdf" class="btn-download">
+    📥 הורד את המתכון כ-PDF
+  </a>
+  <a href="index.html" class="btn-back">🏠 חזרה לדף הראשי</a>
+</div>
+
+<script>
+const userName = localStorage.getItem('userName') || '';
+if (userName) {
+  document.getElementById('userName').textContent = `כל הכבוד, ${userName}! 👨‍🍳`;
+}
+</script>
+</body>
+</html>
