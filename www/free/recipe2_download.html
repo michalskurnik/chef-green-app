@@ -174,7 +174,7 @@ body {
   <a href="mac_chesse.pdf" download="מאפה-פסטה-גבינות-השף-הירוק.pdf" class="btn-download">
     📥 הורד את המתכון כ-PDF
   </a>
-  <a href="https://chef.foodgames.co.il/#pricing" class="btn-back">🏠 חזרה לדף הראשי</a>
+  <a href="index.html" class="btn-back">🗺️ חזרה למפת המשימות</a>
 </div>
 
 <script>
@@ -182,6 +182,7 @@ const userName = localStorage.getItem('userName') || '';
 if (userName) {
   document.getElementById('userName').textContent = `כל הכבוד, ${userName}! 👨‍🍳`;
 }
+localStorage.setItem('story2_completed', '1');
 </script>
 </body>
 </html>

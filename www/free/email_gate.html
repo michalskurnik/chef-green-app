@@ -378,8 +378,8 @@
       <div class="check">🎉</div>
       <h2>נשלח בהצלחה!</h2>
       <p>המתכון המלא בדרך אליכם.<br/>בדקו את תיבת המייל שלכם 📬</p>
-      <button class="btn" style="margin-top:8px;" onclick="window.location.href='story2.html'">
-        <span>🌱</span> המשיכו לעלילה הבאה!
+      <button class="btn" style="margin-top:8px;" onclick="window.location.href='index.html'">
+        <span>🗺️</span> חזרה למפת המשימות
       </button>
     </div>
   </div>
@@ -419,6 +419,7 @@
         const iosOverlay = document.getElementById('ios-download');
         iosOverlay.style.display = 'flex';
         window.open('data:application/pdf;base64,' + RECIPE_B64, '_blank');
+        localStorage.setItem('story1_completed', '1');
       } else {
         // Standard download
         const link = document.createElement('a');
@@ -432,6 +433,7 @@
         document.getElementById('main-content').style.display = 'none';
         const success = document.getElementById('success-state');
         success.style.display = 'flex';
+        localStorage.setItem('story1_completed', '1');
       }
     }
 
