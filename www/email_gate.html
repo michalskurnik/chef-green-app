@@ -301,15 +301,58 @@ const PDFS = {
 
 function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
+const FAKE_DOMAINS = new Set([
+  'example.com','example.org','example.net','example.edu',
+  'test.com','test.org','test.net',
+  'abc.xyz','aaa.aaa','xxx.xxx','foo.bar',
+  'localhost','domain.com','email.com','mail.com',
+  'mailinator.com','yopmail.com','guerrillamail.com',
+  '10minutemail.com','10minutemail.net','tempmail.com','temp-mail.org',
+  'throwaway.email','trashmail.com','sharklasers.com','getnada.com',
+  'mohmal.com','dispostable.com','maildrop.cc','fakeinbox.com'
+]);
+const RESERVED_TLDS = ['.test','.example','.invalid','.localhost'];
+const OBVIOUS_FAKE_LOCAL = new Set([
+  'test','testing','tester','admin','administrator',
+  'asdf','asdfgh','qwer','qwerty','zxcv',
+  'fake','dummy','example','sample',
+  'noreply','no-reply','donotreply','mailer-daemon'
+]);
+
+function isObviouslyFake(email) {
+  const lc = email.toLowerCase();
+  const atIdx = lc.indexOf('@');
+  if (atIdx < 1) return false;
+  const local = lc.slice(0, atIdx);
+  const domain = lc.slice(atIdx + 1);
+  if (FAKE_DOMAINS.has(domain)) return true;
+  if (RESERVED_TLDS.some(tld => domain.endsWith(tld))) return true;
+  if (OBVIOUS_FAKE_LOCAL.has(local)) return true;
+  const parts = domain.split('.');
+  if (parts.length < 2) return true;
+  if (parts[parts.length - 1].length < 2) return true;
+  if (parts.every(p => /^(.)\1*$/.test(p))) return true;
+  return false;
+}
+
 async function submitEmail() {
   const email = document.getElementById('emailInput').value.trim();
   const err = document.getElementById('errorMsg');
+  const input = document.getElementById('emailInput');
   if (!validateEmail(email)) {
+    err.textContent = 'כתובת מייל לא תקינה';
     err.style.display = 'block';
-    document.getElementById('emailInput').style.borderColor = '#e53935';
+    input.style.borderColor = '#e53935';
+    return;
+  }
+  if (isObviouslyFake(email)) {
+    err.textContent = 'נא להשתמש בכתובת מייל אמיתית 🙏';
+    err.style.display = 'block';
+    input.style.borderColor = '#e53935';
     return;
   }
   err.style.display = 'none';
+  input.style.borderColor = '';
   const btn = document.getElementById('submitBtn');
   document.getElementById('btnText').style.display = 'none';
   document.getElementById('spinner').style.display = 'block';
@@ -344,22 +387,27 @@ async function viewPDF(key, title) {
   container.innerHTML = '';
   document.getElementById('viewerTitle').textContent = title;
   document.getElementById('pdfViewer').classList.add('show');
+  // Wait one frame so the flex layout settles and clientWidth is accurate
+  await new Promise(r => requestAnimationFrame(r));
   const data = b64toBytes(pdf.b64);
   const doc = await pdfjsLib.getDocument({ data }).promise;
-  const dpr = window.devicePixelRatio || 2;
-  const containerWidth = container.clientWidth - 16;
+  const dpr = Math.max(window.devicePixelRatio || 1, 2);
+  const containerWidth = container.clientWidth;
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
     const baseViewport = page.getViewport({ scale: 1 });
-    const scale = (containerWidth / baseViewport.width) * dpr;
-    const viewport = page.getViewport({ scale });
+    const renderScale = (containerWidth / baseViewport.width) * dpr;
+    const viewport = page.getViewport({ scale: renderScale });
     const canvas = document.createElement('canvas');
     canvas.width = viewport.width;
     canvas.height = viewport.height;
-    canvas.style.width = containerWidth + 'px';
-    canvas.style.height = (containerWidth * baseViewport.height / baseViewport.width) + 'px';
+    canvas.style.width = '100%';
+    canvas.style.height = 'auto';
     container.appendChild(canvas);
-    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    await page.render({ canvasContext: ctx, viewport }).promise;
   }
 }
 

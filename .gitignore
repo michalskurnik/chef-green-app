@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# IDE (user-specific)
+.idea/
+.vscode/
+*.swp
+
+# iOS build artifacts (Capacitor)
+ios/App/Pods/
+ios/App/build/
+ios/DerivedData/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+
+# Android build artifacts (Capacitor)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+*.apk
+*.aab
+
+# Environment
+.env
+.env.local
