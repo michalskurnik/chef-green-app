@@ -3,10 +3,438 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>בחרו חבילה | השף הירוק</title>
-  <style>html,body{margin:0;background:#1A3D1F;display:flex;align-items:center;justify-content:center;min-height:100svh;font-family:sans-serif;color:#fff;}</style>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>בחרו הרפתקה | השף הירוק</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #1A3D1F;
+      font-family: 'Varela Round', 'Heebo', Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+      min-height: 100%;
+    }
+
+    /* ── Page shell ───────────────────────────────────────── */
+    .page {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100svh;
+      padding:
+        calc(env(safe-area-inset-top, 0px) + 18px)
+        16px
+        calc(env(safe-area-inset-bottom, 0px) + 28px);
+      position: relative;
+    }
+
+    /* ── Corner leaf decorations ──────────────────────────── */
+    .leaf { position: fixed; pointer-events: none; z-index: 0; font-size: 38px; opacity: 0.6; }
+    .leaf-tl { top: calc(env(safe-area-inset-top, 0px) + 4px); right: 8px;  transform: scaleX(-1) rotate(-15deg); }
+    .leaf-tr { top: calc(env(safe-area-inset-top, 0px) + 4px); left:  8px;  transform: rotate(-15deg); }
+
+    /* ── Header ───────────────────────────────────────────── */
+    .header {
+      text-align: center;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+    .greeting {
+      font-family: 'Fredoka One', cursive;
+      font-size: 26px;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .greeting em {
+      color: #F5A623;
+      font-style: normal;
+    }
+    .sub-heading {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Cards stack ──────────────────────────────────────── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Individual card ──────────────────────────────────── */
+    .card {
+      display: flex;
+      flex-direction: row-reverse; /* image LEFT in RTL context */
+      border-radius: 18px;
+      overflow: hidden;
+      background: #FDF5DF;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      min-height: 110px;
+      text-decoration: none;
+      -webkit-user-select: none;
+    }
+    .card:active {
+      transform: scale(0.975);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    /* ── Illustration pane ────────────────────────────────── */
+    .card-img {
+      flex: 0 0 54%;
+      position: relative;
+      overflow: hidden;
+      min-height: 110px;
+    }
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+    /* Placeholder gradient when image isn't loaded */
+    .card-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+    }
+
+    /* ── Text pane ────────────────────────────────────────── */
+    .card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px 14px 12px 8px;
+    }
+    .card-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 17px;
+      line-height: 1.25;
+      color: #1B3A0F;
+      margin-bottom: 4px;
+    }
+    .card-sub {
+      font-size: 11px;
+      color: #5A6B40;
+      line-height: 1.45;
+      border-top: 1px dashed rgba(90,107,64,0.35);
+      padding-top: 6px;
+      margin-top: 2px;
+    }
+
+    /* ── Buttons ──────────────────────────────────────────── */
+    .btn-free {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      align-self: flex-end;
+      background: linear-gradient(135deg, #2E7D32, #1B5E20);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 15px;
+      letter-spacing: 0.05em;
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: none;
+      box-shadow: 0 3px 10px rgba(27,94,32,0.45);
+    }
+    .btn-free .lock-icon { font-size: 13px; }
+
+    .btn-price {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      align-self: flex-end;
+      background: linear-gradient(135deg, #E8A800, #C87800);
+      color: #fff;
+      font-family: 'Fredoka One', cursive;
+      font-size: 15px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: none;
+      box-shadow: 0 3px 10px rgba(200,120,0,0.45);
+      white-space: nowrap;
+    }
+    .coin { font-size: 16px; line-height: 1; }
+
+    /* ── Bundle banner ────────────────────────────────────── */
+    .bundle {
+      display: flex;
+      flex-direction: row-reverse;
+      border-radius: 18px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #E8A800, #D48A00);
+      box-shadow: 0 6px 22px rgba(200,120,0,0.4);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      min-height: 110px;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .bundle:active {
+      transform: scale(0.975);
+      box-shadow: 0 2px 8px rgba(200,120,0,0.25);
+    }
+    .bundle-img {
+      flex: 0 0 52%;
+      position: relative;
+      overflow: hidden;
+    }
+    .bundle-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+    .bundle-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 44px;
+      background: rgba(0,0,0,0.08);
+    }
+    .bundle-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 16px 14px 8px;
+    }
+    .bundle-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 20px;
+      color: #3B1A00;
+      line-height: 1.2;
+    }
+    .bundle-sub {
+      font-size: 11px;
+      color: rgba(59,26,0,0.75);
+      line-height: 1.45;
+      margin-top: 4px;
+    }
+    .btn-bundle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      align-self: flex-end;
+      background: linear-gradient(135deg, #fff3, #fff1);
+      border: 2px solid rgba(255,255,255,0.6);
+      color: #3B1A00;
+      font-family: 'Fredoka One', cursive;
+      font-size: 16px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* Confetti dots on bundle */
+    .confetti {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .confetti span {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      opacity: 0.55;
+    }
+  </style>
 </head>
 <body>
-  <p style="opacity:0.5;font-size:14px;">packages.html — to be built</p>
+
+  <!-- Corner leaves -->
+  <div class="leaf leaf-tl">🌿</div>
+  <div class="leaf leaf-tr">🌿</div>
+
+  <div class="page">
+
+    <!-- Greeting -->
+    <div class="header">
+      <div class="greeting">שלום, <em id="chefName">שף!</em></div>
+      <div class="sub-heading">בחרו את ההרפתקה הבאה שלכם 👇</div>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards">
+
+      <!-- Card 1 — FREE -->
+      <div class="card" id="card-free" role="button" tabindex="0">
+        <div class="card-img">
+          <img
+            src="/assets/images/card-dinner.png"
+            alt="ארוחת ערב שילדים אוהבים"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          >
+          <div class="card-img-placeholder" style="display:none;background:linear-gradient(135deg,#6BBF47,#3A8C1A);">🍽️</div>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="card-title">ארוחת ערב<br>שילדים אוהבים</div>
+            <div class="card-sub">5 מתכונים פשוטים וטעימים</div>
+          </div>
+          <button class="btn-free" tabindex="-1">
+            <span class="lock-icon">🔓</span> FREE
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 2 — Italy -->
+      <div class="card" id="card-italy" role="button" tabindex="0">
+        <div class="card-img">
+          <img
+            src="/assets/images/card-italy.png"
+            alt="מסביב לעולם: איטליה"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          >
+          <div class="card-img-placeholder" style="display:none;background:linear-gradient(135deg,#7BB8E8,#3A7FC1);">🇮🇹</div>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="card-title">מסביב לעולם:<br>איטליה</div>
+            <div class="card-sub">פסטה צבעונית ומנות יצירתיות</div>
+          </div>
+          <button class="btn-price" tabindex="-1">
+            <span class="coin">🪙</span> ₪ 14.99
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 3 — Plant protein -->
+      <div class="card" id="card-plant" role="button" tabindex="0">
+        <div class="card-img">
+          <img
+            src="/assets/images/card-plant.png"
+            alt="חלבונים מהצומח"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          >
+          <div class="card-img-placeholder" style="display:none;background:linear-gradient(135deg,#A8D060,#5A9020);">🌱</div>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="card-title">חלבונים<br>מהצומח</div>
+            <div class="card-sub">טופו, חומוס ועדשים במנות שילדים אוהבים</div>
+          </div>
+          <button class="btn-price" tabindex="-1">
+            <span class="coin">🪙</span> ₪ 14.99
+          </button>
+        </div>
+      </div>
+
+      <!-- Card 4 — Kitchen science -->
+      <div class="card" id="card-science" role="button" tabindex="0">
+        <div class="card-img">
+          <img
+            src="/assets/images/card-science.png"
+            alt="ניסויים פשוטים במטבח"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+          >
+          <div class="card-img-placeholder" style="display:none;background:linear-gradient(135deg,#E8D060,#B09020);">🔬</div>
+        </div>
+        <div class="card-body">
+          <div>
+            <div class="card-title">ניסויים פשוטים<br>במטבח</div>
+            <div class="card-sub">מדע, יצירתיות ואוכל</div>
+          </div>
+          <button class="btn-price" tabindex="-1">
+            <span class="coin">🪙</span> ₪ 14.99
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /cards -->
+
+    <!-- Bundle banner -->
+    <div class="bundle" id="card-bundle" role="button" tabindex="0">
+      <div class="confetti" id="confetti"></div>
+      <div class="bundle-img">
+        <img
+          src="/assets/images/card-bundle.png"
+          alt="חבילת הכל כלול"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+        >
+        <div class="bundle-img-placeholder" style="display:none;">🎉</div>
+      </div>
+      <div class="bundle-body">
+        <div>
+          <div class="bundle-title">חבילת הכל כלול</div>
+          <div class="bundle-sub">כל ההרפתקאות במחיר מיוחד</div>
+        </div>
+        <button class="btn-bundle" tabindex="-1">
+          <span class="coin">🪙</span> ₪ 34.99
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+
+  <script>
+    // ── Greeting ─────────────────────────────────────────────
+    const name = localStorage.getItem('chefName');
+    if (name) {
+      document.getElementById('chefName').textContent = name + '!';
+    }
+
+    // ── Confetti dots on bundle ───────────────────────────────
+    const confettiEl = document.getElementById('confetti');
+    const colors = ['#FF6B6B','#FFE66D','#6BCB77','#4D9EFF','#FF9F45','#fff'];
+    for (let i = 0; i < 18; i++) {
+      const s = document.createElement('span');
+      s.style.cssText = [
+        'left:'   + (Math.random() * 100) + '%',
+        'top:'    + (Math.random() * 100) + '%',
+        'background:' + colors[Math.floor(Math.random() * colors.length)],
+        'width:'  + (4 + Math.random() * 5) + 'px',
+        'height:' + (4 + Math.random() * 5) + 'px',
+        'border-radius:' + (Math.random() > 0.5 ? '50%' : '2px'),
+      ].join(';');
+      confettiEl.appendChild(s);
+    }
+
+    // ── Navigation ────────────────────────────────────────────
+    function navigate(el, handler) {
+      el.addEventListener('click', handler);
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); }
+      });
+    }
+
+    navigate(document.getElementById('card-free'), function() {
+      window.location.href = '../free/index.html';
+    });
+
+    function showIAPPlaceholder(packageName) {
+      alert('רכישה: ' + packageName + '\n\n(IAP עדיין לא מחובר — יופעל דרך App Store)');
+    }
+
+    navigate(document.getElementById('card-italy'),   function() { showIAPPlaceholder('מסביב לעולם: איטליה — ₪14.99'); });
+    navigate(document.getElementById('card-plant'),   function() { showIAPPlaceholder('חלבונים מהצומח — ₪14.99'); });
+    navigate(document.getElementById('card-science'), function() { showIAPPlaceholder('ניסויים פשוטים במטבח — ₪14.99'); });
+    navigate(document.getElementById('card-bundle'),  function() { showIAPPlaceholder('חבילת הכל כלול — ₪34.99'); });
+  </script>
 </body>
 </html>
