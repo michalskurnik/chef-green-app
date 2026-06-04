@@ -1,5 +1,8 @@
 {
   "appId": "com.michalskurnik.chefapp",
   "appName": "עלילות השף הירוק",
-  "webDir": "www"
+  "webDir": "www",
+  "server": {
+    "initialPath": "/app/start.html"
+  }
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>html,body{margin:0;background:#1A3D1F;}</style>
+</head>
+<body>
+<script>
+  if (localStorage.getItem('chefName')) {
+    window.location.replace('packages.html');
+  } else {
+    window.location.replace('onboarding.html');
+  }
+</script>
+</body>
+</html>
