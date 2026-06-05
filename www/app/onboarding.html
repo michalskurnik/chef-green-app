@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>ברוכים הבאים | השף הירוק</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Fredoka+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Fredoka+One&family=Rubik:wght@500;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -143,6 +143,38 @@
       .sparkle-ipad  { display: block; }
       /* iPad image is landscape — anchor from left instead of right */
       .s1-bg-img { object-position: center center; }
+    }
+
+    /* Welcome text — above the button */
+    .welcome-text {
+      position: absolute;
+      bottom: 140px;
+      left: 24px;
+      right: 24px;
+      direction: rtl;
+      text-align: center;
+      z-index: 2;
+      animation: slideInUp 0.8s ease-out 0.3s both;
+    }
+    .welcome-text h1 {
+      font-family: 'Rubik', 'Varela Round', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #F5F0DC;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      margin-bottom: 6px;
+    }
+    .welcome-text p {
+      font-family: 'Rubik', 'Varela Round', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #F5921E;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    @media (min-width: 769px) {
+      .welcome-text { bottom: 160px; }
+      .welcome-text h1 { font-size: 42px; }
+      .welcome-text p  { font-size: 22px; }
     }
 
     /* Progress dots pinned to top of screen 1 */
@@ -414,6 +446,11 @@
     <div class="sparkle sparkle-ipad" style="top:40%;right:15%;animation-delay:0.9s;"></div>
     <div class="sparkle sparkle-ipad" style="top:72%;left:18%; animation-delay:1.2s;"></div>
     <div class="sparkle sparkle-ipad" style="top:6%; right:22%;animation-delay:1.5s;"></div>
+
+    <div class="welcome-text">
+      <h1>ברוכים הבאים!</h1>
+      <p>להרפתקאות השף הירוק וביטו הרובוט</p>
+    </div>
 
     <button class="btn-welcome" id="btnWelcome">בואו נכיר! ✨</button>
 
