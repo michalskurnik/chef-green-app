@@ -112,6 +112,30 @@
       animation: slideInUp 0.6s ease-out both;
     }
 
+    /* Sparkle dots over vegetables */
+    @keyframes glow {
+      from {
+        transform: scale(1);
+        opacity: 0.6;
+        box-shadow: 0 0 8px 4px rgba(255,215,0,0.4);
+      }
+      to {
+        transform: scale(1.4);
+        opacity: 1;
+        box-shadow: 0 0 16px 8px rgba(255,215,0,0.7);
+      }
+    }
+    .sparkle {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #FFD700, transparent);
+      pointer-events: none;
+      z-index: 1;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
     /* Progress dots pinned to top of screen 1 */
     #screen1 .progress-dots {
       position: absolute;
@@ -365,6 +389,14 @@
       alt="השף הירוק"
       class="s1-bg-img"
     >
+
+    <!-- Sparkle dots over vegetable areas -->
+    <div class="sparkle" style="top:15%;right:25%;animation-delay:0s;"></div>
+    <div class="sparkle" style="top:10%;left:30%; animation-delay:0.3s;"></div>
+    <div class="sparkle" style="top:20%;left:15%; animation-delay:0.6s;"></div>
+    <div class="sparkle" style="top:8%; right:10%;animation-delay:0.9s;"></div>
+    <div class="sparkle" style="top:25%;right:5%; animation-delay:1.2s;"></div>
+    <div class="sparkle" style="top:5%; left:50%; animation-delay:1.5s;"></div>
 
     <button class="btn-welcome" id="btnWelcome">בואו נכיר! ✨</button>
 
