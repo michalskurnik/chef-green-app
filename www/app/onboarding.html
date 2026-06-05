@@ -230,12 +230,46 @@
       z-index: 1;
       width: 100%;
     }
-    .s2-chef-img {
+    /* Floating character heads */
+    @keyframes floatChef {
+      0%, 100% { transform: translateY(0px) rotate(-3deg); }
+      50%       { transform: translateY(-15px) rotate(3deg); }
+    }
+    @keyframes floatBito {
+      0%, 100% { transform: translateY(0px) rotate(3deg); }
+      50%       { transform: translateY(-12px) rotate(-3deg); }
+    }
+    .s2-chars {
+      display: flex;
+      flex-direction: row;   /* RTL: first child → right side */
+      align-items: flex-end;
+      justify-content: center;
+      gap: 36px;
+      flex: 1;
       width: 100%;
-      max-width: 260px;
-      object-fit: contain;
       min-height: 0;
-      display: block;
+      padding: 0 20px;
+    }
+    .char-head {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .char-head img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .char-chef-head {
+      animation: floatChef 3s ease-in-out infinite;
+    }
+    .char-chef-head img { object-position: top center; }
+    .char-bito-head {
+      animation: floatBito 2.8s ease-in-out infinite;
+      animation-delay: 0.4s;
     }
 
     /* Speech bubble */
@@ -467,11 +501,16 @@
     </div>
 
     <div class="s2-chef-area">
-      <img
-        src="../assets/images/onboarding-chef.png"
-        alt="השף הירוק"
-        class="s2-chef-img"
-      >
+      <div class="s2-chars">
+        <!-- RTL: first child = right side → Chef on right -->
+        <div class="char-head char-chef-head">
+          <img src="../assets/images/free-index-1.jpg" alt="השף הירוק">
+        </div>
+        <!-- second child = left side → Bito on left -->
+        <div class="char-head char-bito-head">
+          <img src="../assets/images/shared-bg.png" alt="ביטו הרובוט">
+        </div>
+      </div>
       <div class="speech-bubble pop" id="speechBubble">מי השף הצעיר שלנו?</div>
     </div>
 
