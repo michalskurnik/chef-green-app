@@ -97,31 +97,41 @@
     /* ══════════════════════════════════════════════════
        SCREEN 1 — WELCOME
     ══════════════════════════════════════════════════ */
-    .s1-chef-area {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 0;
+    /* Screen 1 — full-bleed image layout */
+    #screen1 { padding: 0; }
+
+    .s1-bg-img {
+      position: absolute;
+      inset: 0;
       width: 100%;
-      position: relative;
-      z-index: 1;
-    }
-    .s1-chef-img {
-      width: 100%;
-      max-width: 320px;
-      object-fit: contain;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
       display: block;
+      z-index: 0;
       animation: slideInUp 0.6s ease-out both;
     }
 
-    /* Pulsing CTA */
+    /* Progress dots pinned to top of screen 1 */
+    #screen1 .progress-dots {
+      position: absolute;
+      top: calc(env(safe-area-inset-top, 0px) + 20px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      margin-bottom: 0;
+    }
+
+    /* Pulsing CTA — pinned to bottom of screen 1 */
     @keyframes pulse {
       0%, 100% { transform: scale(1); }
       50%       { transform: scale(1.05); }
     }
     .btn-welcome {
-      width: 100%;
+      position: absolute;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 40px);
+      left: 24px;
+      right: 24px;
       padding: 18px 20px;
       border-radius: 50px;
       border: none;
@@ -131,9 +141,7 @@
       font-family: 'Fredoka One', 'Varela Round', cursive;
       cursor: pointer;
       box-shadow: 0 6px 28px rgba(245,146,30,0.45);
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
+      z-index: 2;
       -webkit-appearance: none;
       animation: pulse 2s ease-in-out 1.5s infinite;
     }
@@ -352,13 +360,11 @@
     <span class="star" style="top:56%;left:7%; color:#F5921E;font-size:20px;animation:float 3s   ease-in-out infinite;animation-delay:0.8s;">★</span>
     <span class="star" style="top:52%;right:6%;color:#F5F0DC;font-size:16px;animation:float 3.5s ease-in-out infinite;animation-delay:1.2s;">★</span>
 
-    <div class="s1-chef-area">
-      <img
-        src="../assets/images/onboarding-chef.png"
-        alt="השף הירוק"
-        class="s1-chef-img"
-      >
-    </div>
+    <img
+      src="../assets/images/onboarding-welcome.png"
+      alt="השף הירוק"
+      class="s1-bg-img"
+    >
 
     <button class="btn-welcome" id="btnWelcome">בואו נכיר! ✨</button>
 
