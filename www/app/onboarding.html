@@ -12,8 +12,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       background: #1A3D1F;
       font-family: 'Varela Round', 'Heebo', Arial, sans-serif;
       overflow: hidden;
@@ -21,65 +20,157 @@
       -webkit-text-size-adjust: 100%;
     }
 
-    /* ── Layout shell ─────────────────────────────────────── */
-    .screen {
-      width: 100%;
-      max-width: 390px;
-      height: 100svh;
-      margin: 0 auto;
+    /* ══════════════════════════════════════════════════
+       SCREEN PANELS — full-screen, slide left/right
+    ══════════════════════════════════════════════════ */
+    .screen-panel {
+      position: fixed;
+      inset: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      background: #1A3D1F;
+      overflow: hidden;
+      transition: transform 0.4s ease-in-out;
       padding:
         calc(env(safe-area-inset-top, 0px) + 12px)
         24px
         calc(env(safe-area-inset-bottom, 0px) + 28px);
     }
 
-    /* ── Progress dots ────────────────────────────────────── */
+    #screen1 { transform: translateX(0); }
+    #screen2 { transform: translateX(100%); }
+    #screen3 { transform: translateX(100%); }
+
+    /* Background glow behind everything */
+    .screen-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 35%, rgba(74,140,40,0.35) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════════════
+       PROGRESS DOTS
+    ══════════════════════════════════════════════════ */
     .progress-dots {
       display: flex;
       gap: 8px;
       align-items: center;
       flex-shrink: 0;
       margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
     }
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.22);
+      background: rgba(255,255,255,0.22);
       transition: width 0.3s ease, border-radius 0.3s ease, background 0.3s ease;
     }
-    .dot.active {
-      width: 28px;
-      border-radius: 4px;
-      background: #F5A623;
+    .dot.active { width: 28px; border-radius: 4px; background: #F5A623; }
+
+    /* ══════════════════════════════════════════════════
+       FLOATING STARS  (shared keyframe)
+    ══════════════════════════════════════════════════ */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50%       { transform: translateY(-12px) rotate(15deg); }
+    }
+    .star {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+      line-height: 1;
+      user-select: none;
     }
 
-    /* ── Chef illustration ────────────────────────────────── */
-    .chef-area {
+    /* ══════════════════════════════════════════════════
+       SHARED  slideInUp  (image on s1, button on s3)
+    ══════════════════════════════════════════════════ */
+    @keyframes slideInUp {
+      from { transform: translateY(60px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    /* ══════════════════════════════════════════════════
+       SCREEN 1 — WELCOME
+    ══════════════════════════════════════════════════ */
+    .s1-chef-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    .s1-chef-img {
+      width: 100%;
+      max-width: 320px;
+      object-fit: contain;
+      display: block;
+      animation: slideInUp 0.6s ease-out both;
+    }
+
+    /* Pulsing CTA */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.05); }
+    }
+    .btn-welcome {
+      width: 100%;
+      padding: 18px 20px;
+      border-radius: 50px;
+      border: none;
+      background: #F5921E;
+      color: #fff;
+      font-size: 19px;
+      font-family: 'Fredoka One', 'Varela Round', cursive;
+      cursor: pointer;
+      box-shadow: 0 6px 28px rgba(245,146,30,0.45);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      -webkit-appearance: none;
+      animation: pulse 2s ease-in-out 1.5s infinite;
+    }
+    .btn-welcome:active {
+      animation: none;
+      transform: scale(0.97);
+    }
+
+    /* ══════════════════════════════════════════════════
+       SCREEN 2 — NAME INPUT
+    ══════════════════════════════════════════════════ */
+    .s2-chef-area {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      gap: 0;
       min-height: 0;
       padding-bottom: 4px;
-    }
-
-    .chef-img {
+      position: relative;
+      z-index: 1;
       width: 100%;
-      max-width: 340px;
-      display: block;
-      margin: 0 auto;
-      flex-shrink: 1;
-      min-height: 0;
+    }
+    .s2-chef-img {
+      width: 100%;
+      max-width: 260px;
       object-fit: contain;
+      min-height: 0;
+      display: block;
     }
 
-    /* Speech bubble points UP toward the chef */
+    /* Speech bubble */
+    @keyframes popIn {
+      0%   { transform: scaleY(0); opacity: 0; }
+      70%  { transform: scaleY(1.05); }
+      100% { transform: scaleY(1); opacity: 1; }
+    }
     .speech-bubble {
       background: #fff;
       border-radius: 18px;
@@ -88,23 +179,26 @@
       font-size: 20px;
       color: #1A3D1F;
       text-align: center;
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
       position: relative;
       margin-top: 4px;
       flex-shrink: 0;
+      transform-origin: bottom center;
     }
     .speech-bubble::before {
       content: '';
       position: absolute;
-      top: -11px;
-      left: 50%;
+      top: -11px; left: 50%;
       transform: translateX(-50%);
       border: 11px solid transparent;
       border-bottom-color: #fff;
       border-top: none;
     }
+    .speech-bubble.pop {
+      animation: popIn 0.4s ease-out 0.4s both;
+    }
 
-    /* ── Input section ────────────────────────────────────── */
+    /* Input section */
     .input-section {
       width: 100%;
       flex-shrink: 0;
@@ -112,8 +206,9 @@
       flex-direction: column;
       gap: 14px;
       padding-top: 18px;
+      position: relative;
+      z-index: 1;
     }
-
     .name-input {
       width: 100%;
       padding: 17px 22px;
@@ -129,17 +224,92 @@
       transition: border-color 0.2s, box-shadow 0.2s;
       caret-color: #F5921E;
     }
-    .name-input::placeholder {
-      color: rgba(26, 61, 31, 0.4);
-    }
+    .name-input::placeholder { color: rgba(26,61,31,0.4); }
     .name-input:focus {
       border-color: #F5921E;
-      box-shadow: 0 0 0 3px rgba(245, 146, 30, 0.2);
+      box-shadow: 0 0 0 3px rgba(245,146,30,0.2);
     }
 
-    /* ── Start button ─────────────────────────────────────── */
+    /* Submit button — grey-green → orange */
     .btn-start {
       width: 100%;
+      padding: 18px 20px;
+      border-radius: 50px;
+      border: none;
+      background: #4a6a4e;
+      color: rgba(255,255,255,0.45);
+      font-size: 19px;
+      font-family: 'Fredoka One', 'Varela Round', cursive;
+      cursor: default;
+      box-shadow: none;
+      transition: background-color 0.3s ease, color 0.3s ease,
+                  transform 0.2s ease, box-shadow 0.3s ease;
+      -webkit-appearance: none;
+    }
+    .btn-start.has-name {
+      background: #F5921E;
+      color: #fff;
+      box-shadow: 0 6px 28px rgba(245,146,30,0.45);
+      transform: scale(1.02);
+      cursor: pointer;
+    }
+    .btn-start.has-name:active { transform: scale(0.97); }
+
+    /* ══════════════════════════════════════════════════
+       SCREEN 3 — VIDEO
+    ══════════════════════════════════════════════════ */
+    #screen3 {
+      justify-content: center;
+      gap: 0;
+    }
+
+    /* Countdown overlay */
+    .countdown-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1A3D1F;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .countdown-overlay.gone { display: none; }
+
+    @keyframes countFade {
+      0%   { opacity: 0; transform: scale(1.5); }
+      30%  { opacity: 1; transform: scale(1); }
+      70%  { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.8); }
+    }
+    .count-digit {
+      position: absolute;
+      font-family: 'Fredoka One', cursive;
+      font-size: 100px;
+      color: #F5921E;
+      text-shadow: 0 4px 28px rgba(245,146,30,0.55);
+    }
+    .count-digit.tick { animation: countFade 1s ease-in-out both; }
+
+    /* Video */
+    .video-wrap {
+      width: 100%;
+      max-width: 390px;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      background: #000;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      flex-shrink: 0;
+    }
+    .video-wrap video { width: 100%; display: block; }
+
+    /* CTA after video ends */
+    .btn-ready {
+      width: 100%;
+      max-width: 390px;
+      margin-top: 20px;
       padding: 18px 20px;
       border-radius: 50px;
       border: none;
@@ -147,63 +317,72 @@
       color: #fff;
       font-size: 19px;
       font-family: 'Fredoka One', 'Varela Round', cursive;
-      font-weight: 400;
-      letter-spacing: 0.03em;
       cursor: pointer;
-      box-shadow: 0 6px 28px rgba(245, 146, 30, 0.45);
-      transition: opacity 0.2s, transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 6px 28px rgba(245,146,30,0.45);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
       -webkit-appearance: none;
+      transform: translateY(80px);
+      opacity: 0;
     }
-    .btn-start:disabled {
-      background: rgba(255, 255, 255, 0.12);
-      color: rgba(255, 255, 255, 0.3);
-      box-shadow: none;
-      cursor: default;
+    @keyframes btnSlideUp {
+      to { transform: translateY(0); opacity: 1; }
     }
-    .btn-start:not(:disabled):active {
-      transform: scale(0.97);
-      box-shadow: 0 3px 14px rgba(245, 146, 30, 0.3);
+    .btn-ready.visible {
+      animation: btnSlideUp 0.5s ease-out forwards;
     }
-
-    @keyframes btnPop {
-      0%   { transform: scale(0.95); }
-      60%  { transform: scale(1.03); }
-      100% { transform: scale(1); }
-    }
-    .btn-start.pop {
-      animation: btnPop 0.3s ease forwards;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 35%, rgba(74,140,40,0.35) 0%, transparent 70%);
-      pointer-events: none;
-    }
+    .btn-ready.visible:active { transform: scale(0.97); animation: none; opacity: 1; }
   </style>
 </head>
 <body>
-  <div class="screen">
 
-    <!-- Progress: step 1 of 3 -->
+  <!-- ══════════════════════ SCREEN 1: WELCOME ══════════════════════ -->
+  <div id="screen1" class="screen-panel">
+
     <div class="progress-dots" aria-label="שלב 1 מתוך 3">
       <div class="dot active"></div>
       <div class="dot"></div>
       <div class="dot"></div>
     </div>
 
-    <!-- Chef illustration + speech bubble -->
-    <div class="chef-area">
+    <!-- Floating stars -->
+    <span class="star" style="top:20%;right:9%; color:#F5921E;font-size:18px;animation:float 2s   ease-in-out infinite;">★</span>
+    <span class="star" style="top:24%;left:11%;color:#F5F0DC;font-size:16px;animation:float 2.5s ease-in-out infinite;animation-delay:0.4s;">★</span>
+    <span class="star" style="top:56%;left:7%; color:#F5921E;font-size:20px;animation:float 3s   ease-in-out infinite;animation-delay:0.8s;">★</span>
+    <span class="star" style="top:52%;right:6%;color:#F5F0DC;font-size:16px;animation:float 3.5s ease-in-out infinite;animation-delay:1.2s;">★</span>
+
+    <div class="s1-chef-area">
       <img
         src="../assets/images/onboarding-chef.png"
         alt="השף הירוק"
-        class="chef-img"
+        class="s1-chef-img"
       >
-      <div class="speech-bubble">מי השף הצעיר שלנו?</div>
     </div>
 
-    <!-- Name input + CTA -->
+    <button class="btn-welcome" id="btnWelcome">בואו נכיר! ✨</button>
+
+  </div>
+
+
+  <!-- ══════════════════════ SCREEN 2: NAME INPUT ══════════════════════ -->
+  <div id="screen2" class="screen-panel">
+
+    <div class="progress-dots" aria-label="שלב 2 מתוך 3">
+      <div class="dot"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="s2-chef-area">
+      <img
+        src="../assets/images/onboarding-chef.png"
+        alt="השף הירוק"
+        class="s2-chef-img"
+      >
+      <div class="speech-bubble pop" id="speechBubble">מי השף הצעיר שלנו?</div>
+    </div>
+
     <div class="input-section">
       <input
         id="nameInput"
@@ -217,56 +396,142 @@
         spellcheck="false"
         inputmode="text"
       >
-      <button id="btnStart" class="btn-start" disabled>בואו נתחיל!</button>
+      <button id="btnStart" class="btn-start">בואו נתחיל!</button>
     </div>
 
   </div>
 
+
+  <!-- ══════════════════════ SCREEN 3: VIDEO ══════════════════════ -->
+  <div id="screen3" class="screen-panel">
+
+    <div class="progress-dots" aria-label="שלב 3 מתוך 3">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot active"></div>
+    </div>
+
+    <!-- Countdown overlay (sits above video until dismissed) -->
+    <div class="countdown-overlay" id="countdownOverlay">
+      <span class="count-digit" id="countDigit">3</span>
+    </div>
+
+    <div class="video-wrap">
+      <video id="mainVideo" playsinline webkit-playsinline preload="auto">
+        <source src="../assets/video/intro.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <button class="btn-ready" id="btnReady">לבחירת ההרפתקה 🗺️</button>
+
+  </div>
+
+
   <script>
-    const input = document.getElementById('nameInput');
-    const btn   = document.getElementById('btnStart');
-    let wasEmpty = true;
+    const s1 = document.getElementById('screen1');
+    const s2 = document.getElementById('screen2');
+    const s3 = document.getElementById('screen3');
 
-    function updateButton() {
+    // ── Screen 1 → 2 ──────────────────────────────────────────────
+    document.getElementById('btnWelcome').addEventListener('click', function () {
+      s1.style.transform = 'translateX(-100%)';
+      s2.style.transform = 'translateX(0)';
+
+      // Re-fire speech bubble pop (in case user navigated back somehow)
+      const bubble = document.getElementById('speechBubble');
+      bubble.classList.remove('pop');
+      void bubble.offsetWidth;
+      bubble.classList.add('pop');
+
+      setTimeout(function () { document.getElementById('nameInput').focus(); }, 450);
+    });
+
+    // ── Name input → button state ──────────────────────────────────
+    const input    = document.getElementById('nameInput');
+    const btnStart = document.getElementById('btnStart');
+
+    input.addEventListener('input', function () {
       const name = input.value.trim();
-      const isEmpty = name.length === 0;
-
-      if (!isEmpty) {
-        btn.textContent = 'בואו נתחיל, ' + name + '!';
-        if (wasEmpty) {
-          btn.disabled = false;
-          btn.classList.remove('pop');
-          void btn.offsetWidth;
-          btn.classList.add('pop');
-        } else {
-          btn.disabled = false;
-        }
+      if (name.length > 0) {
+        btnStart.textContent = 'בואו נתחיל, ' + name + '!';
+        btnStart.classList.add('has-name');
       } else {
-        btn.textContent = 'בואו נתחיל!';
-        btn.disabled = true;
+        btnStart.textContent = 'בואו נתחיל!';
+        btnStart.classList.remove('has-name');
       }
+    });
 
-      wasEmpty = isEmpty;
-    }
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { input.blur(); submitName(); }
+    });
 
-    function handleSubmit() {
+    btnStart.addEventListener('click', submitName);
+
+    function submitName() {
       const name = input.value.trim();
       if (!name) return;
       localStorage.setItem('chefName', name);
       localStorage.setItem('userName', name);
-      window.location.href = 'intro-video.html';
+      goToScreen3();
     }
 
-    input.addEventListener('input', updateButton);
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') { input.blur(); handleSubmit(); }
-    });
-    btn.addEventListener('click', handleSubmit);
-
+    // iOS: prevent page scroll when keyboard opens
     input.addEventListener('focus', function () {
-      setTimeout(function () {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 300);
+      setTimeout(function () { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 300);
+    });
+
+    // ── Screen 2 → 3 ──────────────────────────────────────────────
+    function goToScreen3() {
+      s2.style.transform = 'translateX(-100%)';
+      s3.style.transform = 'translateX(0)';
+      startCountdown();
+    }
+
+    // ── Countdown 3 → 2 → 1 → play video ─────────────────────────
+    function startCountdown() {
+      const overlay  = document.getElementById('countdownOverlay');
+      const digitEl  = document.getElementById('countDigit');
+      let n = 3;
+
+      function tick(num) {
+        digitEl.textContent = num;
+        digitEl.classList.remove('tick');
+        void digitEl.offsetWidth;   // force reflow to restart animation
+        digitEl.classList.add('tick');
+      }
+
+      tick(3);
+
+      const iv = setInterval(function () {
+        n--;
+        if (n > 0) {
+          tick(n);
+        } else {
+          clearInterval(iv);
+          overlay.classList.add('gone');
+          const video = document.getElementById('mainVideo');
+          video.play().catch(function () {
+            // Autoplay blocked or video missing — reveal CTA immediately
+            showReadyBtn();
+          });
+        }
+      }, 1000);
+    }
+
+    // ── Video ends → slide up CTA ──────────────────────────────────
+    const video = document.getElementById('mainVideo');
+
+    video.addEventListener('ended', showReadyBtn);
+    video.addEventListener('error', showReadyBtn);   // missing file fallback
+
+    const btnReady = document.getElementById('btnReady');
+
+    function showReadyBtn() {
+      btnReady.classList.add('visible');
+    }
+
+    btnReady.addEventListener('click', function () {
+      window.location.href = 'packages.html';
     });
   </script>
 </body>
