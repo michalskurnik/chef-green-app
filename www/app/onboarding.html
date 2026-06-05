@@ -31,7 +31,7 @@
       flex-direction: column;
       align-items: center;
       padding:
-        calc(env(safe-area-inset-top, 0px) + 20px)
+        calc(env(safe-area-inset-top, 0px) + 12px)
         24px
         calc(env(safe-area-inset-bottom, 0px) + 28px);
     }
@@ -42,7 +42,7 @@
       gap: 8px;
       align-items: center;
       flex-shrink: 0;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .dot {
       width: 8px;
@@ -57,21 +57,26 @@
       background: #F5A623;
     }
 
-    /* ── Chef + bubble area ───────────────────────────────── */
+    /* ── Chef illustration ────────────────────────────────── */
     .chef-area {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-end;
       gap: 0;
       min-height: 0;
+      padding-bottom: 4px;
     }
 
-    #chef-container {
-      width: 170px;
-      height: 170px;
-      flex-shrink: 0;
+    .chef-img {
+      width: 100%;
+      max-width: 340px;
+      display: block;
+      margin: 0 auto;
+      flex-shrink: 1;
+      min-height: 0;
+      object-fit: contain;
     }
 
     /* Speech bubble points UP toward the chef */
@@ -86,6 +91,7 @@
       box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
       position: relative;
       margin-top: 4px;
+      flex-shrink: 0;
     }
     .speech-bubble::before {
       content: '';
@@ -105,47 +111,47 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
-      padding-top: 20px;
+      padding-top: 18px;
     }
 
     .name-input {
       width: 100%;
-      padding: 17px 20px;
-      border-radius: 18px;
-      border: 2px solid rgba(255, 255, 255, 0.18);
-      background: rgba(255, 255, 255, 0.09);
-      color: #fff;
+      padding: 17px 22px;
+      border-radius: 50px;
+      border: 2px solid transparent;
+      background: #F5F0DC;
+      color: #1A3D1F;
       font-size: 18px;
       font-family: 'Varela Round', 'Heebo', Arial, sans-serif;
-      text-align: right;
+      text-align: center;
       outline: none;
       -webkit-appearance: none;
-      transition: border-color 0.2s, background 0.2s;
-      caret-color: #F5A623;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      caret-color: #F5921E;
     }
     .name-input::placeholder {
-      color: rgba(255, 255, 255, 0.38);
+      color: rgba(26, 61, 31, 0.4);
     }
     .name-input:focus {
-      border-color: rgba(245, 166, 35, 0.7);
-      background: rgba(255, 255, 255, 0.13);
+      border-color: #F5921E;
+      box-shadow: 0 0 0 3px rgba(245, 146, 30, 0.2);
     }
 
     /* ── Start button ─────────────────────────────────────── */
     .btn-start {
       width: 100%;
       padding: 18px 20px;
-      border-radius: 18px;
+      border-radius: 50px;
       border: none;
-      background: linear-gradient(135deg, #F7B731, #E8841C);
+      background: #F5921E;
       color: #fff;
       font-size: 19px;
       font-family: 'Fredoka One', 'Varela Round', cursive;
       font-weight: 400;
       letter-spacing: 0.03em;
       cursor: pointer;
-      box-shadow: 0 6px 28px rgba(245, 166, 35, 0.45);
-      transition: opacity 0.2s, transform 0.15s, box-shadow 0.15s, background 0.25s;
+      box-shadow: 0 6px 28px rgba(245, 146, 30, 0.45);
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.15s;
       -webkit-appearance: none;
     }
     .btn-start:disabled {
@@ -156,10 +162,9 @@
     }
     .btn-start:not(:disabled):active {
       transform: scale(0.97);
-      box-shadow: 0 3px 14px rgba(245, 166, 35, 0.3);
+      box-shadow: 0 3px 14px rgba(245, 146, 30, 0.3);
     }
 
-    /* Nudge animation when name first appears */
     @keyframes btnPop {
       0%   { transform: scale(0.95); }
       60%  { transform: scale(1.03); }
@@ -169,7 +174,6 @@
       animation: btnPop 0.3s ease forwards;
     }
 
-    /* Subtle background radial glow */
     body::before {
       content: '';
       position: fixed;
@@ -189,9 +193,13 @@
       <div class="dot"></div>
     </div>
 
-    <!-- Chef character + speech bubble -->
+    <!-- Chef illustration + speech bubble -->
     <div class="chef-area">
-      <div id="chef-container"></div>
+      <img
+        src="../assets/images/onboarding-chef.png"
+        alt="השף הירוק"
+        class="chef-img"
+      >
       <div class="speech-bubble">מי השף הצעיר שלנו?</div>
     </div>
 
@@ -214,11 +222,7 @@
 
   </div>
 
-  <script src="../assets/chef-animation.js"></script>
   <script>
-    // Render chef animation
-    ChefAnim.render('#chef-container', { width: 160, speed: 480 });
-
     const input = document.getElementById('nameInput');
     const btn   = document.getElementById('btnStart');
     let wasEmpty = true;
@@ -232,7 +236,6 @@
         if (wasEmpty) {
           btn.disabled = false;
           btn.classList.remove('pop');
-          // Force reflow so animation re-triggers
           void btn.offsetWidth;
           btn.classList.add('pop');
         } else {
@@ -250,6 +253,7 @@
       const name = input.value.trim();
       if (!name) return;
       localStorage.setItem('chefName', name);
+      localStorage.setItem('userName', name);
       window.location.href = 'intro-video.html';
     }
 
@@ -259,7 +263,6 @@
     });
     btn.addEventListener('click', handleSubmit);
 
-    // Scroll screen up when keyboard opens (iOS fix)
     input.addEventListener('focus', function () {
       setTimeout(function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
