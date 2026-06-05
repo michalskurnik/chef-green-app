@@ -136,6 +136,15 @@
       animation: glow 2s ease-in-out infinite alternate;
     }
 
+    /* Phone sparkles hidden on iPad, iPad sparkles hidden on phone */
+    .sparkle-ipad { display: none; }
+    @media (min-width: 769px) {
+      .sparkle-phone { display: none; }
+      .sparkle-ipad  { display: block; }
+      /* iPad image is landscape — anchor from left instead of right */
+      .s1-bg-img { object-position: center center; }
+    }
+
     /* Progress dots pinned to top of screen 1 */
     #screen1 .progress-dots {
       position: absolute;
@@ -384,19 +393,33 @@
     <span class="star" style="top:56%;left:7%; color:#F5921E;font-size:20px;animation:float 3s   ease-in-out infinite;animation-delay:0.8s;">★</span>
     <span class="star" style="top:52%;right:6%;color:#F5F0DC;font-size:16px;animation:float 3.5s ease-in-out infinite;animation-delay:1.2s;">★</span>
 
-    <img
-      src="../assets/images/onboarding-welcome.png"
-      alt="השף הירוק"
-      class="s1-bg-img"
-    >
+    <!-- Responsive image: iPad landscape / phone portrait -->
+    <picture>
+      <source media="(min-width: 769px)" srcset="../assets/images/onboarding-welcome-ipad.png">
+      <img src="../assets/images/onboarding-welcome.png" alt="השף הירוק" class="s1-bg-img">
+    </picture>
 
-    <!-- Sparkle dots over vegetable areas -->
-    <div class="sparkle" style="top:15%;right:25%;animation-delay:0s;"></div>
-    <div class="sparkle" style="top:10%;left:30%; animation-delay:0.3s;"></div>
-    <div class="sparkle" style="top:20%;left:15%; animation-delay:0.6s;"></div>
-    <div class="sparkle" style="top:8%; right:10%;animation-delay:0.9s;"></div>
-    <div class="sparkle" style="top:25%;right:5%; animation-delay:1.2s;"></div>
-    <div class="sparkle" style="top:5%; left:50%; animation-delay:1.5s;"></div>
+    <!-- Phone sparkles (portrait image) -->
+    <div class="sparkle sparkle-phone" style="top:15%;right:25%;animation-delay:0s;"></div>
+    <div class="sparkle sparkle-phone" style="top:10%;left:30%; animation-delay:0.3s;"></div>
+    <div class="sparkle sparkle-phone" style="top:20%;left:15%; animation-delay:0.6s;"></div>
+    <div class="sparkle sparkle-phone" style="top:8%; right:10%;animation-delay:0.9s;"></div>
+    <div class="sparkle sparkle-phone" style="top:25%;right:5%; animation-delay:1.2s;"></div>
+    <div class="sparkle sparkle-phone" style="top:5%; left:50%; animation-delay:1.5s;"></div>
+
+    <!-- iPad sparkles (landscape kitchen image) -->
+    <!-- spice jars shelf -->
+    <div class="sparkle sparkle-ipad" style="top:8%; right:26%;animation-delay:0s;"></div>
+    <!-- lamp glow -->
+    <div class="sparkle sparkle-ipad" style="top:6%; left:9%; animation-delay:0.3s;"></div>
+    <!-- herb / basil pot left -->
+    <div class="sparkle sparkle-ipad" style="top:50%;left:13%; animation-delay:0.6s;"></div>
+    <!-- sunflower right of robot -->
+    <div class="sparkle sparkle-ipad" style="top:48%;right:21%;animation-delay:0.9s;"></div>
+    <!-- salad bowl center -->
+    <div class="sparkle sparkle-ipad" style="top:52%;left:44%; animation-delay:1.2s;"></div>
+    <!-- cucumber slices on counter -->
+    <div class="sparkle sparkle-ipad" style="top:63%;right:37%;animation-delay:1.5s;"></div>
 
     <button class="btn-welcome" id="btnWelcome">בואו נכיר! ✨</button>
 
