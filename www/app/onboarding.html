@@ -367,20 +367,36 @@
     ══════════════════════════════════════════════════ */
     #screen3 { justify-content: flex-start; gap: 0; }
 
-    /* Top bar: greeting + skip */
+    /* Top bar: title + skip */
     .s3-topbar {
       width: 100%;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       padding: 6px 0 10px;
       flex-shrink: 0;
       direction: rtl;
     }
-    .s3-greeting {
-      font-family: 'Fredoka One', cursive;
-      font-size: 17px;
-      color: #F5A623;
+    .s3-title {
+      flex: 1;
+      text-align: center;
+      direction: rtl;
+    }
+    .s3-title-name {
+      font-family: 'Rubik', 'Varela Round', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #F5921E;
+      display: block;
+    }
+    .s3-title-sub {
+      font-family: 'Rubik', 'Varela Round', sans-serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: #F5F0DC;
+      display: block;
+      margin-top: 2px;
+      line-height: 1.4;
     }
     .btn-skip {
       background: rgba(255,255,255,0.1);
@@ -660,9 +676,12 @@
       <div class="dot active"></div>
     </div>
 
-    <!-- Greeting + skip -->
+    <!-- Title + skip -->
     <div class="s3-topbar">
-      <div class="s3-greeting" id="s3Greeting">מוכן להרפתקה? 🌿</div>
+      <div class="s3-title">
+        <span class="s3-title-name" id="s3TitleName"></span>
+        <span class="s3-title-sub">בואו נתחיל בהרפתקאות קולינריות לגילוי מתכונים סודיים</span>
+      </div>
       <button class="btn-skip" id="btnSkip">דלג ›</button>
     </div>
 
@@ -700,7 +719,7 @@
       </div>
     </div>
 
-    <button class="btn-ready" id="btnReady">לבחירת ההרפתקה 🗺️</button>
+    <button class="btn-ready" id="btnReady">לבחירת הרפתקאת אוכל 🍽️</button>
 
   </div>
 
@@ -762,10 +781,10 @@
     function goToScreen3() {
       s2.style.transform = 'translateX(-100%)';
       s3.style.transform = 'translateX(0)';
-      // Personalise greeting
+      // Personalise title
       var savedName = localStorage.getItem('chefName') || '';
-      var greetEl = document.getElementById('s3Greeting');
-      if (savedName) greetEl.textContent = 'היי ' + savedName + ', מוכן להרפתקה? 🌿';
+      var titleName = document.getElementById('s3TitleName');
+      titleName.textContent = savedName ? savedName + ',' : 'שף,';
       startCountdown();
     }
 
