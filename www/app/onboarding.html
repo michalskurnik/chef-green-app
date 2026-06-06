@@ -503,6 +503,31 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px #333;
     }
 
+    /* Tap-to-play overlay (shown when autoplay is blocked) */
+    .tv-play-btn {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.25);
+      border: none;
+      cursor: pointer;
+      z-index: 6;
+    }
+    .tv-play-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(245,146,30,0.92);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(245,146,30,0.6);
+    }
+
     /* CTA after video ends */
     .btn-ready {
       width: 100%;
@@ -651,11 +676,15 @@
                 id="mainVideo"
                 playsinline
                 webkit-playsinline
-                preload="auto"
-                poster="../assets/images/onboarding-welcome.png"
+                preload="metadata"
+                poster="/assets/images/onboarding-welcome.png"
               >
-                <source src="../assets/video/free-index-1.mp4" type="video/mp4">
+                <source src="/assets/video/free-index-1.mp4" type="video/mp4">
               </video>
+              <!-- Shown when autoplay is blocked; user taps to start -->
+              <button class="tv-play-btn" id="tvPlayBtn" style="display:none;" aria-label="הפעל">
+                <div class="tv-play-icon">▶</div>
+              </button>
             </div>
           </div>
           <div class="tv-knobs">
@@ -768,22 +797,25 @@
         } else {
           clearInterval(iv);
           overlay.classList.add('gone');
-          const video = document.getElementById('mainVideo');
           video.play().catch(function () {
-            // Autoplay blocked or video missing — reveal CTA immediately
-            showReadyBtn();
+            // Autoplay blocked — show tap-to-play button on TV screen
+            document.getElementById('tvPlayBtn').style.display = 'flex';
           });
         }
       }, 1000);
     }
 
-    // ── Video ends → slide up CTA ──────────────────────────────────
-    const video = document.getElementById('mainVideo');
+    // ── Video / tap-to-play / CTA ──────────────────────────────────
+    const video   = document.getElementById('mainVideo');
+    const btnReady  = document.getElementById('btnReady');
+    const tvPlayBtn = document.getElementById('tvPlayBtn');
+
+    tvPlayBtn.addEventListener('click', function () {
+      tvPlayBtn.style.display = 'none';
+      video.play();
+    });
 
     video.addEventListener('ended', showReadyBtn);
-    video.addEventListener('error', showReadyBtn);   // missing file fallback
-
-    const btnReady = document.getElementById('btnReady');
 
     function showReadyBtn() {
       btnReady.classList.add('visible');
