@@ -365,10 +365,36 @@
     /* ══════════════════════════════════════════════════
        SCREEN 3 — VIDEO
     ══════════════════════════════════════════════════ */
-    #screen3 {
-      justify-content: center;
-      gap: 0;
+    #screen3 { justify-content: flex-start; gap: 0; }
+
+    /* Top bar: greeting + skip */
+    .s3-topbar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0 10px;
+      flex-shrink: 0;
+      direction: rtl;
     }
+    .s3-greeting {
+      font-family: 'Fredoka One', cursive;
+      font-size: 17px;
+      color: #F5A623;
+    }
+    .btn-skip {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-family: 'Varela Round', sans-serif;
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      -webkit-appearance: none;
+    }
+    .btn-skip:active { background: rgba(255,255,255,0.2); color: #fff; }
 
     /* Countdown overlay */
     .countdown-overlay {
@@ -398,26 +424,90 @@
     }
     .count-digit.tick { animation: countFade 1s ease-in-out both; }
 
-    /* Video */
-    .video-wrap {
+    /* ── TV frame (same design as free/index.html) ── */
+    .tv-outer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
       width: 100%;
-      max-width: 390px;
-      border-radius: 20px;
-      overflow: hidden;
-      position: relative;
-      z-index: 1;
-      background: #000;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      flex-shrink: 0;
+      min-height: 0;
     }
-    .video-wrap video { width: 100%; display: block; }
+    .tv-frame { position: relative; width: 100%; max-width: 440px; }
+    .tv-body {
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      border-radius: 22px 22px 18px 18px;
+      padding: 14px 18px 10px;
+      box-shadow:
+        0 0 0 3px #444,
+        0 0 0 5px #222,
+        0 15px 40px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .tv-screen-bezel {
+      background: #111;
+      border-radius: 10px;
+      padding: 7px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.8), 0 0 0 2px #333;
+      position: relative;
+      overflow: hidden;
+    }
+    .tv-screen-bezel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg,
+        transparent, transparent 2px,
+        rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+      pointer-events: none;
+      z-index: 5;
+      border-radius: 6px;
+    }
+    .tv-video-area {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      background: #000;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .tv-video-area video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+    }
+    .tv-knobs { display: flex; gap: 8px; margin-top: 7px; padding: 0 4px; }
+    .knob {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+    }
+    .knob.red   { background: #c0392b; }
+    .knob.green { background: #27ae60; }
+    .knob.amber { background: #f39c12; animation: knobBlink 1.5s ease-in-out infinite; }
+    @keyframes knobBlink {
+      0%, 100% { opacity: 1; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 0 4px #f39c12; }
+      50%       { opacity: 0.4; }
+    }
+    .tv-stand { display: flex; flex-direction: column; align-items: center; }
+    .tv-neck  { width: 38px; height: 13px; background: linear-gradient(180deg, #333, #222); }
+    .tv-base  {
+      width: 110px; height: 11px;
+      background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px #333;
+    }
 
     /* CTA after video ends */
     .btn-ready {
       width: 100%;
-      max-width: 390px;
-      margin-top: 20px;
-      padding: 18px 20px;
+      padding: 16px 20px;
+      margin-top: 14px;
       border-radius: 50px;
       border: none;
       background: #F5921E;
@@ -427,8 +517,6 @@
       cursor: pointer;
       box-shadow: 0 6px 28px rgba(245,146,30,0.45);
       flex-shrink: 0;
-      position: relative;
-      z-index: 1;
       -webkit-appearance: none;
       transform: translateY(80px);
       opacity: 0;
@@ -536,21 +624,51 @@
   <!-- ══════════════════════ SCREEN 3: VIDEO ══════════════════════ -->
   <div id="screen3" class="screen-panel">
 
+    <!-- Countdown overlay (full-screen, dismissed before video plays) -->
+    <div class="countdown-overlay" id="countdownOverlay">
+      <span class="count-digit" id="countDigit">3</span>
+    </div>
+
     <div class="progress-dots" aria-label="שלב 3 מתוך 3">
       <div class="dot"></div>
       <div class="dot"></div>
       <div class="dot active"></div>
     </div>
 
-    <!-- Countdown overlay (sits above video until dismissed) -->
-    <div class="countdown-overlay" id="countdownOverlay">
-      <span class="count-digit" id="countDigit">3</span>
+    <!-- Greeting + skip -->
+    <div class="s3-topbar">
+      <div class="s3-greeting" id="s3Greeting">מוכן להרפתקה? 🌿</div>
+      <button class="btn-skip" id="btnSkip">דלג ›</button>
     </div>
 
-    <div class="video-wrap">
-      <video id="mainVideo" playsinline webkit-playsinline preload="auto">
-        <source src="../assets/video/intro.mp4" type="video/mp4">
-      </video>
+    <!-- TV frame -->
+    <div class="tv-outer">
+      <div class="tv-frame">
+        <div class="tv-body">
+          <div class="tv-screen-bezel">
+            <div class="tv-video-area">
+              <video
+                id="mainVideo"
+                playsinline
+                webkit-playsinline
+                preload="auto"
+                poster="../assets/images/onboarding-welcome.png"
+              >
+                <source src="../assets/video/intro.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+          <div class="tv-knobs">
+            <div class="knob red"></div>
+            <div class="knob amber"></div>
+            <div class="knob green"></div>
+          </div>
+        </div>
+        <div class="tv-stand">
+          <div class="tv-neck"></div>
+          <div class="tv-base"></div>
+        </div>
+      </div>
     </div>
 
     <button class="btn-ready" id="btnReady">לבחירת ההרפתקה 🗺️</button>
@@ -615,8 +733,18 @@
     function goToScreen3() {
       s2.style.transform = 'translateX(-100%)';
       s3.style.transform = 'translateX(0)';
+      // Personalise greeting
+      var savedName = localStorage.getItem('chefName') || '';
+      var greetEl = document.getElementById('s3Greeting');
+      if (savedName) greetEl.textContent = 'היי ' + savedName + ', מוכן להרפתקה? 🌿';
       startCountdown();
     }
+
+    // ── Skip button ────────────────────────────────────────────────
+    document.getElementById('btnSkip').addEventListener('click', function () {
+      document.getElementById('mainVideo').pause();
+      window.location.href = 'packages.html';
+    });
 
     // ── Countdown 3 → 2 → 1 → play video ─────────────────────────
     function startCountdown() {
