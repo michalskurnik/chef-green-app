@@ -6,8 +6,8 @@
     },
     {
       "src": "/",
-      "status": 302,
-      "headers": { "Location": "/app/start.html" }
+      "dest": "/app/start.html",
+      "status": 302
     },
     {
       "src": "/(.*)",
