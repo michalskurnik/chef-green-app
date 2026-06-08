@@ -76,7 +76,7 @@ body{background:#1A3A1A;display:flex;justify-content:center;align-items:flex-sta
            font-size:13px;font-weight:800;cursor:pointer;font-family:'Assistant',sans-serif;z-index:10}
 
 /* DONE */
-#done-screen{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);
+#done-panel{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);
               flex-direction:column;align-items:center;justify-content:center;gap:16px;
               text-align:center;padding:28px}
 .ov-title{font-family:'Fredoka One',cursive;font-size:30px;color:white}
@@ -146,7 +146,7 @@ button,.btn,[role=button]{touch-action:manipulation}
 
 </div>
 
-<div id="done-screen">
+<div id="done-panel">
   <div style="font-size:72px">🎉</div>
   <div class="ov-title">כל הכבוד!</div>
   <div id="stars-row"></div>
@@ -221,7 +221,7 @@ function updateProgress(){
 function showDone(){
   const sr=document.getElementById('stars-row');sr.innerHTML='';
   for(let i=0;i<3;i++){const s=document.createElement('span');s.className='fstr';s.style.animationDelay=(i*.18)+'s';s.textContent='⭐';sr.appendChild(s);}
-  document.getElementById('done-screen').style.display='flex';
+  document.getElementById('done-panel').style.display='flex';
   const d=JSON.parse(localStorage.getItem('dinner_stars_detail')||'[]');
   while(d.length<11)d.push(0);d[9]=3;
   localStorage.setItem('dinner_stars_detail',JSON.stringify(d));
@@ -231,7 +231,7 @@ function showDone(){
 function resetGame(){
   found.clear();
   document.querySelectorAll('.tgt').forEach(t=>{t.classList.remove('found');const c=t.querySelector('.chk');if(c)c.remove();t.style.animation='';});
-  document.getElementById('done-screen').style.display='none';
+  document.getElementById('done-panel').style.display='none';
   updateProgress();buildHotspots();
 }
 

@@ -715,15 +715,16 @@ button,.btn,[role=button]{touch-action:manipulation}
     { name: 'ארנבת ביצה 🐰',     color: '#B5186A', href: 'game4.html',  games: [3,4]    },
     { name: 'קאסדייה בצורות 🫓',  color: '#B84000', href: 'game6.html',  games: [5,6]    },
     { name: 'שבלולי פיצה 🍕',    color: '#A51C1C', href: 'game8.html',  games: [7,8]    },
+    { name: 'פסטה בזוקה 🍝',     color: '#6A1B9A', href: 'game10.html', games: [9,10]   },
   ];
 
   const COMPLETION_KEYS = [
     'station1_completed','station2_completed','station3_completed',
-    'station4_completed'
+    'station4_completed','station5_completed'
   ];
   const LEGACY_KEYS = [
     'recipe1_completed','recipe2_completed','recipe3_completed',
-    'recipe4_completed'
+    'recipe4_completed','recipe5_completed'
   ];
 
   function isCompleted(i) {
@@ -763,7 +764,7 @@ button,.btn,[role=button]{touch-action:manipulation}
     }
 
     const done = getCompletedCount();
-    document.getElementById('progress-txt').textContent = `${done}/4 תחנות`;
+    document.getElementById('progress-txt').textContent = `${done}/5 תחנות`;
     document.getElementById('progress-fill').style.width = `${(done / RECIPES.length) * 100}%`;
 
     const dotsEl = document.getElementById('progress-dots');

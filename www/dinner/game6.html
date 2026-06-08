@@ -75,8 +75,8 @@ body{background:#1A0800;display:flex;justify-content:center;font-family:'Assista
 .feedback{position:fixed;pointer-events:none;font-family:'Fredoka One',cursive;font-size:26px;animation:floatUp .9s ease forwards;z-index:999}
 
 /* SCREENS */
-#start-screen,#done-screen{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:28px}
-#done-screen{display:none}
+#start-screen,#done-panel{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:28px}
+#done-panel{display:none}
 .ov-title{font-family:'Fredoka One',cursive;font-size:36px;color:white}
 .ov-sub{font-size:22px;color:#BCAAA4;font-weight:700;line-height:1.75;max-width:320px}
 .ov-btn{background:linear-gradient(135deg,#E65100,#FF8F00);color:white;border:none;border-radius:22px;padding:18px 50px;font-size:24px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(230,81,0,.5)}
@@ -171,7 +171,7 @@ button,.btn,[role=button]{touch-action:manipulation}
   <button style="background:none;border:none;color:#888;font-size:18px;font-weight:700;cursor:pointer;margin-top:-4px" onclick="window.location.href='game7.html'">דלג ←</button>
 </div>
 
-<div id="done-screen">
+<div id="done-panel">
   <div style="font-size:72px">🎉</div>
   <div class="ov-title">כל הכבוד!</div>
   <div class="ov-sub" id="done-msg">השלמתם את כל 3 הקאסדיות!</div>
@@ -477,7 +477,7 @@ function showFb(text,color){
 function startGame(){
   gameActive=true;completedCount=0;shapeIdx=0;selectedIngr=null;panItems=[];
   document.getElementById('start-screen').style.display='none';
-  document.getElementById('done-screen').style.display='none';
+  document.getElementById('done-panel').style.display='none';
   // Reset dots
   for(let i=0;i<3;i++){
     const d=document.getElementById('dot'+i);
@@ -493,7 +493,7 @@ function startGame(){
 
 function endGame(){
   gameActive=false;clearOrderTimer();
-  document.getElementById('done-screen').style.display='flex';
+  document.getElementById('done-panel').style.display='flex';
   const sr=document.getElementById('stars-row');sr.innerHTML='';
   for(let i=0;i<3;i++){
     const s=document.createElement('span');s.className='fstr';

@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>ברוכים הבאים | השף הירוק</title>
@@ -803,7 +803,6 @@
       const name = input.value.trim();
       if (!name) return;
       localStorage.setItem('chefName', name);
-      localStorage.setItem('userName', name);
       goToScreen3();
     }
 
@@ -826,7 +825,7 @@
     // ── Skip button ────────────────────────────────────────────────
     document.getElementById('btnSkip').addEventListener('click', function () {
       document.getElementById('mainVideo').pause();
-      window.location.href = 'packages.html';
+      window.location.href = 'intro-video.html';
     });
 
     // ── Countdown 3 → 2 → 1 → play video ─────────────────────────
@@ -876,7 +875,7 @@
     }
 
     btnReady.addEventListener('click', function () {
-      window.location.href = 'packages.html';
+      window.location.href = 'intro-video.html';
     });
   </script>
 </body>
