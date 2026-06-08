@@ -1,0 +1,314 @@
+﻿<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>להורים | עלילות השף הירוק</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+*:not(p):not(h1):not(h2):not(li):not(a){-webkit-user-select:none;user-select:none}
+/* Re-enable text selection for content */
+p,h1,h2,h3,li{-webkit-user-select:text;user-select:text}
+
+html{
+  touch-action:pan-y;
+  overscroll-behavior-y:none;
+}
+body{
+  background:#F5F0DC;
+  color:#1A3D1F;
+  font-family:'Rubik',sans-serif;
+  direction:rtl;
+  overflow-y:auto;
+  overflow-x:hidden;
+  position:relative;
+  height:auto;
+  overscroll-behavior-y:none;
+  padding-bottom:80px;
+}
+
+/* ── Page wrapper ── */
+.page{
+  max-width:600px;
+  margin:0 auto;
+  padding:20px 24px 0;
+}
+
+/* ── Back button ── */
+.back-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#1A3D1F;
+  opacity:.5;
+  font-size:14px;
+  font-weight:500;
+  text-decoration:none;
+  padding:8px 0;
+  margin-bottom:20px;
+  cursor:pointer;
+  -webkit-user-select:none;
+  user-select:none;
+  touch-action:manipulation;
+  transition:opacity .2s;
+}
+.back-btn:hover{opacity:.85}
+
+/* ── Header ── */
+.header{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  padding-bottom:28px;
+  margin-bottom:28px;
+  border-bottom:1.5px solid rgba(26,61,31,.14);
+}
+.chef-logo{
+  width:80px;
+  height:80px;
+  object-fit:contain;
+  border-radius:50%;
+  background:rgba(26,61,31,.07);
+  padding:10px;
+  margin-bottom:16px;
+}
+.header-title{
+  font-size:28px;
+  font-weight:700;
+  color:#1A3D1F;
+  line-height:1.2;
+  margin-bottom:6px;
+}
+.header-sub{
+  font-size:16px;
+  color:#F5921E;
+  font-weight:500;
+}
+
+/* ── Section ── */
+.section{margin-bottom:0}
+
+.section-title{
+  font-size:17px;
+  font-weight:700;
+  color:#1A3D1F;
+  margin-bottom:13px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  line-height:1.3;
+}
+
+.section-body{
+  font-size:16px;
+  line-height:1.85;
+  color:#2D4A32;
+}
+.section-body+.section-body{margin-top:13px}
+
+/* ── Bullet lists ── */
+.tip-list{
+  list-style:none;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:11px;
+}
+.tip-list li{
+  font-size:16px;
+  line-height:1.75;
+  color:#2D4A32;
+  padding-right:18px;
+  position:relative;
+}
+.tip-list li::before{
+  content:"•";
+  color:#F5921E;
+  position:absolute;
+  right:0;
+  top:0;
+  font-size:20px;
+  line-height:1.45;
+}
+.tip-list strong{
+  color:#1A3D1F;
+  font-weight:700;
+}
+
+/* ── Divider ── */
+.divider{
+  height:1px;
+  background:rgba(26,61,31,.12);
+  margin:28px 0;
+}
+
+/* ── Download button ── */
+.download-btn{
+  display:block;
+  background:#F5921E;
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:17px;
+  font-weight:700;
+  padding:16px 24px;
+  border-radius:50px;
+  width:100%;
+  margin-top:20px;
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+  transition:background .2s, transform .1s, box-shadow .2s;
+  box-shadow:0 4px 18px rgba(245,146,30,.38);
+  cursor:pointer;
+}
+.download-btn:active{
+  background:#d97c0e;
+  transform:scale(.98);
+  box-shadow:0 2px 10px rgba(245,146,30,.3);
+}
+
+/* ── Print button ── */
+.print-btn{
+  width:100%;
+  padding:16px;
+  border-radius:50px;
+  background:#fff;
+  border:2px solid #1A3D1F;
+  color:#1A3D1F;
+  font-size:17px;
+  font-weight:600;
+  font-family:'Rubik',sans-serif;
+  margin-top:12px;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-user-select:none;
+  user-select:none;
+  transition:background .2s, transform .1s;
+}
+.print-btn:active{
+  background:#F5F0DC;
+  transform:scale(.98);
+}
+
+/* ── iPad ── */
+@media(min-width:768px){
+  .page{padding:32px 40px 0}
+  .chef-logo{width:96px;height:96px}
+  .header-title{font-size:32px}
+  .section-title{font-size:19px}
+  .section-body,.tip-list li{font-size:17px}
+  .download-btn{font-size:18px;padding:18px 32px}
+}
+</style>
+<style>
+/* ── iPad compatibility ── */
+@media(min-width:768px){
+  body{max-width:680px;margin-left:auto;margin-right:auto}
+  #app,.app-container,.game-container{max-width:680px;margin-left:auto;margin-right:auto}
+  h1,#htitle{font-size:38px}
+  h2{font-size:28px}
+  p,.card-text{font-size:20px}
+  .instruction-text,#instruct{font-size:22px}
+  .pitem,.draggable,.card{min-width:90px;min-height:90px}
+  .btn,#nbtn,#start-btn,.cta-btn,.download-btn,.print-btn{font-size:22px;padding:20px}
+  .game-circle,#plate,.assembly-area{width:min(70vw,420px);height:min(70vw,420px)}
+  .ingredient-grid{grid-template-columns:repeat(3,1fr)}
+  .tv-frame,#video-container,.video-wrap{max-width:600px;margin-left:auto;margin-right:auto}
+  img{max-width:100%;object-fit:contain}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Back -->
+  <a href="index.html" class="back-btn">← חזרה למשחק</a>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="../assets/images/onboarding-chef.png" alt="השף הירוק" class="chef-logo">
+    <h1 class="header-title">להורים</h1>
+    <p class="header-sub">עלילות השף הירוק</p>
+  </div>
+
+  <!-- Section 1: Welcome -->
+  <div class="section">
+    <h2 class="section-title">🌿 ברוכים הבאים</h2>
+    <p class="section-body">
+      ״עלילות השף הירוק״ היא אפליקציית משחק אינטראקטיבית לילדים בגילאי 6–10. דרך משחקונים, אתגרים, משימות יצירתיות ומתכונים מותאמי גיל, הילדים יוצאים להרפתקה מהנה עם השף הירוק וביטו הרובוט ומגלים את עולם הבישול הבריא בדרך חווייתית ומסקרנת.
+    </p>
+    <p class="section-body">
+      אנחנו מאמינים שסקרנות היא המפתח ללמידה. לכן האפליקציה נועדה לעודד ילדים לחקור, לשאול שאלות, להכיר מרכיבים חדשים ולהרגיש בטוחים יותר סביב אוכל, בישול ותזונה מגוונת.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 2: Dinner package -->
+  <div class="section">
+    <h2 class="section-title">🍽️ חבילת ארוחת הערב</h2>
+    <p class="section-body">
+      ליקטנו עבורכם מתכונים יצירתיים, מהנים ופשוטים לביצוע, המשלבים את כל מה שצריך לארוחת ערב מאוזנת ובריאה. דרך משחק, יצירה והתנסות במטבח, הילדים יכירו מגוון מרכיבים, יגלו רעיונות חדשים להגשת אוכל וילמדו כיצד להכין מנות צבעוניות ומזמינות שכל המשפחה יכולה ליהנות מהן.
+    </p>
+    <p class="section-body">
+      כל מתכון בחבילה נבחר בקפידה כדי לשלב בין הנאה, יצירתיות וחשיפה למזון מגוון, תוך התאמה לילדים בגילאי 6–10 ולזמן הכנה משפחתי נעים ופשוט.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 3: What the child learns -->
+  <div class="section">
+    <h2 class="section-title">📚 מה הילד שלכם לומד?</h2>
+    <ul class="tip-list">
+      <li><strong>להכיר מזונות חדשים</strong> – ירקות, פירות, דגנים, קטניות ומרכיבים מגוונים בדרך משחקית ומהנה.</li>
+      <li><strong>לפתח סקרנות וחשיבה חוקרת</strong> – באמצעות שאלות, משימות ואתגרים המעודדים גילוי והתנסות.</li>
+      <li><strong>לתרגל קבלת החלטות ופתרון בעיות</strong> – דרך משחקונים, בחירות ופעילויות אינטראקטיביות.</li>
+      <li><strong>לבנות ביטחון ועצמאות במטבח</strong> – באמצעות היכרות הדרגתית עם תהליכי הכנה ומתכונים פשוטים.</li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 4: Tips for parents -->
+  <div class="section">
+    <h2 class="section-title">💡 טיפים להורים</h2>
+    <ul class="tip-list">
+      <li>שוחחו עם הילדים על המרכיבים שפגשו במהלך המשחק ושאלו אותם מה הכי סקרן אותם.</li>
+      <li>הזמינו את הילדים לבחור מתכון ולהוביל חלק מתהליך ההכנה בבית.</li>
+      <li>עודדו אותם לטעום מרכיבים חדשים ולהביע את דעתם על הטעמים והמרקמים.</li>
+      <li>זכרו שהמטרה היא ליהנות מהדרך, לחקור ולגלות – לא רק להגיע לתוצאה המושלמת.</li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 5: Recipe booklet + download -->
+  <div class="section">
+    <h2 class="section-title">📖 חוברת המתכונים</h2>
+    <p class="section-body">
+      רוצים להמשיך את ההרפתקה גם מחוץ למסך? חוברת המתכונים מרכזת את כל המתכונים מהחבילה ומאפשרת לכם לבשל יחד בבית. זו הזדמנות נהדרת להפוך את החוויה הדיגיטלית לפעילות משפחתית משותפת, לחזק את הביטחון של הילדים במטבח וליהנות מזמן איכות סביב האוכל.
+    </p>
+    <p class="section-body">
+      מומלץ לעבור יחד על החוברת, לבחור מתכון שמסקרן אתכם ולהמשיך את המסע של השף הירוק גם במטבח הביתי.
+    </p>
+    <!-- PDF file: www/assets/recipe-book/recepie_book_free.pdf
+         Upload this file to enable the download button -->
+    <a href="../assets/recipe-book/recepie_book_free.pdf"
+       class="download-btn"
+       target="_blank"
+       download="חוברת מתכונים — ארוחת ערב שילדים אוהבים.pdf">
+      להורדת חוברת המתכונים 📥
+    </a>
+    <button onclick="window.print()" class="print-btn">
+      🖨️ הדפסת חוברת המתכונים
+    </button>
+  </div>
+
+</div><!-- /page -->
+</body>
+</html>

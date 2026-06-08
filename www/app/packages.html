@@ -263,6 +263,30 @@
       border-radius: 50%;
       opacity: 0.55;
     }
+
+    /* ══════════════════════════════════════════════════
+       iPad  min-width: 768px
+    ══════════════════════════════════════════════════ */
+    @media (min-width: 768px) {
+      .page {
+        max-width: 640px;
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+      .greeting       { font-size: 32px; }
+      .sub-heading    { font-size: 15px; }
+      .card           { min-height: 140px; }
+      .card-img       { min-height: 140px; }
+      .card-title     { font-size: 20px; }
+      .card-sub       { font-size: 13px; }
+      .btn-free,
+      .btn-price      { padding: 10px 20px; font-size: 17px; min-height: 44px; }
+      .bundle         { min-height: 140px; }
+      .bundle-img     { min-height: 140px; }
+      .bundle-title   { font-size: 24px; }
+      .bundle-sub     { font-size: 13px; }
+      .btn-bundle     { padding: 10px 20px; font-size: 18px; min-height: 44px; }
+    }
   </style>
 </head>
 <body>

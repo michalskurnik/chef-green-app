@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@700;800&display=swap" rel="stylesheet">
 <title>משחק 6 - קאסדייה בצורות</title>
 <style>
@@ -77,12 +77,38 @@ body{background:#1A0800;display:flex;justify-content:center;font-family:'Assista
 /* SCREENS */
 #start-screen,#done-screen{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:28px}
 #done-screen{display:none}
-.ov-title{font-family:'Fredoka One',cursive;font-size:30px;color:white}
-.ov-sub{font-size:14px;color:#BCAAA4;font-weight:700;line-height:1.75;max-width:280px}
-.ov-btn{background:linear-gradient(135deg,#E65100,#FF8F00);color:white;border:none;border-radius:22px;padding:15px 50px;font-size:19px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(230,81,0,.5)}
+.ov-title{font-family:'Fredoka One',cursive;font-size:36px;color:white}
+.ov-sub{font-size:22px;color:#BCAAA4;font-weight:700;line-height:1.75;max-width:320px}
+.ov-btn{background:linear-gradient(135deg,#E65100,#FF8F00);color:white;border:none;border-radius:22px;padding:18px 50px;font-size:24px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(230,81,0,.5)}
 .ov-btn.green{background:linear-gradient(135deg,#2E7D32,#4CAF50)}
 #stars-row{display:flex;gap:12px}
 .fstr{font-size:48px}
+</style>
+<style>
+/* Anti-zoom for kids — targeted, preserves scroll */
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{overflow-y:auto;overflow-x:hidden;position:relative;height:auto;overscroll-behavior-y:none;padding-bottom:80px}
+[draggable=true],.pitem,.draggable{touch-action:none;-webkit-user-drag:none}
+canvas{touch-action:none}
+button,.btn,[role=button]{touch-action:manipulation}
+</style>
+<style>
+/* ── iPad compatibility ── */
+@media(min-width:768px){
+  body{max-width:680px;margin-left:auto;margin-right:auto}
+  #app,.app-container,.game-container{max-width:680px;margin-left:auto;margin-right:auto}
+  h1,#htitle{font-size:38px}
+  h2{font-size:28px}
+  p,.card-text{font-size:20px}
+  .instruction-text,#instruct{font-size:22px}
+  .pitem,.draggable,.card{min-width:90px;min-height:90px}
+  .btn,#nbtn,#start-btn,.cta-btn,.download-btn,.print-btn{font-size:22px;padding:20px}
+  .game-circle,#plate,.assembly-area{width:min(70vw,420px);height:min(70vw,420px)}
+  .ingredient-grid{grid-template-columns:repeat(3,1fr)}
+  .tv-frame,#video-container,.video-wrap{max-width:600px;margin-left:auto;margin-right:auto}
+  img{max-width:100%;object-fit:contain}
+}
 </style>
 </head>
 <body>
@@ -139,10 +165,10 @@ body{background:#1A0800;display:flex;justify-content:center;font-family:'Assista
     יש לך <strong style="color:#FFD54F">10 שניות</strong> לכל קאסדייה!<br>
     לחץ על מרכיב → הוא עולה ישר על הטורטייה!<br><br>
     צריך להשלים <strong style="color:#A5D6A7">3 קאסדיות</strong> 🎉<br><br>
-    ⚠️ <strong style="color:#FF8A65">לא הכל שייך לקאסדייה!</strong>
+    <span style="font-size:20px">⚠️ <strong style="color:#FF8A65">לא הכל שייך לקאסדייה!</strong></span>
   </div>
   <button class="ov-btn" onclick="startGame()">🚀 בואו נתחיל!</button>
-  <button style="background:none;border:none;color:#888;font-size:13px;font-weight:700;cursor:pointer;margin-top:-4px" onclick="window.location.href='game7.html'">דלג ←</button>
+  <button style="background:none;border:none;color:#888;font-size:18px;font-weight:700;cursor:pointer;margin-top:-4px" onclick="window.location.href='game7.html'">דלג ←</button>
 </div>
 
 <div id="done-screen">
@@ -239,16 +265,22 @@ function drawPan(shape, toppings){
   }
   ctx.restore();
 
-  // Topping pips
+  // Topping pips — reset state so emoji render in full colour
+  ctx.save();
+  ctx.fillStyle='black';
+  ctx.globalAlpha=1;
+  ctx.font='26px serif';
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
   toppings.forEach((id,i)=>{
     const ingr=INGR.find(x=>x.id===id);
     if(!ingr)return;
     const a=i*(Math.PI*2/Math.max(toppings.length,1));
-    const r2=30+i*8;
+    const r2=28+i*10;
     const px=CX+Math.cos(a)*r2, py=CY+Math.sin(a)*r2;
-    ctx.font='20px serif';ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(ingr.em,px,py);
   });
+  ctx.restore();
 }
 
 function drawStarShape(cx,cy,R,r,pts){

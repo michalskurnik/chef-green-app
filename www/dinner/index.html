@@ -1,251 +1,656 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<title>תעלומת ארוחת הערב 🍽️</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>תעלומת ארוחת הערב 🍽️</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:         #1A3D1F;
+      --card:       #F5F0DC;
+      --orange:     #F5921E;
+      --gold:       #F5C842;
+      --text-dark:  #1A3D1F;
+      --text-light: #F5F0DC;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      font-family: 'Rubik', 'Varela Round', sans-serif;
+      direction: rtl;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
+    }
+
+    /* ════════════════════════════════════════
+       ANIMATIONS
+    ════════════════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50%       { transform: translateY(-12px) rotate(2deg); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1);    box-shadow: 0 6px 28px rgba(245,146,30,.45); }
+      50%       { transform: scale(1.04); box-shadow: 0 10px 36px rgba(245,146,30,.65); }
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: .35; transform: scale(.8) rotate(0deg); }
+      50%       { opacity: 1;   transform: scale(1.2) rotate(15deg); }
+    }
+    @keyframes knobBlink {
+      0%, 100% { opacity: 1;  box-shadow: inset 0 1px 2px rgba(0,0,0,.5), 0 0 6px #f39c12; }
+      50%       { opacity: .4; }
+    }
+    @keyframes lockWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25%       { transform: rotate(-10deg); }
+      75%       { transform: rotate(10deg); }
+    }
+    @keyframes stationSlide {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ════════════════════════════════════════
+       PAGE SHELL
+    ════════════════════════════════════════ */
+    .page {
+      width: 100%;
+      max-width: 480px;
+      padding: 0 16px;
+    }
+
+    /* ════════════════════════════════════════
+       HERO BANNER  (cream card, top of page)
+    ════════════════════════════════════════ */
+    #hero-banner {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      border-radius: 0 0 32px 32px;
+      padding: calc(env(safe-area-inset-top, 0px) + 28px) 24px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp .5s ease both;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+    }
+    /* Subtle parchment lines */
+    #hero-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 30px,
+        rgba(26,61,31,.04) 30px, rgba(26,61,31,.04) 31px
+      );
+      pointer-events: none;
+    }
+    .hero-deco {
+      position: absolute;
+      animation: twinkle ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #chef-img {
+      width: 120px; height: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,.2));
+      animation: float 3.5s ease-in-out infinite;
+      position: relative; z-index: 1;
+      margin-bottom: 14px;
+    }
+    #hero-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 34px;
+      line-height: 1.1;
+      color: var(--text-dark);
+      position: relative; z-index: 1;
+      margin-bottom: 8px;
+    }
+    #hero-sub {
+      font-family: 'Rubik', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: rgba(26,61,31,.6);
+      position: relative; z-index: 1;
+      margin-bottom: 22px;
+    }
+
+    /* 5 locked dish slots */
+    #dishes-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      position: relative; z-index: 1;
+    }
+    .dish {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a3a3a, #555);
+      border: 3px solid rgba(26,61,31,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    }
+    .dish .lock { animation: lockWiggle 3.5s ease-in-out infinite; display: block; }
+
+    /* ════════════════════════════════════════
+       VIDEO MODULE  (TV frame, dark)
+    ════════════════════════════════════════ */
+    #video-module {
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      border-radius: 22px 22px 18px 18px;
+      padding: 14px 18px 10px;
+      margin-bottom: 16px;
+      box-shadow:
+        0 0 0 3px #444,
+        0 0 0 5px #222,
+        0 16px 40px rgba(0,0,0,.55);
+      cursor: pointer;
+      animation: fadeUp .5s .12s ease both;
+    }
+    .tv-screen-bezel {
+      background: #111;
+      border-radius: 10px;
+      padding: 7px;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,.8), 0 0 0 2px #333;
+      position: relative;
+      overflow: hidden;
+    }
+    .tv-screen-bezel::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg,
+        transparent, transparent 2px,
+        rgba(0,0,0,.05) 2px, rgba(0,0,0,.05) 4px);
+      pointer-events: none;
+      z-index: 5;
+      border-radius: 6px;
+    }
+    #video-thumb {
+      width: 100%; border-radius: 5px;
+      position: relative; background: #000;
+      aspect-ratio: 16/9; overflow: hidden;
+    }
+    #video-thumb video {
+      width: 100%; height: 100%; display: block; object-fit: cover;
+    }
+    #play-overlay {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.25); border-radius: 5px;
+      transition: opacity .2s;
+    }
+    #play-overlay.hidden { display: none; }
+    .play-circle {
+      width: 62px; height: 62px;
+      border-radius: 50%;
+      background: rgba(245,146,30,.92);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; color: #fff;
+      padding-right: 3px;
+      box-shadow: 0 4px 20px rgba(245,146,30,.6);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .tv-knobs { display: flex; gap: 8px; margin-top: 8px; padding: 0 4px; }
+    .knob { width: 10px; height: 10px; border-radius: 50%; box-shadow: inset 0 1px 2px rgba(0,0,0,.5); }
+    .knob.red   { background: #c0392b; }
+    .knob.green { background: #27ae60; }
+    .knob.amber { background: #f39c12; animation: knobBlink 1.5s ease-in-out infinite; }
+    .tv-label {
+      font-family: 'Fredoka One', cursive;
+      font-size: 18px;
+      color: rgba(245,240,220,.75);
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* ── Story text ─────────────────────────── */
+    .story-text {
+      padding: 4px 4px 18px;
+      text-align: center;
+    }
+    .story-text p {
+      font-family: 'Rubik', sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: rgba(245,240,220,.7);
+      line-height: 1.8;
+    }
+    .story-text strong { font-weight: 700; color: var(--gold); }
+
+    /* ════════════════════════════════════════
+       CTA BUTTONS
+    ════════════════════════════════════════ */
+    #cta-primary {
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 22px;
+      padding: 20px 24px;
+      font-size: 24px;
+      font-family: 'Fredoka One', cursive;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 12px;
+      box-shadow: 0 6px 28px rgba(245,146,30,.5);
+      animation: pulse 2.5s ease-in-out infinite;
+      -webkit-appearance: none;
+    }
+    #cta-primary:active { transform: scale(.97); animation: none; }
+
+    #cta-secondary {
+      background: rgba(245,240,220,.1);
+      border: 2px solid rgba(245,240,220,.22);
+      border-radius: 18px;
+      padding: 16px 20px;
+      font-size: 18px;
+      font-family: 'Rubik', sans-serif;
+      font-weight: 500;
+      color: rgba(245,240,220,.65);
+      cursor: pointer;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+    #cta-secondary:active { background: rgba(245,240,220,.18); }
+
+    /* ════════════════════════════════════════
+       QUEST MAP SCREEN
+    ════════════════════════════════════════ */
+    #menu-screen {
+      display: none;
+      width: 100%;
+      max-width: 480px;
+      animation: fadeUp .4s ease;
+    }
+
+    /* ── Map header ──────────────────────────── */
+    #map-header {
+      background: var(--card);
+      border-radius: 0 0 32px 32px;
+      padding: calc(env(safe-area-inset-top, 0px) + 22px) 24px 26px;
+      text-align: center;
+      box-shadow: 0 8px 28px rgba(0,0,0,.28);
+      margin-bottom: 20px;
+    }
+    #map-header h2 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 32px;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+    #map-header p {
+      font-family: 'Rubik', sans-serif;
+      font-size: 18px;
+      color: rgba(26,61,31,.6);
+      margin-bottom: 16px;
+    }
+    .stars-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--text-dark);
+      border-radius: 30px;
+      padding: 10px 20px;
+      box-shadow: 0 3px 14px rgba(0,0,0,.2);
+    }
+    #stars-count {
+      font-family: 'Fredoka One', cursive;
+      font-size: 26px;
+      color: var(--gold);
+    }
+    .stars-label {
+      font-family: 'Rubik', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(245,240,220,.7);
+    }
+
+    /* ── Success banner ──────────────────────── */
+    #success-banner {
+      display: none;
+      margin: 0 16px 16px;
+      background: linear-gradient(135deg, #43A047, #66BB6A);
+      border-radius: 20px;
+      padding: 16px 20px;
+      text-align: center;
+      box-shadow: 0 4px 18px rgba(67,160,71,.35);
+      animation: fadeUp .5s ease;
+    }
+    #success-banner p {
+      font-family: 'Fredoka One', cursive;
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    #success-banner small {
+      font-family: 'Rubik', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(255,255,255,.85);
+    }
+
+    /* ── Progress strip ──────────────────────── */
+    #progress-card {
+      margin: 0 16px 20px;
+      background: rgba(245,240,220,.08);
+      border: 2px solid rgba(245,240,220,.12);
+      border-radius: 20px;
+      padding: 14px 18px;
+    }
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .progress-row span {
+      font-family: 'Rubik', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(245,240,220,.6);
+    }
+    #progress-txt {
+      font-family: 'Fredoka One', cursive;
+      font-size: 18px;
+      color: var(--orange);
+    }
+    .progress-track {
+      background: rgba(245,240,220,.12);
+      border-radius: 8px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    #progress-fill {
+      height: 100%;
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--orange), var(--gold));
+      transition: width .6s ease;
+      width: 0%;
+    }
+    #progress-dots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    /* ── Adventure map stations ──────────────── */
+    #adventure-map { padding: 0 16px; }
+
+    .station-wrap {
+      margin-bottom: 12px;
+      animation: stationSlide .4s ease both;
+    }
+
+    .station {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 22px;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      direction: rtl;
+      text-align: right;
+      transition: transform .15s ease, box-shadow .15s ease;
+      min-height: 86px;
+    }
+    .station:active { transform: scale(.975); }
+
+    /* number circle */
+    .station-num {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fredoka One', cursive;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    /* text column */
+    .station-text { flex: 1; min-width: 0; }
+    .station-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: 22px;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .station-sub {
+      font-family: 'Rubik', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* action chip */
+    .station-chip {
+      flex-shrink: 0;
+      font-family: 'Fredoka One', cursive;
+      font-size: 15px;
+      padding: 7px 14px;
+      border-radius: 16px;
+      white-space: nowrap;
+    }
+
+    /* UNLOCKED state */
+    .station.unlocked {
+      box-shadow: 0 6px 24px rgba(0,0,0,.3);
+    }
+    .station.unlocked .station-num {
+      background: rgba(255,255,255,.2);
+      color: #fff;
+    }
+    .station.unlocked .station-name  { color: #fff; }
+    .station.unlocked .station-sub   { color: rgba(255,255,255,.65); }
+    .station.unlocked .station-chip  { background: rgba(255,255,255,.22); color: #fff; }
+
+    /* FRESH UNLOCK — pulses + gold border */
+    .station.fresh {
+      box-shadow: 0 8px 32px rgba(245,200,66,.55);
+      border: 3px solid var(--gold) !important;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .station.fresh .station-chip {
+      background: var(--gold);
+      color: var(--text-dark);
+    }
+
+    /* COMPLETED */
+    .station.done {
+      box-shadow: 0 4px 18px rgba(0,0,0,.2);
+    }
+    .station.done .station-num {
+      background: rgba(255,255,255,.18);
+      font-size: 26px;
+    }
+    .station.done .station-name  { color: #fff; }
+    .station.done .station-sub   { color: rgba(255,255,255,.7); }
+    .station.done .station-chip  { background: rgba(255,255,255,.18); color: rgba(255,255,255,.85); }
+
+    /* LOCKED */
+    .station.locked {
+      background: rgba(245,240,220,.05) !important;
+      border: 2px dashed rgba(245,240,220,.15) !important;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    .station.locked .station-num  { background: rgba(245,240,220,.08); color: rgba(245,240,220,.3); }
+    .station.locked .station-name { color: rgba(245,240,220,.3); }
+    .station.locked .station-sub  { color: rgba(245,240,220,.2); }
+    .station.locked .station-chip { color: rgba(245,240,220,.25); }
+
+    /* ── Path connector between stations ────────── */
+    .path-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(245,240,220,.2);
+      margin: 0 auto 3px;
+    }
+    .path-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      margin-bottom: 12px;
+      gap: 3px;
+    }
+
+    /* ── Footer buttons ──────────────────────────── */
+    #map-footer { padding: 4px 16px 0; }
+
+    #adventure-trophy-btn {
+      display: none;
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold), var(--orange));
+      color: #fff;
+      border: none;
+      border-radius: 22px;
+      padding: 20px;
+      font-size: 24px;
+      font-family: 'Fredoka One', cursive;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(245,200,66,.5);
+      animation: pulse 2s ease-in-out infinite;
+      margin-bottom: 12px;
+      -webkit-appearance: none;
+    }
+    #parents-btn {
+      background: rgba(245,240,220,.07);
+      border: 2px solid rgba(245,240,220,.15);
+      border-radius: 18px;
+      padding: 16px 20px;
+      font-size: 18px;
+      font-family: 'Rubik', sans-serif;
+      font-weight: 500;
+      color: rgba(245,240,220,.5);
+      cursor: pointer;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+    #parents-btn:active { background: rgba(245,240,220,.14); }
+
+    /* ════════════════════════════════════════
+       iPad  min-width: 768px
+    ════════════════════════════════════════ */
+    @media (min-width: 768px) {
+      .page, #hero-banner, #menu-screen { max-width: 640px; }
+      #chef-img { width: 150px; height: 150px; }
+      #hero-title { font-size: 42px; }
+      #hero-sub { font-size: 20px; }
+      #cta-primary, #adventure-trophy-btn { font-size: 28px; padding: 22px; }
+      #cta-secondary, #parents-btn { font-size: 20px; }
+      #map-header h2 { font-size: 38px; }
+      #map-header p  { font-size: 20px; }
+      .station-name  { font-size: 26px; }
+    }
+  </style>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
-html,body{min-height:100vh}
-body{
-  background:linear-gradient(175deg,#FFFBF0 0%,#FFF8E1 40%,#FFF0D4 100%);
-  font-family:'Assistant',sans-serif;direction:rtl;
-  display:flex;flex-direction:column;align-items:center;
-  padding:0 0 48px;
-}
-
-/* ── ANIMATIONS ───────────────────────────────────────────── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,107,53,.3)}50%{transform:scale(1.02);box-shadow:0 0 0 12px rgba(255,107,53,0)}}
-@keyframes twinkle{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-@keyframes revealDish{0%{transform:scale(.95);opacity:0}100%{transform:scale(1);opacity:1}}
-@keyframes lockWiggle{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
-
-/* ── HERO HEADER ──────────────────────────────────────────── */
-#hero-hdr{
-  width:100%;max-width:480px;
-  background:linear-gradient(145deg,#2E7D32 0%,#388E3C 50%,#1B5E20 100%);
-  border-radius:0 0 32px 32px;
-  padding:28px 24px 20px;text-align:center;
-  box-shadow:0 8px 32px rgba(46,125,50,.35);
-  position:relative;overflow:hidden;
-  animation:fadeUp .5s ease;
-}
-#hero-hdr::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.12) 0%,transparent 60%),
-             radial-gradient(ellipse at 80% 80%,rgba(255,200,0,.08) 0%,transparent 50%);
-}
-.star-deco{position:absolute;animation:twinkle ease-in-out infinite}
-
-#chef-img{
-  width:130px;height:130px;object-fit:contain;
-  filter:drop-shadow(0 8px 20px rgba(0,0,0,.3));
-  animation:float 3.5s ease-in-out infinite;
-  position:relative;z-index:1;margin-bottom:10px;
-}
-#hero-title{
-  font-family:'Fredoka One',cursive;
-  font-size:28px;line-height:1.15;
-  background:linear-gradient(135deg,#FFD54F 0%,#FF8F00 60%,#FFD54F 100%);
-  background-size:200% auto;
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  animation:shimmer 3s linear infinite;
-  position:relative;z-index:1;margin-bottom:6px;
-}
-#hero-sub{
-  color:rgba(255,255,255,.88);font-size:14px;font-weight:700;
-  position:relative;z-index:1;
-}
-
-/* ── MAIN CARD ────────────────────────────────────────────── */
-#main-card{
-  width:100%;max-width:480px;padding:0 16px;margin-top:20px;
-  animation:fadeUp .5s .1s ease both;
-}
-
-/* ── DISHES ROW ───────────────────────────────────────────── */
-#dishes-row{
-  display:flex;gap:8px;justify-content:center;margin-bottom:18px;
-}
-.dish{
-  width:52px;height:52px;border-radius:50%;
-  background:linear-gradient(135deg,#424242,#616161);
-  border:3px solid rgba(255,255,255,.15);
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;box-shadow:0 4px 12px rgba(0,0,0,.3);
-  animation:revealDish .5s ease both;
-}
-.dish .lock{
-  font-size:18px;filter:brightness(1.4);
-  animation:lockWiggle 3s ease-in-out infinite;
-}
-
-/* ── VIDEO MODULE ─────────────────────────────────────────── */
-#video-module{
-  background:linear-gradient(135deg,#1A237E,#283593);
-  border-radius:22px;padding:14px;margin-bottom:16px;
-  box-shadow:0 6px 24px rgba(26,35,126,.35);
-  cursor:pointer;position:relative;overflow:hidden;
-}
-#video-module::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.08),transparent 60%);
-}
-#video-thumb{
-  width:100%;border-radius:14px;overflow:hidden;
-  position:relative;background:#000;aspect-ratio:16/9;
-}
-#video-thumb video{width:100%;display:block;border-radius:14px}
-#play-overlay{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.25);border-radius:14px;transition:opacity .2s;
-}
-#play-overlay.hidden{display:none}
-.play-circle{
-  width:58px;height:58px;border-radius:50%;
-  background:rgba(255,255,255,.92);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 20px rgba(0,0,0,.4);
-  animation:pulse 2s ease-in-out infinite;
-}
-.play-circle::after{content:'▶';font-size:20px;color:#1A237E;margin-right:-3px}
-.video-meta{margin-top:10px;position:relative;z-index:1}
-.video-tag{
-  display:inline-block;background:rgba(255,255,255,.15);
-  border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);
-  margin-bottom:4px;
-}
-.video-title{font-family:'Fredoka One',cursive;font-size:17px;color:white;margin-bottom:2px}
-.video-sub{font-size:12px;color:rgba(255,255,255,.7);font-weight:700}
-
-/* ── MISSION CARD ─────────────────────────────────────────── */
-#mission-card{
-  background:linear-gradient(135deg,#FFF8E1,#FFFDE7);
-  border:2px solid #F7C948;border-radius:20px;
-  padding:16px;margin-bottom:16px;
-  box-shadow:0 4px 16px rgba(247,201,72,.2);
-}
-.mission-icon{font-size:28px;margin-bottom:6px}
-.mission-title{
-  font-family:'Fredoka One',cursive;font-size:16px;
-  color:#E65100;margin-bottom:6px;
-}
-.mission-text{
-  font-size:13px;font-weight:700;color:#4A3000;
-  line-height:1.75;
-}
-.mission-hint{
-  margin-top:10px;padding-top:10px;border-top:1.5px dashed #F7C948;
-  font-size:12px;color:#856404;font-weight:700;line-height:1.6;
-}
-
-/* ── CTAs ─────────────────────────────────────────────────── */
-#cta-primary{
-  background:linear-gradient(135deg,#FF6B35 0%,#FF8C42 100%);
-  color:white;border:none;border-radius:20px;
-  padding:17px 24px;font-size:18px;font-weight:900;
-  cursor:pointer;width:100%;margin-bottom:10px;
-  box-shadow:0 6px 22px rgba(255,107,53,.45);
-  font-family:'Fredoka One',cursive;direction:rtl;
-  animation:pulse 2.5s ease-in-out infinite;
-  letter-spacing:.3px;
-}
-#cta-primary:active{transform:scale(.97);animation:none}
-#cta-secondary{
-  background:rgba(255,255,255,.7);
-  border:2px solid rgba(46,125,50,.25);
-  border-radius:16px;padding:11px 20px;
-  font-size:13px;font-weight:800;color:#2E7D32;
-  cursor:pointer;width:100%;
-  font-family:'Assistant',sans-serif;direction:rtl;
-  backdrop-filter:blur(4px);
-}
-#cta-secondary:hover{background:rgba(255,255,255,.9)}
-
-/* ── MENU SCREEN ──────────────────────────────────────────── */
-#menu-screen{display:none;width:100%;max-width:480px;padding:0 16px;animation:fadeUp .4s ease}
-#menu-hdr{
-  background:linear-gradient(135deg,#2E7D32,#388E3C);
-  border-radius:0 0 24px 24px;padding:20px 20px 18px;
-  text-align:center;color:white;margin-bottom:18px;
-  box-shadow:0 6px 20px rgba(46,125,50,.3);
-}
-.recipe-btn{
-  border:none;border-radius:18px;padding:16px 18px;
-  cursor:pointer;display:flex;justify-content:space-between;align-items:center;
-  transition:transform .15s;width:100%;font-family:'Assistant',sans-serif;direction:rtl;
-  margin-bottom:10px;
-}
-.recipe-btn:hover{transform:translateY(-2px)}
-.recipe-btn:active{transform:scale(.97)}
-#parents-btn{
-  margin-top:8px;background:none;border:2px solid #DDD;
-  border-radius:16px;padding:10px 20px;font-size:13px;
-  font-weight:800;color:#888;cursor:pointer;width:100%;
-  font-family:'Assistant',sans-serif;
+/* Anti-zoom for kids — targeted, preserves scroll */
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{overflow-y:auto;overflow-x:hidden;position:relative;height:auto;overscroll-behavior-y:none;padding-bottom:80px}
+[draggable=true],.pitem,.draggable{touch-action:none;-webkit-user-drag:none}
+canvas{touch-action:none}
+button,.btn,[role=button]{touch-action:manipulation}
+</style>
+<style>
+/* ── iPad compatibility ── */
+@media(min-width:768px){
+  body{max-width:680px;margin-left:auto;margin-right:auto}
+  #app,.app-container,.game-container{max-width:680px;margin-left:auto;margin-right:auto}
+  h1,#htitle{font-size:38px}
+  h2{font-size:28px}
+  p,.card-text{font-size:20px}
+  .instruction-text,#instruct{font-size:22px}
+  .pitem,.draggable,.card{min-width:90px;min-height:90px}
+  .btn,#nbtn,#start-btn,.cta-btn,.download-btn,.print-btn{font-size:22px;padding:20px}
+  .game-circle,#plate,.assembly-area{width:min(70vw,420px);height:min(70vw,420px)}
+  .ingredient-grid{grid-template-columns:repeat(3,1fr)}
+  .tv-frame,#video-container,.video-wrap{max-width:600px;margin-left:auto;margin-right:auto}
+  img{max-width:100%;object-fit:contain}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ INTRO SCREEN ══════════════════════════════════════════ -->
+<!-- ════════ INTRO SCREEN ════════════════════════════════ -->
 <div id="intro-screen">
 
-  <!-- HERO HEADER -->
-  <header id="hero-hdr">
-    <div class="star-deco" style="top:14px;left:18px;font-size:20px;animation-duration:2.2s;animation-delay:0s">✨</div>
-    <div class="star-deco" style="top:22px;right:24px;font-size:16px;animation-duration:3s;animation-delay:.4s">⭐</div>
-    <div class="star-deco" style="bottom:18px;left:36px;font-size:14px;animation-duration:2.6s;animation-delay:.8s">🌟</div>
-    <div class="star-deco" style="bottom:14px;right:40px;font-size:18px;animation-duration:2s;animation-delay:.2s">✨</div>
+  <!-- HERO BANNER -->
+  <header id="hero-banner">
+    <div class="hero-deco" style="top:18px;right:20px;font-size:22px;animation-duration:2.2s;animation-delay:.0s">✨</div>
+    <div class="hero-deco" style="top:22px;left:24px; font-size:18px;animation-duration:3s;  animation-delay:.4s">⭐</div>
+    <div class="hero-deco" style="bottom:26px;right:38px;font-size:16px;animation-duration:2.6s;animation-delay:.8s">🌟</div>
+    <div class="hero-deco" style="bottom:22px;left:34px; font-size:20px;animation-duration:2s;  animation-delay:.2s">✨</div>
+
     <img id="chef-img" src="/assets/images/dinner-index-1.png" alt="השף הירוק">
     <h1 id="hero-title">תעלומת ארוחת הערב</h1>
-    <p id="hero-sub">5 מנות סודיות מחכות להתגלות</p>
+    <p id="hero-sub">4 מנות סודיות מחכות להתגלות</p>
+
+    <div id="dishes-row">
+      <div class="dish" style="animation-delay:.10s"><span class="lock">🔒</span></div>
+      <div class="dish" style="animation-delay:.20s"><span class="lock">🔒</span></div>
+      <div class="dish" style="animation-delay:.30s"><span class="lock">🔒</span></div>
+      <div class="dish" style="animation-delay:.40s"><span class="lock">🔒</span></div>
+    </div>
   </header>
 
-  <div id="main-card">
+  <div class="page" style="padding-top:20px">
 
-    <!-- HIDDEN DISHES -->
-    <div id="dishes-row">
-      <div class="dish" style="animation-delay:.1s"><span class="lock">🔒</span></div>
-      <div class="dish" style="animation-delay:.2s"><span class="lock">🔒</span></div>
-      <div class="dish" style="animation-delay:.3s"><span class="lock">🔒</span></div>
-      <div class="dish" style="animation-delay:.4s"><span class="lock">🔒</span></div>
-      <div class="dish" style="animation-delay:.5s"><span class="lock">🔒</span></div>
-    </div>
-
-    <!-- VIDEO MODULE -->
+    <!-- VIDEO (TV frame) -->
     <div id="video-module">
-      <div id="video-thumb">
-        <video id="intro-video" preload="metadata" playsinline webkit-playsinline
-               src="/assets/video/dinner-index-1.mp4"></video>
-        <div id="play-overlay">
-          <div class="play-circle"></div>
+      <div class="tv-screen-bezel">
+        <div id="video-thumb">
+          <video id="intro-video" preload="metadata" playsinline webkit-playsinline
+                 src="/assets/video/dinner-index-1.mp4"></video>
+          <div id="play-overlay">
+            <div class="play-circle">▶</div>
+          </div>
         </div>
       </div>
-      <div class="video-meta">
-        <div class="video-tag">🎬 סרטון פתיחה</div>
-        <div class="video-title">תחילת ההרפתקה</div>
-        <div class="video-sub">לחצו כדי לצפות בתחילת ההרפתקה</div>
+      <div class="tv-knobs">
+        <div class="knob red"></div>
+        <div class="knob amber"></div>
+        <div class="knob green"></div>
       </div>
+      <div class="tv-label">🎬 לחצו לצפות בפתיחת ההרפתקה</div>
     </div>
 
-    <!-- MISSION CARD -->
-    <div id="mission-card" style="border-radius:20px;overflow:hidden;margin-bottom:16px;box-shadow:0 4px 16px rgba(247,201,72,.25);position:relative;direction:rtl">
-      <img src="/assets/images/dinner-index-2.png" style="width:100%;display:block" alt="מצאו את המרכיבים">
-      <div style="position:absolute;top:14%;right:27%;width:58%;text-align:right;direction:rtl;pointer-events:none">
-        <div style="font-family:'Fredoka One',cursive;font-size:clamp(10px,2.8vw,15px);color:#5C3209;line-height:1.75;font-weight:700">
-          השף הירוק וביטו התכוננו לתחרות מתכון הערב הטוב ביותר...<br>
-        אבל 5 המנות נשארו <strong>מוסתרות!</strong><br>
-        רק אתם תוכלו לחשוף אותן דרך משחקים, רמזים ומרכיבים.
-        </div>
-        <div style="margin-top:6px;padding-top:6px;border-top:1.5px dashed #C8930A;font-family:'Fredoka One',cursive;font-size:clamp(9px,2.4vw,13px);color:#7A4E00;line-height:1.5">
-          🔍 אספו רמזים, גלו מרכיבים, ופתחו בהדרגה את 5 מתכוני הערב הסודיים
-        </div>
-      </div>
+    <!-- STORY TEXT -->
+    <div class="story-text">
+      <p>
+        השף הירוק וביטו התכוננו לתחרות מתכון הערב הטוב ביותר...<br>
+        אבל 4 המנות נשארו <strong>מוסתרות!</strong><br>
+        רק אתם תוכלו לחשוף אותן דרך משחקים ורמזים.
+      </p>
     </div>
 
     <!-- CTAs -->
@@ -255,253 +660,248 @@ body{
   </div>
 </div>
 
-<!-- ══ MENU SCREEN ════════════════════════════════════════════ -->
+
+<!-- ════════ QUEST MAP SCREEN ════════════════════════════ -->
 <div id="menu-screen">
-  <div id="menu-hdr">
-    <div style="font-size:44px;margin-bottom:6px">🔍</div>
-    <div style="font-family:'Fredoka One',cursive;font-size:22px;margin-bottom:4px">חשפו את המנות הסודיות</div>
-    <div style="font-size:13px;opacity:.85;font-weight:700">כל משחק מגלה מנה חדשה!</div>
-    <div style="background:rgba(255,255,255,.15);border-radius:14px;padding:8px 16px;display:inline-flex;align-items:center;gap:8px;margin-top:12px">
-      <span style="font-size:20px">⭐</span>
-      <span id="stars-count" style="font-weight:800;color:#FFD54F;font-size:18px">0</span>
-      <span style="font-weight:700;color:rgba(255,255,255,.8);font-size:13px">כוכבים שנצברו</span>
+
+  <!-- MAP HEADER -->
+  <div id="map-header">
+    <h2>🍳 הרפתקת האוכל</h2>
+    <p>כל תחנה מגלה מנה סודית חדשה!</p>
+    <div class="stars-badge">
+      <span style="font-size:24px">⭐</span>
+      <span id="stars-count">0</span>
+      <span class="stars-label">כוכבים שנצברו</span>
     </div>
   </div>
 
-  <!-- SUCCESS BANNER (shown when recipe1_completed) -->
-  <div id="success-banner" style="display:none;margin:12px 16px 0;background:linear-gradient(135deg,#43A047,#66BB6A);border-radius:16px;padding:12px 16px;text-align:center;box-shadow:0 4px 16px rgba(67,160,71,.35);animation:fadeUp .5s ease">
-    <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:2px">🎉 כל הכבוד! השלמתם את משימת רובוט טורטייה!</div>
-    <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.85)">המשימה הבאה נפתחה! 🔓</div>
+  <!-- SUCCESS BANNER (after station 1 complete) -->
+  <div id="success-banner">
+    <p>🎉 כל הכבוד! השלמתם את משימת רובוט טורטייה!</p>
+    <small>המשימה הבאה נפתחה! 🔓</small>
   </div>
 
-  <!-- PROGRESS INDICATOR -->
-  <div id="progress-bar-wrap" style="margin:12px 16px 0;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 2px 10px rgba(0,0,0,.07)">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <span style="font-size:12px;font-weight:800;color:#636e72">התקדמות</span>
-      <span id="progress-txt" style="font-size:12px;font-weight:800;color:#FF6B35">0/5 תחנות הושלמו</span>
+  <!-- PROGRESS -->
+  <div id="progress-card">
+    <div class="progress-row">
+      <span>התקדמות</span>
+      <span id="progress-txt">0/5 תחנות</span>
     </div>
-    <div style="background:#F0F0F0;border-radius:8px;height:8px;overflow:hidden">
-      <div id="progress-fill" style="height:100%;border-radius:8px;background:linear-gradient(90deg,#FF6B35,#F7C948);transition:width .6s ease;width:0%"></div>
+    <div class="progress-track">
+      <div id="progress-fill"></div>
     </div>
-    <!-- Dots indicator -->
-    <div style="display:flex;gap:6px;margin-top:8px;justify-content:center" id="progress-dots"></div>
+    <div id="progress-dots"></div>
   </div>
 
-  <div id="recipe-list"></div>
-  <button id="parents-btn" onclick="window.location.href='parents.html'">👨‍👩‍👧‍👦 מסך הורים</button>
-  <!-- Trophy CTA — shown only when all 5 stations complete and already seen completion page -->
-  <button id="adventure-trophy-btn" onclick="window.location.href='completion.html'" style="display:none;margin:0 16px 16px;width:calc(100% - 32px);background:linear-gradient(135deg,#F7C948,#FF6B35);color:#fff;border:none;border-radius:18px;padding:14px;font-size:16px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(247,201,72,.5);animation:pulse 2s ease-in-out infinite">🏆 פתרתם את התעלומה — ראו את ההישג!</button>
+  <!-- STATIONS (built by JS) -->
+  <div id="adventure-map">
+    <div id="recipe-list"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div id="map-footer">
+    <button id="adventure-trophy-btn" onclick="window.location.href='completion.html'">
+      🏆 פתרתם את התעלומה — ראו את ההישג!
+    </button>
+    <button id="parents-btn" onclick="window.location.href='parents.html'">👨‍👩‍👧‍👦 מסך הורים</button>
+  </div>
+
 </div>
 
+
 <script>
-const RECIPES=[
-  {name:'רובוט טורטייה 🤖', color:'#FF6B35', href:'game1.html', games:[0,1,2]},
-  {name:'ארנבת ביצה 🐰',    color:'#C2185B', href:'game4.html', games:[3,4]},
-  {name:'קאסדייה בצורות 🫓', color:'#E65100', href:'game6.html', games:[5,6]},
-  {name:'שבלולי פיצה 🍕',   color:'#C62828', href:'game8.html', games:[7,8]},
-  {name:'פסטה בזוקה 🍝',    color:'#6A1B9A', href:'game10.html',games:[9,10]},
-];
+  const RECIPES = [
+    { name: 'רובוט טורטייה 🤖',  color: '#D45500', href: 'game1.html',  games: [0,1,2]  },
+    { name: 'ארנבת ביצה 🐰',     color: '#B5186A', href: 'game4.html',  games: [3,4]    },
+    { name: 'קאסדייה בצורות 🫓',  color: '#B84000', href: 'game6.html',  games: [5,6]    },
+    { name: 'שבלולי פיצה 🍕',    color: '#A51C1C', href: 'game8.html',  games: [7,8]    },
+  ];
 
-// Completion keys per station (new) + legacy recipe keys (backward compat)
-const COMPLETION_KEYS=['station1_completed','station2_completed','station3_completed','station4_completed','station5_completed'];
-const LEGACY_KEYS=['recipe1_completed','recipe2_completed','recipe3_completed','recipe4_completed','recipe5_completed'];
+  const COMPLETION_KEYS = [
+    'station1_completed','station2_completed','station3_completed',
+    'station4_completed'
+  ];
+  const LEGACY_KEYS = [
+    'recipe1_completed','recipe2_completed','recipe3_completed',
+    'recipe4_completed'
+  ];
 
-function isCompleted(i){
-  return localStorage.getItem(COMPLETION_KEYS[i])==='1' ||
-         localStorage.getItem(LEGACY_KEYS[i])==='1';
-}
-
-function isUnlocked(i){
-  if(i===0) return true;
-  // Unlock if previous recipe completed OR if previous recipe has stars
-  if(isCompleted(i-1)) return true;
-  const d=JSON.parse(localStorage.getItem('dinner_stars_detail')||'[]');
-  return RECIPES[i-1].games.some(g=>d[g]>0);
-}
-
-function isNewlyUnlocked(i){
-  // Newly unlocked = unlocked but not yet started (no stars)
-  if(!isUnlocked(i)||i===0) return false;
-  const d=JSON.parse(localStorage.getItem('dinner_stars_detail')||'[]');
-  return !RECIPES[i].games.some(g=>d[g]>0) && !isCompleted(i);
-}
-
-function getTotalStars(){
-  return JSON.parse(localStorage.getItem('dinner_stars_detail')||'[]').reduce((a,b)=>a+b,0);
-}
-
-function getCompletedCount(){
-  return RECIPES.filter((_,i)=>isCompleted(i)).length;
-}
-
-function buildMenu(){
-  document.getElementById('stars-count').textContent=getTotalStars();
-
-  // ── Adventure complete check ────────────────────────────────
-  if(getCompletedCount()===RECIPES.length){
-    if(!localStorage.getItem('adventure_completed_seen')){
-      localStorage.setItem('adventure_completed_seen','1');
-      window.location.href='completion.html';
-      return;
-    }
-    // Already seen — show trophy button
-    document.getElementById('adventure-trophy-btn').style.display='block';
+  function isCompleted(i) {
+    return localStorage.getItem(COMPLETION_KEYS[i]) === '1' ||
+           localStorage.getItem(LEGACY_KEYS[i]) === '1';
+  }
+  function isUnlocked(i) {
+    if (i === 0) return true;
+    if (isCompleted(i)) return true;        // completed missions are always unlocked
+    if (isCompleted(i - 1)) return true;
+    const d = JSON.parse(localStorage.getItem('dinner_stars_detail') || '[]');
+    return RECIPES[i - 1].games.some(g => d[g] > 0);
+  }
+  function isNewlyUnlocked(i) {
+    if (!isUnlocked(i) || i === 0) return false;
+    const d = JSON.parse(localStorage.getItem('dinner_stars_detail') || '[]');
+    return !RECIPES[i].games.some(g => d[g] > 0) && !isCompleted(i);
+  }
+  function getTotalStars() {
+    return JSON.parse(localStorage.getItem('dinner_stars_detail') || '[]')
+           .reduce((a, b) => a + b, 0);
+  }
+  function getCompletedCount() {
+    return RECIPES.filter((_, i) => isCompleted(i)).length;
   }
 
-  // ── Progress indicator ──────────────────────────────────────
-  const total=RECIPES.length;
-  const done=getCompletedCount();
-  document.getElementById('progress-txt').textContent=`${done}/5 תחנות הושלמו`;
-  document.getElementById('progress-fill').style.width=`${(done/total)*100}%`;
+  function buildMenu() {
+    document.getElementById('stars-count').textContent = getTotalStars();
 
-  // Dots
-  const dotsEl=document.getElementById('progress-dots');
-  dotsEl.innerHTML='';
-  for(let i=0;i<total;i++){
-    const dot=document.createElement('div');
-    Object.assign(dot.style,{
-      width:'10px',height:'10px',borderRadius:'50%',flexShrink:'0',
-      background:isCompleted(i)?'#FF6B35':isUnlocked(i)?'#FFA07A':'#DDD',
-      boxShadow:isCompleted(i)?'0 1px 6px rgba(255,107,53,.55)':'none',
-      transition:'all .3s',
+    if (getCompletedCount() === RECIPES.length) {
+      if (!localStorage.getItem('adventure_completed_seen')) {
+        localStorage.setItem('adventure_completed_seen', '1');
+        window.location.href = 'completion.html';
+        return;
+      }
+      document.getElementById('adventure-trophy-btn').style.display = 'block';
+    }
+
+    const done = getCompletedCount();
+    document.getElementById('progress-txt').textContent = `${done}/4 תחנות`;
+    document.getElementById('progress-fill').style.width = `${(done / RECIPES.length) * 100}%`;
+
+    const dotsEl = document.getElementById('progress-dots');
+    dotsEl.innerHTML = '';
+    RECIPES.forEach((_, i) => {
+      const dot = document.createElement('div');
+      Object.assign(dot.style, {
+        width: '12px', height: '12px', borderRadius: '50%', flexShrink: '0',
+        background: isCompleted(i)
+          ? 'var(--orange)'
+          : isUnlocked(i)
+            ? 'rgba(245,240,220,.35)'
+            : 'rgba(245,240,220,.1)',
+        boxShadow: isCompleted(i) ? '0 1px 6px rgba(245,146,30,.6)' : 'none',
+        transition: 'all .3s',
+      });
+      dotsEl.appendChild(dot);
     });
-    dotsEl.appendChild(dot);
+
+    document.getElementById('success-banner').style.display =
+      isCompleted(0) ? 'block' : 'none';
+
+    const list = document.getElementById('recipe-list');
+    list.innerHTML = '';
+
+    RECIPES.forEach((r, i) => {
+      const unlocked    = isUnlocked(i);
+      const completed   = isCompleted(i);
+      const freshUnlock = isNewlyUnlocked(i);
+
+      // Path connector (except before first station)
+      if (i > 0) {
+        const conn = document.createElement('div');
+        conn.className = 'path-connector';
+        for (let d = 0; d < 3; d++) {
+          const dot = document.createElement('div');
+          dot.className = 'path-dot';
+          conn.appendChild(dot);
+        }
+        list.appendChild(conn);
+      }
+
+      const wrap = document.createElement('div');
+      wrap.className = 'station-wrap';
+      wrap.style.animationDelay = `${i * 0.08}s`;
+
+      const btn = document.createElement('button');
+      btn.className = 'station';
+      btn.style.background = `linear-gradient(135deg, ${r.color}, ${r.color}BB)`;
+
+      if      (completed)   btn.classList.add('done');
+      else if (freshUnlock) btn.classList.add('unlocked', 'fresh');
+      else if (unlocked)    btn.classList.add('unlocked');
+      else                  { btn.classList.add('locked'); btn.disabled = true; }
+
+      if (unlocked) btn.onclick = () => window.location.href = r.href;
+
+      // Number / state icon
+      const num = document.createElement('div');
+      num.className = 'station-num';
+      if      (completed) { num.textContent = '✅'; num.style.background = 'rgba(255,255,255,.18)'; }
+      else if (unlocked)  { num.textContent = i + 1; num.style.background = 'rgba(255,255,255,.2)'; num.style.color = '#fff'; }
+      else                { num.textContent = '🔒'; num.style.background = 'rgba(245,240,220,.07)'; }
+
+      // Text
+      const text = document.createElement('div');
+      text.className = 'station-text';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'station-name';
+      nameEl.textContent = unlocked ? r.name : '??? מנה סודית';
+
+      const subEl = document.createElement('div');
+      subEl.className = 'station-sub';
+      if      (completed)   { subEl.textContent = '✓ הושלם';          subEl.style.color = 'rgba(255,255,255,.7)'; }
+      else if (freshUnlock) { subEl.textContent = '✨ נפתח עכשיו!';    subEl.style.color = 'var(--gold)'; }
+      else if (unlocked)    { subEl.textContent = 'לחצו להתחיל ▶';   subEl.style.color = 'rgba(255,255,255,.6)'; }
+      else                  { subEl.textContent = '🔒 עדיין נעול';    subEl.style.color = 'rgba(245,240,220,.25)'; }
+
+      text.appendChild(nameEl);
+      text.appendChild(subEl);
+
+      // Action chip
+      const chip = document.createElement('div');
+      chip.className = 'station-chip';
+      if      (completed)   { chip.textContent = 'שחקו שוב'; }
+      else if (freshUnlock) { chip.textContent = 'התחילו!'; chip.style.background = 'var(--gold)'; chip.style.color = 'var(--text-dark)'; }
+      else if (unlocked)    { chip.textContent = '▶'; chip.style.fontSize = '22px'; chip.style.padding = '6px 10px'; }
+      else                  { chip.textContent = '🔒'; chip.style.fontSize = '22px'; }
+
+      btn.appendChild(num);
+      btn.appendChild(text);
+      btn.appendChild(chip);
+      wrap.appendChild(btn);
+      list.appendChild(wrap);
+    });
   }
 
-  // ── Success banner ──────────────────────────────────────────
-  const banner=document.getElementById('success-banner');
-  banner.style.display=isCompleted(0)?'block':'none';
+  function goMenu() {
+    document.getElementById('intro-screen').style.display = 'none';
+    document.getElementById('menu-screen').style.display  = 'block';
+    buildMenu();
+  }
 
-  // ── Recipe list ─────────────────────────────────────────────
-  const list=document.getElementById('recipe-list');
-  list.innerHTML='';
-
-  RECIPES.forEach((r,i)=>{
-    const unlocked=isUnlocked(i);
-    const completed=isCompleted(i);
-    const freshUnlock=isNewlyUnlocked(i);
-
-    const btn=document.createElement('button');
-    btn.className='recipe-btn';
-    btn.disabled=!unlocked;
-
-    // Styling per state
-    if(completed){
-      Object.assign(btn.style,{
-        background:`linear-gradient(135deg,${r.color}22,${r.color}11)`,
-        border:`2px solid ${r.color}66`,
-        boxShadow:`0 3px 12px ${r.color}22`,
-        cursor:'pointer',
-      });
-    } else if(freshUnlock){
-      Object.assign(btn.style,{
-        background:`linear-gradient(135deg,${r.color},${r.color}CC)`,
-        border:`3px solid #FFD54F`,
-        boxShadow:`0 6px 24px ${r.color}70`,
-        cursor:'pointer',
-        animation:'pulse 2s ease-in-out infinite',
-      });
-    } else if(unlocked){
-      Object.assign(btn.style,{
-        background:`linear-gradient(135deg,${r.color},${r.color}CC)`,
-        border:'none',
-        boxShadow:`0 6px 20px ${r.color}50`,
-        cursor:'pointer',
-      });
-    } else {
-      Object.assign(btn.style,{
-        background:'#F5F6FA',
-        border:`2px dashed ${r.color}44`,
-        boxShadow:'none',
-        cursor:'not-allowed',
-      });
-    }
-
-    if(unlocked) btn.onclick=()=>window.location.href=r.href;
-
-    // ── Left side: number + label stack ──────────────────────
-    const left=document.createElement('div');
-    left.style.cssText='display:flex;align-items:center;gap:12px;flex:1;min-width:0';
-
-    const num=document.createElement('div');
-    Object.assign(num.style,{
-      width:'36px',height:'36px',borderRadius:'50%',flexShrink:'0',
-      background:completed?`${r.color}33`:unlocked?'rgba(255,255,255,.25)':'#E0E0E0',
-      display:'flex',alignItems:'center',justifyContent:'center',
-      fontWeight:'900',fontSize:'15px',
-      color:completed?r.color:unlocked?'white':'#B2BEC3',
-      border:completed?`2px solid ${r.color}88`:'none',
+  // Update hero dish-row slots to reflect completion
+  const DISH_EMOJIS = ['🤖','🐰','🫓','🍕'];
+  function updateDishRow() {
+    document.querySelectorAll('#dishes-row .dish').forEach((d, i) => {
+      const span = d.querySelector('.lock');
+      if (!span) return;
+      if (isCompleted(i)) {
+        span.textContent = '✅';
+        span.style.animation = 'none';
+        d.style.background = 'linear-gradient(135deg,#43A047,#66BB6A)';
+        d.style.borderColor = '#43A047';
+      } else if (isUnlocked(i)) {
+        span.textContent = DISH_EMOJIS[i];
+        span.style.animation = 'none';
+        d.style.background = 'linear-gradient(135deg,rgba(245,146,30,.6),rgba(245,200,66,.5))';
+      }
     });
-    num.textContent=i+1;
+  }
 
-    const lblWrap=document.createElement('div');
-    lblWrap.style.cssText='display:flex;flex-direction:column;gap:3px;min-width:0';
-
-    const lbl=document.createElement('div');
-    lbl.style.cssText=`font-weight:800;font-size:${unlocked?'16px':'15px'};color:${completed?r.color:unlocked?'white':'#95A5A6'};font-family:${unlocked?"'Fredoka One',cursive":"inherit"};white-space:nowrap;overflow:hidden;text-overflow:ellipsis`;
-    lbl.textContent=unlocked?r.name:'??? מנה סודית';
-
-    // Sub-label for states
-    if(completed){
-      const sub=document.createElement('div');
-      sub.style.cssText=`font-size:11px;font-weight:700;color:${r.color};opacity:.8`;
-      sub.textContent='✅ הושלם';
-      lblWrap.appendChild(lbl);
-      lblWrap.appendChild(sub);
-    } else if(freshUnlock){
-      const sub=document.createElement('div');
-      sub.style.cssText='font-size:11px;font-weight:800;color:#FFD54F;letter-spacing:.3px';
-      sub.textContent='✨ נפתח עכשיו!';
-      lblWrap.appendChild(lbl);
-      lblWrap.appendChild(sub);
-    } else {
-      lblWrap.appendChild(lbl);
-    }
-
-    // ── Right side: icon/CTA ──────────────────────────────────
-    const ic=document.createElement('div');
-    ic.style.cssText='display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0';
-
-    if(completed){
-      const icBtn=document.createElement('span');
-      icBtn.style.cssText=`font-size:11px;font-weight:800;background:${r.color};color:white;padding:3px 8px;border-radius:10px;white-space:nowrap`;
-      icBtn.textContent='שחקו שוב';
-      ic.appendChild(icBtn);
-    } else if(freshUnlock){
-      const icBtn=document.createElement('span');
-      icBtn.style.cssText='font-size:11px;font-weight:800;background:#FFD54F;color:#3E2800;padding:3px 8px;border-radius:10px;white-space:nowrap';
-      icBtn.textContent='התחילו ▶';
-      ic.appendChild(icBtn);
-    } else {
-      const icSpan=document.createElement('span');
-      icSpan.style.fontSize='22px';
-      icSpan.textContent=unlocked?'▶️':'🔒';
-      ic.appendChild(icSpan);
-    }
-
-    left.appendChild(num);
-    left.appendChild(lblWrap);
-    btn.appendChild(left);
-    btn.appendChild(ic);
-    list.appendChild(btn);
+  // On load: restore progress — auto-skip intro if returning player
+  document.addEventListener('DOMContentLoaded', function () {
+    updateDishRow();
+    const hasProgress = RECIPES.some((_, i) => isCompleted(i)) || getTotalStars() > 0;
+    if (hasProgress) goMenu();
   });
-}
 
-function goMenu(){
-  document.getElementById('intro-screen').style.display='none';
-  document.getElementById('menu-screen').style.display='block';
-  buildMenu();
-}
-
-// Video toggle
-const vid=document.getElementById('intro-video');
-const overlay=document.getElementById('play-overlay');
-document.getElementById('video-module').addEventListener('click',()=>{
-  if(vid.paused){vid.play();overlay.classList.add('hidden');}
-  else{vid.pause();overlay.classList.remove('hidden');}
-});
-vid.addEventListener('ended',()=>overlay.classList.remove('hidden'));
+  // Video toggle
+  const vid     = document.getElementById('intro-video');
+  const overlay = document.getElementById('play-overlay');
+  document.getElementById('video-module').addEventListener('click', () => {
+    if (vid.paused) { vid.play(); overlay.classList.add('hidden'); }
+    else            { vid.pause(); overlay.classList.remove('hidden'); }
+  });
+  vid.addEventListener('ended', () => overlay.classList.remove('hidden'));
 </script>
 </body>
 </html>
-

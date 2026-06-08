@@ -81,6 +81,12 @@
     if (panel._sfPatched) return;
     panel._sfPatched = true;
 
+    // Write completion key as soon as the done-panel appears (don't wait for button click)
+    if (flow.isLast) {
+      localStorage.setItem('station' + flow.station + '_completed', '1');
+      localStorage.setItem('recipe' + flow.station + '_completed', '1');
+    }
+
     var buttons = panel.querySelectorAll('button');
     buttons.forEach(function (btn) {
       // Replace onclick with our transition

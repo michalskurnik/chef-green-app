@@ -5,6 +5,10 @@
       "dest": "/api/$1"
     },
     {
+      "src": "/",
+      "dest": "/www/app/start.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/www/$1"
     }

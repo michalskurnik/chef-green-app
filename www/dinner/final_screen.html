@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <title>פיצחתם את הסוד! 🏆</title>
 <style>
@@ -336,6 +336,32 @@ body{font-family:'Assistant',sans-serif;direction:rtl;background:#FFFBF0}
   cursor:pointer;width:100%;max-width:320px;display:block;
 }
 </style>
+<style>
+/* Anti-zoom for kids — targeted, preserves scroll */
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{overflow-y:auto;overflow-x:hidden;position:relative;height:auto;overscroll-behavior-y:none;padding-bottom:80px}
+[draggable=true],.pitem,.draggable{touch-action:none;-webkit-user-drag:none}
+canvas{touch-action:none}
+button,.btn,[role=button]{touch-action:manipulation}
+</style>
+<style>
+/* ── iPad compatibility ── */
+@media(min-width:768px){
+  body{max-width:680px;margin-left:auto;margin-right:auto}
+  #app,.app-container,.game-container{max-width:680px;margin-left:auto;margin-right:auto}
+  h1,#htitle{font-size:38px}
+  h2{font-size:28px}
+  p,.card-text{font-size:20px}
+  .instruction-text,#instruct{font-size:22px}
+  .pitem,.draggable,.card{min-width:90px;min-height:90px}
+  .btn,#nbtn,#start-btn,.cta-btn,.download-btn,.print-btn{font-size:22px;padding:20px}
+  .game-circle,#plate,.assembly-area{width:min(70vw,420px);height:min(70vw,420px)}
+  .ingredient-grid{grid-template-columns:repeat(3,1fr)}
+  .tv-frame,#video-container,.video-wrap{max-width:600px;margin-left:auto;margin-right:auto}
+  img{max-width:100%;object-fit:contain}
+}
+</style>
 </head>
 <body>
 
@@ -344,7 +370,7 @@ body{font-family:'Assistant',sans-serif;direction:rtl;background:#FFFBF0}
 
 <!-- Skip Overlay (shown if stations not complete) -->
 <div id="skip-overlay">
-  <span class="skip-emoji">🗺️</span>
+  <span class="skip-emoji">🍳</span>
   <div class="skip-title">מצב דמו</div>
   <p class="skip-sub">לא השלמתם את כל התחנות עדיין.<br>רוצים לדלג ולראות את מסך הסיום?</p>
   <button class="skip-btn-primary" onclick="skipAllAndContinue()">✨ דלג על כל המשימות</button>
@@ -418,7 +444,7 @@ body{font-family:'Assistant',sans-serif;direction:rtl;background:#FFFBF0}
     <button class="btn-photo" onclick="sendPhoto()">שלחו לנו תמונה 📸</button>
     <div class="btn-row">
       <button class="btn-secondary" onclick="downloadRecipes()">📥 המתכונים</button>
-      <button class="btn-secondary" onclick="goHub()">🗺️ חזרה לבית</button>
+      <button class="btn-secondary" onclick="goHub()">🍳 חזרה לבית</button>
     </div>
     <button class="btn-tertiary" onclick="replay()">🔄 נסו שוב</button>
   </div>

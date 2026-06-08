@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@700;800&display=swap" rel="stylesheet">
 <title>משחק 9 - סדר שלבים</title>
 <style>
@@ -25,19 +25,15 @@ body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36
 #skip-btn{background:none;border:2px solid #DDD;border-radius:14px;padding:6px 14px;font-size:12px;font-weight:800;color:#AAA;cursor:pointer;font-family:'Assistant',sans-serif}
 #check-btn{background:linear-gradient(135deg,#C62828,#E53935);color:#fff;border:none;border-radius:14px;padding:6px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Assistant',sans-serif;opacity:.4;pointer-events:none;transition:all .25s}
 #check-btn.ready{opacity:1;pointer-events:auto;box-shadow:0 3px 12px rgba(198,40,40,.4)}
-#list{display:flex;flex-direction:column;gap:9px;padding:4px 16px 8px}
-.card{background:#FFFBF5;border:2px solid #EDD8B0;border-radius:16px;padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:grab;transition:box-shadow .2s,transform .2s,border-color .2s,background .2s}
+#list{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;padding:4px 16px 8px}
+.card{border:2px solid #EDD8B0;border-radius:16px;overflow:hidden;position:relative;cursor:grab;transition:box-shadow .2s,transform .2s,border-color .2s;aspect-ratio:1/1}
 .card:active{cursor:grabbing}
 .card.dragging{opacity:.3;transform:scale(.97)}
-.card.over{border-color:#C62828;background:#FFEBEE;transform:scale(1.02)}
-.card.correct{border-color:#4CAF50;background:#F1FBF3;animation:correctPop .35s ease}
-.card.wrong{border-color:#EF5350;background:#FFF1F1;animation:shake .4s ease}
-.card-num{min-width:30px;height:30px;border-radius:50%;background:#F0E6D0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#9B7540;transition:all .3s;flex-shrink:0}
-.card.correct .card-num{background:#4CAF50;color:white}
-.card.wrong .card-num{background:#EF5350;color:white}
-.card-emoji{font-size:22px;flex-shrink:0}
-.card-text{font-size:13px;font-weight:700;color:#3E2800;line-height:1.4;flex:1}
-.drag-handle{font-size:16px;color:#CCC;flex-shrink:0}
+.card.over{border-color:#C62828;transform:scale(1.02);box-shadow:0 4px 12px rgba(198,40,40,.3)}
+.card.correct{border-color:#4CAF50;animation:correctPop .35s ease}
+.card.wrong{border-color:#EF5350;animation:shake .4s ease}
+.card-img{width:100%;height:100%;object-fit:cover;display:block}
+.card-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;pointer-events:none}
 #hint-bar{text-align:center;padding:2px 16px 10px;font-size:12px;font-weight:700;color:#888;min-height:22px}
 
 /* recipe modal */
@@ -62,6 +58,32 @@ body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36
 .str{font-size:40px;filter:drop-shadow(0 2px 6px gold)}
 #dmsg{font-size:14px;font-weight:700;color:#636e72;text-align:center;line-height:1.65;margin-bottom:14px}
 #nbtn{background:linear-gradient(135deg,#FF6B35,#FF8C42);color:#fff;border:none;border-radius:18px;padding:14px 44px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(255,107,53,.42)}
+</style>
+<style>
+/* Anti-zoom for kids — targeted, preserves scroll */
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{overflow-y:auto;overflow-x:hidden;position:relative;height:auto;overscroll-behavior-y:none;padding-bottom:80px}
+[draggable=true],.pitem,.draggable{touch-action:none;-webkit-user-drag:none}
+canvas{touch-action:none}
+button,.btn,[role=button]{touch-action:manipulation}
+</style>
+<style>
+/* ── iPad compatibility ── */
+@media(min-width:768px){
+  body{max-width:680px;margin-left:auto;margin-right:auto}
+  #app,.app-container,.game-container{max-width:680px;margin-left:auto;margin-right:auto}
+  h1,#htitle{font-size:38px}
+  h2{font-size:28px}
+  p,.card-text{font-size:20px}
+  .instruction-text,#instruct{font-size:22px}
+  .pitem,.draggable,.card{min-width:90px;min-height:90px}
+  .btn,#nbtn,#start-btn,.cta-btn,.download-btn,.print-btn{font-size:22px;padding:20px}
+  .game-circle,#plate,.assembly-area{width:min(70vw,420px);height:min(70vw,420px)}
+  .ingredient-grid{grid-template-columns:repeat(3,1fr)}
+  .tv-frame,#video-container,.video-wrap{max-width:600px;margin-left:auto;margin-right:auto}
+  img{max-width:100%;object-fit:contain}
+}
 </style>
 </head>
 <body>
@@ -130,14 +152,14 @@ body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36
 
 <script>
 const STEPS=[
-  {id:1,emoji:'🌾',text:'מערבבים קמח, אבקת אפייה, מלח וחמאה עד פירורים'},
-  {id:2,emoji:'🥛',text:'מוסיפים שמנת חמוצה ומערבבים לבצק רך ואחיד'},
-  {id:3,emoji:'❄️',text:'עוטפים את הבצק ומכניסים למקרר לשעה'},
-  {id:4,emoji:'🎯',text:'מחלקים לשני חלקים ומרדדים כל חלק למלבן'},
-  {id:5,emoji:'🍅',text:'מורחים רסק עגבניות ומפזרים גבינה וזיתים'},
-  {id:6,emoji:'🌀',text:'מגלגלים לרולדה ארוכה וחותכים לשבלולים'},
-  {id:7,emoji:'🥚',text:'מסדרים בתבנית, מורחים ביצה ומפזרים שומשום'},
-  {id:8,emoji:'🔥',text:'אופים ב-180° כ-30 דקות עד שהשבלולים זהובים'},
+  {id:1, img:'../assets/images/recipes/pizza-rolls/step1.png'},
+  {id:2, img:'../assets/images/recipes/pizza-rolls/step2.png'},
+  {id:3, img:'../assets/images/recipes/pizza-rolls/step3.png'},
+  {id:4, img:'../assets/images/recipes/pizza-rolls/step4.png'},
+  {id:5, img:'../assets/images/recipes/pizza-rolls/step5.png'},
+  {id:6, img:'../assets/images/recipes/pizza-rolls/step6.png'},
+  {id:7, img:'../assets/images/recipes/pizza-rolls/step7.png'},
+  {id:8, img:'../assets/images/recipes/pizza-rolls/step8.png'},
 ];
 
 function shuffle(arr){
@@ -153,7 +175,7 @@ function buildList(){
   order.forEach((step,i)=>{
     const card=document.createElement('div');
     card.className='card';card.dataset.idx=i;card.draggable=true;
-    card.innerHTML=`<div class="drag-handle">⠿</div><div class="card-num">${i+1}</div><div class="card-emoji">${step.emoji}</div><div class="card-text">${step.text}</div>`;
+    card.innerHTML=`<img class="card-img" src="${step.img}" alt="שלב ${step.id}"><div class="card-badge">${i+1}</div>`;
     card.addEventListener('dragstart',e=>{if(checked)return;dragSrc=card;card.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
     card.addEventListener('dragover',e=>{e.preventDefault();if(card!==dragSrc)card.classList.add('over');});
     card.addEventListener('dragleave',()=>card.classList.remove('over'));
@@ -205,8 +227,8 @@ function checkOrder(){
     aud(true);setTimeout(()=>showDone(3),900);
   }else{
     cards.forEach((c,i)=>{c.classList.remove('correct','wrong');c.classList.add(order[i].id===i+1?'correct':'wrong');});
-    const stars=correct>=6?2:1;
-    document.getElementById('hint-bar').textContent=`${correct} מתוך 8 במקום הנכון — נסו שוב! 💪`;
+    const stars=correct>=STEPS.length-1?2:1;
+    document.getElementById('hint-bar').textContent=`${correct} מתוך ${STEPS.length} במקום הנכון — נסו שוב! 💪`;
     aud(false);
     setTimeout(()=>{if(correct>=6){checked=true;setTimeout(()=>showDone(stars),400);}else document.querySelectorAll('.card').forEach(c=>c.classList.remove('correct','wrong'));},1200);
   }

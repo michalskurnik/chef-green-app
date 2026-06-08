@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@700;800&display=swap" rel="stylesheet">
 <title>משחק 3 - סדר שלבים</title>
 <style>
@@ -90,6 +90,74 @@ body{background:#FFF8E7;display:flex;flex-direction:column;justify-content:flex-
 .step-txt{font-size:13px;font-weight:700;color:#2C3E50;line-height:1.5;padding-top:3px}
 .sheet-close{display:block;margin:20px 20px 0;width:calc(100% - 40px);background:#F0F3F7;border:none;border-radius:16px;padding:13px;font-size:15px;font-weight:800;color:#636e72;cursor:pointer;font-family:'Assistant',sans-serif}
 </style>
+
+<style>
+/* ── Kids UX boost 6-10 ── */
+body{font-size:18px}
+#app{max-width:430px}
+#hdr{padding:10px 16px 12px}
+#badge{font-size:14px}
+#htitle{font-size:26px;font-family:'Fredoka One',cursive}
+#hsub{font-size:16px;opacity:1;font-family:'Fredoka One',cursive}
+#prog-txt,#counter-txt,#ptxt{font-size:18px;font-weight:800;color:#5D4037;font-family:'Fredoka One',cursive}
+#pantry-label{font-size:16px;padding:8px 0 4px}
+.pitem{min-height:70px;min-width:60px}
+.pitem span{font-size:14px;font-weight:800}
+.cbub{width:28px;height:28px;font-size:13px}
+.card{min-height:70px}
+.card-text{font-size:18px;line-height:1.5}
+.card-num{min-width:38px;height:38px;font-size:18px}
+.card-emoji{font-size:32px}
+.drag-handle{font-size:24px}
+#hint-bar{font-size:16px;min-height:40px;padding:10px 16px 16px;color:#6D4C41;font-weight:800}
+#check-btn{font-size:16px;padding:8px 22px;border-radius:16px}
+#dmsg{font-size:18px;line-height:1.7}
+#nbtn,#recipe-btn{font-size:20px;padding:16px 36px}
+#reset-btn{font-size:16px;padding:12px 28px}
+#stars .str{font-size:48px}
+.encourage-strip{text-align:center;padding:10px 16px 6px;font-family:'Fredoka One',cursive;font-size:18px;color:rgba(56,142,60,.6);min-height:44px;background:#FFFDF7}
+@keyframes dropPulse{0%,100%{border-color:rgba(100,160,255,.4)}50%{border-color:rgba(100,160,255,1);box-shadow:0 0 12px rgba(100,160,255,.6)}}
+@keyframes correctFlash{0%,100%{transform:scale(1)}40%{transform:scale(1.2);filter:brightness(1.3)}}
+.correct-flash{animation:correctFlash .3s ease}
+@media(min-width:768px){
+  #app{max-width:650px}
+  #htitle{font-size:36px}
+  #hsub{font-size:22px}
+  body{font-size:22px}
+  .pitem{min-height:90px;min-width:80px}
+  .card{min-height:90px}
+  .card-text{font-size:22px}
+  .card-emoji{font-size:38px}
+  .cbub{width:36px;height:36px}
+  #dmsg{font-size:22px}
+  #nbtn{font-size:24px;padding:18px 44px}
+}
+</style><style>
+/* Anti-zoom for kids — targeted, preserves scroll */
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{overflow-y:auto;overflow-x:hidden;position:relative;height:auto;overscroll-behavior-y:none;padding-bottom:80px}
+[draggable=true],.pitem,.draggable{touch-action:none;-webkit-user-drag:none}
+canvas{touch-action:none}
+button,.btn,[role=button]{touch-action:manipulation}
+</style>
+<style>
+/* ── iPad compatibility ── */
+@media(min-width:768px){
+  body{max-width:680px;margin-left:auto;margin-right:auto}
+  #app,.app-container,.game-container{max-width:680px;margin-left:auto;margin-right:auto}
+  h1,#htitle{font-size:38px}
+  h2{font-size:28px}
+  p,.card-text{font-size:20px}
+  .instruction-text,#instruct{font-size:22px}
+  .pitem,.draggable,.card{min-width:90px;min-height:90px}
+  .btn,#nbtn,#start-btn,.cta-btn,.download-btn,.print-btn{font-size:22px;padding:20px}
+  .game-circle,#plate,.assembly-area{width:min(70vw,420px);height:min(70vw,420px)}
+  .ingredient-grid{grid-template-columns:repeat(3,1fr)}
+  .tv-frame,#video-container,.video-wrap{max-width:600px;margin-left:auto;margin-right:auto}
+  img{max-width:100%;object-fit:contain}
+}
+</style>
 </head>
 <body>
 <div id="app">
@@ -107,6 +175,7 @@ body{background:#FFF8E7;display:flex;flex-direction:column;justify-content:flex-
   <div id="list"></div>
   <div id="hint-bar">☝️ גררו כרטיס למעלה או למטה כדי לשנות את מקומו</div>
 
+  <div class="encourage-strip" id="encourage-strip">בואו, אתם יכולים! סדרו את השלבים ⭐</div>
   <div id="done-panel">
     <div id="stars">
       <span class="str" id="s0" style="animation:starPop .5s 0s both">⭐</span>
@@ -368,6 +437,7 @@ function showDone(stars){
   const msgs=['💪 נסיון טוב! שיחקתם שוב ותשפרו!','👍 כמעט מושלם!','🎉 כל הכבוד! סדרתם את המתכון בצורה מושלמת!'];
   document.getElementById('dmsg').textContent=msgs[stars-1];
   document.getElementById('done-panel').style.display='flex';
+  var es=document.getElementById('encourage-strip');if(es)es.style.display='none';
   // Save stars to localStorage
   const saved=JSON.parse(localStorage.getItem('dinner_stars_detail')||'[0,0,0]');
   saved[2]=stars;
