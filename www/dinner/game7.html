@@ -102,7 +102,7 @@ button,.btn,[role=button]{touch-action:manipulation}
   <div id="top-row">
     <span id="prog-txt">8 שלבים לסדר</span>
     <div id="top-btns">
-      <button id="skip-btn" onclick="openRecipe()">דלג ←</button>
+      <button id="skip-btn" onclick="skipGame()">דלג ←</button>
       <button id="check-btn" onclick="checkOrder()">✅ בדקו!</button>
     </div>
   </div>
@@ -215,9 +215,7 @@ function buildList(){
   order.forEach((step,i)=>{
     const card=document.createElement('div');
     card.className='card';card.dataset.idx=i;card.draggable=true;
-    card.innerHTML=`
-      <img class="card-img" src="`${step.img}" alt="שלב `${step.id}">
-      <div class="card-badge">${i+1}</div>`;
+    card.innerHTML=`<img class="card-img" src="${step.img}" alt="שלב ${step.id}"><div class="card-badge">${i+1}</div>`;
     card.addEventListener('dragstart',onDragStart);
     card.addEventListener('dragover',onDragOver);
     card.addEventListener('dragleave',onDragLeave);
@@ -298,7 +296,7 @@ function checkOrder(){
     document.getElementById('hint-bar').textContent=`${correct} מתוך ${STEPS.length} במקום הנכון — נסו שוב! 💪`;
     aud(false);
     setTimeout(()=>{
-      if(correct>=6){checked=true;setTimeout(()=>showDone(stars),400);}
+      if(correct>=STEPS.length-1){checked=true;setTimeout(()=>showDone(stars),400);}
       else document.querySelectorAll('.card').forEach(c=>c.classList.remove('correct','wrong'));
     },1200);
   }
@@ -324,6 +322,7 @@ function showDone(stars){
   localStorage.setItem('dinner_stars',d.reduce((a,b)=>a+b,0));
 }
 
+function skipGame(){if(!checked){checked=true;showDone(1);}}
 function openRecipe(){document.getElementById('recipe-modal').classList.add('open');document.body.style.overflow='hidden';}
 function closeRecipe(){document.getElementById('recipe-modal').classList.remove('open');document.body.style.overflow='';}
 function closeOut(e){if(e.target===document.getElementById('recipe-modal'))closeRecipe();}
