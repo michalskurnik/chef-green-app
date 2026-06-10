@@ -7,11 +7,29 @@
 </head>
 <body>
 <script>
+(async function() {
+  try {
+    if (window.Capacitor && Capacitor.isNativePlatform()) {
+      var AdMob = Capacitor.Plugins.AdMob;
+      if (AdMob) {
+        if (Capacitor.getPlatform() === 'ios') {
+          // ATT is handled natively in AppDelegate.swift
+          // Wait for ATT dialog before initializing AdMob
+          await new Promise(function(resolve) { setTimeout(resolve, 2000); });
+        }
+        await AdMob.initialize();
+      }
+    }
+  } catch(e) {
+    // Non-fatal: continue to app regardless
+  }
+
   if (localStorage.getItem('chefName')) {
     window.location.replace('packages.html');
   } else {
     window.location.replace('onboarding.html');
   }
+})();
 </script>
 </body>
 </html>
