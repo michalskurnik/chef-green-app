@@ -456,6 +456,16 @@ button,.btn,[role=button]{touch-action:manipulation}
 
 </div>
 
+<script>
+(function(){
+  var n = localStorage.getItem('chefName');
+  if (!n) return;
+  var h = document.querySelector('.hero-headline');
+  var s = document.querySelector('.hero-sub');
+  if (h) h.textContent = n + ', פיצחתם את סוד ארוחת הערב!';
+  if (s) s.innerHTML = 'עברתם 5 תחנות וגיליתם את כל המנות הסודיות<br>של השף הירוק 🍽️';
+})();
+</script>
 <script src="/assets/final-screen.js"></script>
 </body>
 </html>

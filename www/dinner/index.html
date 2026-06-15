@@ -890,6 +890,11 @@ button,.btn,[role=button]{touch-action:manipulation}
   // On load: restore progress — auto-skip intro if returning player
   document.addEventListener('DOMContentLoaded', function () {
     updateDishRow();
+    const chefName = localStorage.getItem('chefName');
+    if (chefName) {
+      document.getElementById('hero-sub').textContent = 'שלום ' + chefName + '! 4 מנות סודיות מחכות להתגלות';
+      document.querySelector('#map-header p').textContent = 'שלום ' + chefName + '! כל תחנה מגלה מנה סודית חדשה!';
+    }
     const hasProgress = RECIPES.some((_, i) => isCompleted(i)) || getTotalStars() > 0;
     if (hasProgress) goMenu();
   });
