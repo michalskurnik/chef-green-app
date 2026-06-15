@@ -89,6 +89,7 @@
 
     var buttons = panel.querySelectorAll('button');
     buttons.forEach(function (btn) {
+      if (btn.id === 'recipe-btn') return; // recipe button opens modal, not navigation
       // Replace onclick with our transition
       btn.addEventListener('click', function (e) {
         e.preventDefault();
