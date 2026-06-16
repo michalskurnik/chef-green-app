@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>הרפתקת איטליה 🍝</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:         #1A3D1F;
+      --card:       #F5F0DC;
+      --orange:     #F5921E;
+      --gold:       #F5C842;
+      --text-dark:  #1A3D1F;
+      --text-light: #F5F0DC;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      font-family: 'Rubik', 'Varela Round', sans-serif;
+      direction: rtl;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50%       { transform: translateY(-12px) rotate(2deg); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1);    box-shadow: 0 6px 28px rgba(245,146,30,.45); }
+      50%       { transform: scale(1.04); box-shadow: 0 10px 36px rgba(245,146,30,.65); }
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: .35; transform: scale(.8) rotate(0deg); }
+      50%       { opacity: 1;   transform: scale(1.2) rotate(15deg); }
+    }
+    @keyframes lockWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25%       { transform: rotate(-10deg); }
+      75%       { transform: rotate(10deg); }
+    }
+    @keyframes stationSlide {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .page {
+      width: 100%;
+      max-width: 480px;
+      padding: 0 16px;
+    }
+
+    /* HERO BANNER */
+    #hero-banner {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      border-radius: 0 0 32px 32px;
+      padding: calc(env(safe-area-inset-top, 0px) + 28px) 24px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp .5s ease both;
+      box-shadow: 0 10px 40px rgba(0,0,0,.35);
+    }
+    #hero-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 30px,
+        rgba(26,61,31,.04) 30px, rgba(26,61,31,.04) 31px
+      );
+      pointer-events: none;
+    }
+    .hero-deco {
+      position: absolute;
+      animation: twinkle ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    #chef-img {
+      width: 120px; height: 120px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,.2));
+      animation: float 3.5s ease-in-out infinite;
+      position: relative; z-index: 1;
+      margin-bottom: 14px;
+    }
+    #hero-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 34px;
+      line-height: 1.1;
+      color: var(--text-dark);
+      position: relative; z-index: 1;
+      margin-bottom: 8px;
+    }
+    #hero-sub {
+      font-family: 'Rubik', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: rgba(26,61,31,.6);
+      position: relative; z-index: 1;
+      margin-bottom: 22px;
+    }
+    #dishes-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      position: relative; z-index: 1;
+    }
+    .dish {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a3a3a, #555);
+      border: 3px solid rgba(26,61,31,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    }
+    .dish .lock { animation: lockWiggle 3.5s ease-in-out infinite; display: block; }
+
+    /* STORY TEXT */
+    .story-text {
+      padding: 20px 4px 18px;
+      text-align: center;
+    }
+    .story-text p {
+      font-family: 'Rubik', sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: rgba(245,240,220,.7);
+      line-height: 1.8;
+    }
+    .story-text strong { font-weight: 700; color: var(--gold); }
+
+    /* CTA BUTTONS */
+    #cta-primary {
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 22px;
+      padding: 20px 24px;
+      font-size: 24px;
+      font-family: 'Fredoka One', cursive;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 12px;
+      box-shadow: 0 6px 28px rgba(245,146,30,.5);
+      animation: pulse 2.5s ease-in-out infinite;
+      -webkit-appearance: none;
+    }
+    #cta-primary:active { transform: scale(.97); animation: none; }
+
+    /* QUEST MAP SCREEN */
+    #menu-screen {
+      display: none;
+      width: 100%;
+      max-width: 480px;
+      animation: fadeUp .4s ease;
+    }
+
+    #map-header {
+      background: var(--card);
+      border-radius: 0 0 32px 32px;
+      padding: calc(env(safe-area-inset-top, 0px) + 22px) 24px 26px;
+      text-align: center;
+      box-shadow: 0 8px 28px rgba(0,0,0,.28);
+      margin-bottom: 20px;
+    }
+    #map-header h2 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 32px;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+    #map-header p {
+      font-family: 'Rubik', sans-serif;
+      font-size: 18px;
+      color: rgba(26,61,31,.6);
+      margin-bottom: 16px;
+    }
+    .stars-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--text-dark);
+      border-radius: 30px;
+      padding: 10px 20px;
+      box-shadow: 0 3px 14px rgba(0,0,0,.2);
+    }
+    #stars-count {
+      font-family: 'Fredoka One', cursive;
+      font-size: 26px;
+      color: var(--gold);
+    }
+    .stars-label {
+      font-family: 'Rubik', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(245,240,220,.7);
+    }
+
+    #success-banner {
+      display: none;
+      margin: 0 16px 16px;
+      background: linear-gradient(135deg, #43A047, #66BB6A);
+      border-radius: 20px;
+      padding: 16px 20px;
+      text-align: center;
+      box-shadow: 0 4px 18px rgba(67,160,71,.35);
+      animation: fadeUp .5s ease;
+    }
+    #success-banner p {
+      font-family: 'Fredoka One', cursive;
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    #success-banner small {
+      font-family: 'Rubik', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(255,255,255,.85);
+    }
+
+    #progress-card {
+      margin: 0 16px 20px;
+      background: rgba(245,240,220,.08);
+      border: 2px solid rgba(245,240,220,.12);
+      border-radius: 20px;
+      padding: 14px 18px;
+    }
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .progress-row span {
+      font-family: 'Rubik', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(245,240,220,.6);
+    }
+    #progress-txt {
+      font-family: 'Fredoka One', cursive;
+      font-size: 18px;
+      color: var(--orange);
+    }
+    .progress-track {
+      background: rgba(245,240,220,.12);
+      border-radius: 8px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    #progress-fill {
+      height: 100%;
+      border-radius: 8px;
+      background: linear-gradient(90deg, var(--orange), var(--gold));
+      transition: width .6s ease;
+      width: 0%;
+    }
+    #progress-dots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    #adventure-map { padding: 0 16px; }
+
+    .station-wrap {
+      margin-bottom: 12px;
+      animation: stationSlide .4s ease both;
+    }
+    .station {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 22px;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      direction: rtl;
+      text-align: right;
+      transition: transform .15s ease, box-shadow .15s ease;
+      min-height: 86px;
+    }
+    .station:active { transform: scale(.975); }
+    .station-num {
+      width: 54px; height: 54px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fredoka One', cursive;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .station-text { flex: 1; min-width: 0; }
+    .station-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: 22px;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .station-sub {
+      font-family: 'Rubik', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .station-chip {
+      flex-shrink: 0;
+      font-family: 'Fredoka One', cursive;
+      font-size: 15px;
+      padding: 7px 14px;
+      border-radius: 16px;
+      white-space: nowrap;
+    }
+
+    .station.unlocked { box-shadow: 0 6px 24px rgba(0,0,0,.3); }
+    .station.unlocked .station-num  { background: rgba(255,255,255,.2); color: #fff; }
+    .station.unlocked .station-name { color: #fff; }
+    .station.unlocked .station-sub  { color: rgba(255,255,255,.65); }
+    .station.unlocked .station-chip { background: rgba(255,255,255,.22); color: #fff; }
+
+    .station.fresh {
+      box-shadow: 0 8px 32px rgba(245,200,66,.55);
+      border: 3px solid var(--gold) !important;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .station.fresh .station-chip { background: var(--gold); color: var(--text-dark); }
+
+    .station.done { box-shadow: 0 4px 18px rgba(0,0,0,.2); }
+    .station.done .station-num  { background: rgba(255,255,255,.18); font-size: 26px; }
+    .station.done .station-name { color: #fff; }
+    .station.done .station-sub  { color: rgba(255,255,255,.7); }
+    .station.done .station-chip { background: rgba(255,255,255,.18); color: rgba(255,255,255,.85); }
+
+    .station.locked {
+      background: rgba(245,240,220,.05) !important;
+      border: 2px dashed rgba(245,240,220,.15) !important;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    .station.locked .station-num  { background: rgba(245,240,220,.08); color: rgba(245,240,220,.3); }
+    .station.locked .station-name { color: rgba(245,240,220,.3); }
+    .station.locked .station-sub  { color: rgba(245,240,220,.2); }
+    .station.locked .station-chip { color: rgba(245,240,220,.25); }
+
+    .path-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(245,240,220,.2);
+      margin: 0 auto 3px;
+    }
+    .path-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      margin-bottom: 12px;
+      gap: 3px;
+    }
+
+    #map-footer { padding: 4px 16px 0; }
+    #adventure-trophy-btn {
+      display: none;
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold), var(--orange));
+      color: #fff;
+      border: none;
+      border-radius: 22px;
+      padding: 20px;
+      font-size: 24px;
+      font-family: 'Fredoka One', cursive;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(245,200,66,.5);
+      animation: pulse 2s ease-in-out infinite;
+      margin-bottom: 12px;
+      -webkit-appearance: none;
+    }
+
+    @media (min-width: 768px) {
+      .page, #hero-banner, #menu-screen { max-width: 640px; }
+      #chef-img { width: 150px; height: 150px; }
+      #hero-title { font-size: 42px; }
+      #hero-sub { font-size: 20px; }
+      #cta-primary, #adventure-trophy-btn { font-size: 28px; padding: 22px; }
+      #map-header h2 { font-size: 38px; }
+      #map-header p  { font-size: 20px; }
+      .station-name  { font-size: 26px; }
+    }
+  </style>
+  <style>
+    *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+    html{touch-action:pan-y;overscroll-behavior-y:none}
+    body{overflow-y:auto;overflow-x:hidden;position:relative;height:auto;overscroll-behavior-y:none;padding-bottom:80px}
+    button,[role=button]{touch-action:manipulation}
+  </style>
+</head>
+<body>
+
+<!-- INTRO SCREEN -->
+<div id="intro-screen">
+
+  <header id="hero-banner">
+    <div class="hero-deco" style="top:18px;right:20px;font-size:22px;animation-duration:2.2s;animation-delay:.0s">🍝</div>
+    <div class="hero-deco" style="top:22px;left:24px; font-size:18px;animation-duration:3s;  animation-delay:.4s">⭐</div>
+    <div class="hero-deco" style="bottom:26px;right:38px;font-size:16px;animation-duration:2.6s;animation-delay:.8s">🌟</div>
+    <div class="hero-deco" style="bottom:22px;left:34px; font-size:20px;animation-duration:2s;  animation-delay:.2s">🇮🇹</div>
+
+    <img id="chef-img" src="/assets/images/chef-green.png" alt="השף הירוק">
+    <h1 id="hero-title">הרפתקת איטליה</h1>
+    <p id="hero-sub">4 מתכונים סודיים מהמטבח האיטלקי</p>
+
+    <div id="dishes-row">
+      <div class="dish" style="animation-delay:.10s"><span class="lock">🔒</span></div>
+      <div class="dish" style="animation-delay:.20s"><span class="lock">🔒</span></div>
+      <div class="dish" style="animation-delay:.30s"><span class="lock">🔒</span></div>
+      <div class="dish" style="animation-delay:.40s"><span class="lock">🔒</span></div>
+    </div>
+  </header>
+
+  <div class="page" style="padding-top:20px">
+
+    <div class="story-text">
+      <p>
+        השף הירוק וביטו הגיעו לאיטליה...<br>
+        אבל 4 המתכונים הסודיים <strong>נעלמו!</strong><br>
+        רק אתם תוכלו לשחזר אותם דרך משחקים ורמזים.
+      </p>
+    </div>
+
+    <button id="cta-primary" onclick="goMenu()">🍝 צאו לגלות את המתכונים!</button>
+
+  </div>
+</div>
+
+
+<!-- QUEST MAP SCREEN -->
+<div id="menu-screen">
+
+  <div id="map-header">
+    <h2>🍝 המטבח האיטלקי</h2>
+    <p>כל תחנה מגלה מתכון סודי חדש!</p>
+    <div class="stars-badge">
+      <span style="font-size:24px">⭐</span>
+      <span id="stars-count">0</span>
+      <span class="stars-label">כוכבים שנצברו</span>
+    </div>
+  </div>
+
+  <div id="success-banner">
+    <p>🎉 כל הכבוד! השלמתם את פסטה סגולה!</p>
+    <small>המשימה הבאה נפתחה! 🔓</small>
+  </div>
+
+  <div id="progress-card">
+    <div class="progress-row">
+      <span>התקדמות</span>
+      <span id="progress-txt">0/4 תחנות</span>
+    </div>
+    <div class="progress-track">
+      <div id="progress-fill"></div>
+    </div>
+    <div id="progress-dots"></div>
+  </div>
+
+  <div id="adventure-map">
+    <div id="recipe-list"></div>
+  </div>
+
+  <div id="map-footer">
+    <button id="adventure-trophy-btn" onclick="window.location.href='completion.html'">
+      🏆 השלמתם את הרפתקת איטליה — ראו את ההישג!
+    </button>
+  </div>
+
+</div>
+
+
+<script>
+  const RECIPES = [
+    { name: 'פסטה סגולה 🍝',          color: '#7B2D8B', href: 'game1.html', games: [0,1,2] },
+    { name: 'ברוסקטה חיפושית 🐛',      color: '#8B4513', href: 'game2.html', games: [3,4]   },
+    { name: 'מאפה פסטה וגבינות 🧀',    color: '#D4872A', href: 'game3.html', games: [5,6]   },
+    { name: 'פנקוטה עם פירות 🍮',      color: '#B5186A', href: 'game4.html', games: [7,8]   },
+  ];
+
+  const COMPLETION_KEYS = [
+    'italy_station1_completed','italy_station2_completed',
+    'italy_station3_completed','italy_station4_completed'
+  ];
+
+  function isCompleted(i) {
+    return localStorage.getItem(COMPLETION_KEYS[i]) === '1';
+  }
+  function isUnlocked(i) {
+    if (i === 0) return true;
+    if (isCompleted(i)) return true;
+    if (isCompleted(i - 1)) return true;
+    const d = JSON.parse(localStorage.getItem('italy_stars_detail') || '[]');
+    return RECIPES[i - 1].games.some(g => d[g] > 0);
+  }
+  function isNewlyUnlocked(i) {
+    if (!isUnlocked(i) || i === 0) return false;
+    const d = JSON.parse(localStorage.getItem('italy_stars_detail') || '[]');
+    return !RECIPES[i].games.some(g => d[g] > 0) && !isCompleted(i);
+  }
+  function getTotalStars() {
+    return JSON.parse(localStorage.getItem('italy_stars_detail') || '[]')
+           .reduce(function(a, b) { return a + b; }, 0);
+  }
+  function getCompletedCount() {
+    return RECIPES.filter(function(_, i) { return isCompleted(i); }).length;
+  }
+
+  function buildMenu() {
+    document.getElementById('stars-count').textContent = getTotalStars();
+
+    if (getCompletedCount() === RECIPES.length) {
+      if (!localStorage.getItem('italy_adventure_completed_seen')) {
+        localStorage.setItem('italy_adventure_completed_seen', '1');
+        window.location.href = 'completion.html';
+        return;
+      }
+      document.getElementById('adventure-trophy-btn').style.display = 'block';
+    }
+
+    const done = getCompletedCount();
+    document.getElementById('progress-txt').textContent = done + '/4 תחנות';
+    document.getElementById('progress-fill').style.width = ((done / RECIPES.length) * 100) + '%';
+
+    const dotsEl = document.getElementById('progress-dots');
+    dotsEl.innerHTML = '';
+    RECIPES.forEach(function(_, i) {
+      const dot = document.createElement('div');
+      Object.assign(dot.style, {
+        width: '12px', height: '12px', borderRadius: '50%', flexShrink: '0',
+        background: isCompleted(i)
+          ? 'var(--orange)'
+          : isUnlocked(i)
+            ? 'rgba(245,240,220,.35)'
+            : 'rgba(245,240,220,.1)',
+        boxShadow: isCompleted(i) ? '0 1px 6px rgba(245,146,30,.6)' : 'none',
+        transition: 'all .3s',
+      });
+      dotsEl.appendChild(dot);
+    });
+
+    document.getElementById('success-banner').style.display =
+      isCompleted(0) ? 'block' : 'none';
+
+    const list = document.getElementById('recipe-list');
+    list.innerHTML = '';
+
+    RECIPES.forEach(function(r, i) {
+      const unlocked    = isUnlocked(i);
+      const completed   = isCompleted(i);
+      const freshUnlock = isNewlyUnlocked(i);
+
+      if (i > 0) {
+        const conn = document.createElement('div');
+        conn.className = 'path-connector';
+        for (let d = 0; d < 3; d++) {
+          const dot = document.createElement('div');
+          dot.className = 'path-dot';
+          conn.appendChild(dot);
+        }
+        list.appendChild(conn);
+      }
+
+      const wrap = document.createElement('div');
+      wrap.className = 'station-wrap';
+      wrap.style.animationDelay = (i * 0.08) + 's';
+
+      const btn = document.createElement('button');
+      btn.className = 'station';
+      btn.style.background = 'linear-gradient(135deg, ' + r.color + ', ' + r.color + 'BB)';
+
+      if      (completed)   btn.classList.add('done');
+      else if (freshUnlock) btn.classList.add('unlocked', 'fresh');
+      else if (unlocked)    btn.classList.add('unlocked');
+      else                  { btn.classList.add('locked'); btn.disabled = true; }
+
+      if (unlocked) btn.onclick = function() { window.location.href = r.href; };
+
+      const num = document.createElement('div');
+      num.className = 'station-num';
+      if      (completed) { num.textContent = '✅'; num.style.background = 'rgba(255,255,255,.18)'; }
+      else if (unlocked)  { num.textContent = i + 1; num.style.background = 'rgba(255,255,255,.2)'; num.style.color = '#fff'; }
+      else                { num.textContent = '🔒'; num.style.background = 'rgba(245,240,220,.07)'; }
+
+      const text = document.createElement('div');
+      text.className = 'station-text';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'station-name';
+      nameEl.textContent = unlocked ? r.name : '??? מתכון סודי';
+
+      const subEl = document.createElement('div');
+      subEl.className = 'station-sub';
+      if      (completed)   { subEl.textContent = '✓ הושלם';         subEl.style.color = 'rgba(255,255,255,.7)'; }
+      else if (freshUnlock) { subEl.textContent = '✨ נפתח עכשיו!';   subEl.style.color = 'var(--gold)'; }
+      else if (unlocked)    { subEl.textContent = 'לחצו להתחיל ▶';  subEl.style.color = 'rgba(255,255,255,.6)'; }
+      else                  { subEl.textContent = '🔒 עדיין נעול';   subEl.style.color = 'rgba(245,240,220,.25)'; }
+
+      text.appendChild(nameEl);
+      text.appendChild(subEl);
+
+      const chip = document.createElement('div');
+      chip.className = 'station-chip';
+      if      (completed)   { chip.textContent = 'שחקו שוב'; }
+      else if (freshUnlock) { chip.textContent = 'התחילו!'; chip.style.background = 'var(--gold)'; chip.style.color = 'var(--text-dark)'; }
+      else if (unlocked)    { chip.textContent = '▶'; chip.style.fontSize = '22px'; chip.style.padding = '6px 10px'; }
+      else                  { chip.textContent = '🔒'; chip.style.fontSize = '22px'; }
+
+      btn.appendChild(num);
+      btn.appendChild(text);
+      btn.appendChild(chip);
+      wrap.appendChild(btn);
+      list.appendChild(wrap);
+    });
+  }
+
+  function goMenu() {
+    document.getElementById('intro-screen').style.display = 'none';
+    document.getElementById('menu-screen').style.display  = 'block';
+    buildMenu();
+  }
+
+  const DISH_EMOJIS = ['🍝', '🐛', '🧀', '🍮'];
+  function updateDishRow() {
+    document.querySelectorAll('#dishes-row .dish').forEach(function(d, i) {
+      const span = d.querySelector('.lock');
+      if (!span) return;
+      if (isCompleted(i)) {
+        span.textContent = '✅';
+        span.style.animation = 'none';
+        d.style.background = 'linear-gradient(135deg,#43A047,#66BB6A)';
+        d.style.borderColor = '#43A047';
+      } else if (isUnlocked(i)) {
+        span.textContent = DISH_EMOJIS[i];
+        span.style.animation = 'none';
+        d.style.background = 'linear-gradient(135deg,rgba(245,146,30,.6),rgba(245,200,66,.5))';
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    updateDishRow();
+    const chefName = localStorage.getItem('chefName');
+    if (chefName) {
+      document.getElementById('hero-sub').textContent = 'שלום ' + chefName + '! 4 מתכונים סודיים מהמטבח האיטלקי';
+      document.querySelector('#map-header p').textContent = 'שלום ' + chefName + '! כל תחנה מגלה מתכון סודי חדש!';
+    }
+    const hasProgress = RECIPES.some(function(_, i) { return isCompleted(i); }) || getTotalStars() > 0;
+    if (hasProgress) goMenu();
+  });
+</script>
+</body>
+</html>
