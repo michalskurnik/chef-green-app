@@ -251,6 +251,7 @@ function showDone(stars){
   const msgs=['💪 ניסיון טוב!','👍 כמעט מושלם!','🎉 סדרתם את המתכון בצורה מושלמת!'];
   document.getElementById('dmsg').textContent=msgs[stars-1];
   document.getElementById('done-panel').style.display='flex';
+  setTimeout(()=>document.getElementById('nbtn').scrollIntoView({behavior:'smooth',block:'nearest'}),350);
   const d=JSON.parse(localStorage.getItem('italy_stars_detail')||'[]');
   while(d.length<4)d.push(0);
   d[3]=stars;
@@ -259,7 +260,17 @@ function showDone(stars){
 }
 
 function showRecipeScreen(){document.getElementById('recipe-screen').style.display='flex';}
-function skipGame(){if(!checked){checked=true;showDone(1);}}
+function skipGame(){
+  if(!checked){
+    checked=true;
+    const d=JSON.parse(localStorage.getItem('italy_stars_detail')||'[]');
+    while(d.length<4)d.push(0);
+    d[3]=1;
+    localStorage.setItem('italy_stars_detail',JSON.stringify(d));
+    localStorage.setItem('italy_stars',d.reduce((a,b)=>a+b,0));
+    showRecipeScreen();
+  }
+}
 
 function aud(ok){
   try{
@@ -280,6 +291,5 @@ function aud(ok){
 
 buildList();
 </script>
-<script src="../dinner/station-flow.js"></script>
 </body>
 </html>
