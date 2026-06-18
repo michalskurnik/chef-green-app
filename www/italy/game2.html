@@ -41,27 +41,20 @@ body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36
 
 #hint-bar{text-align:center;padding:2px 16px 10px;font-size:12px;font-weight:700;color:#888;min-height:22px}
 
-#recipe-btn{background:linear-gradient(135deg,#388E3C,#66BB6A);color:#fff;border:none;border-radius:18px;padding:12px 28px;font-size:15px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 4px 14px rgba(56,142,60,.4);margin-top:4px}
-#recipe-modal{display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:999;background:rgba(0,0,0,.55);align-items:flex-end;justify-content:center}
-#recipe-modal.open{display:flex}
-#recipe-sheet{background:#fff;border-radius:26px 26px 0 0;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;padding:0 0 28px}
-#recipe-sheet::-webkit-scrollbar{width:0}
-.s-handle{width:44px;height:5px;background:#E0E0E0;border-radius:4px;margin:12px auto 0}
-.s-body{padding:14px 18px 0}
-.s-title{font-family:'Fredoka One',cursive;font-size:20px;color:#2C3E50;margin-bottom:12px}
-.ingr-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px}
-.ingr-item{background:#FFF8EE;border:1.5px solid #F0D8A0;border-radius:10px;padding:7px 9px;font-size:12px;font-weight:700;color:#4A3000;display:flex;align-items:center;gap:5px}
-.steps-list{display:flex;flex-direction:column;gap:8px}
-.step-row{display:flex;gap:9px;align-items:flex-start}
-.step-num{min-width:24px;height:24px;border-radius:50%;background:#6A1B9A;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0}
-.step-txt{font-size:12px;font-weight:700;color:#2C3E50;line-height:1.5;padding-top:3px}
-.s-close{display:block;margin:18px 18px 0;width:calc(100% - 36px);background:#F0F3F7;border:none;border-radius:14px;padding:12px;font-size:14px;font-weight:800;color:#636e72;cursor:pointer;font-family:'Assistant',sans-serif}
 
 #done-panel{display:none;flex-direction:column;align-items:center;padding:10px 20px 24px}
 #stars{display:flex;gap:12px;padding:4px 0 10px}
 .str{font-size:40px;filter:drop-shadow(0 2px 6px gold)}
 #dmsg{font-size:14px;font-weight:700;color:#636e72;text-align:center;line-height:1.65;margin-bottom:14px}
 #nbtn{background:linear-gradient(135deg,#FF6B35,#FF8C42);color:#fff;border:none;border-radius:18px;padding:14px 44px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(255,107,53,.42)}
+
+#recipe-screen{display:none;position:fixed;inset:0;z-index:300;background:#1A1A2E;flex-direction:column;overflow:hidden}
+#recipe-screen-hdr{background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;text-align:center;padding:18px 16px 14px;flex-shrink:0}
+#recipe-screen-title{font-family:'Fredoka One',cursive;font-size:22px}
+#recipe-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#recipe-scroll img{width:100%;display:block}
+#recipe-screen-foot{background:#1A1A2E;padding:16px 20px calc(16px + env(safe-area-inset-bottom,0px));flex-shrink:0}
+#next-btn{width:100%;background:linear-gradient(135deg,#FF6B35,#FF8C42);color:#fff;border:none;border-radius:18px;padding:16px;font-size:19px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(255,107,53,.42)}
 </style>
 <style>
 *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
@@ -110,39 +103,23 @@ button,.btn,[role=button]{touch-action:manipulation}
       <span class="str" id="s2" style="animation:starPop .5s .36s both">⭐</span>
     </div>
     <p id="dmsg">🎉 סדרתם את המתכון בצורה מושלמת!</p>
-    <button id="recipe-btn" onclick="openRecipe()">📋 צפו במתכון המלא</button>
-    <button id="nbtn" style="margin-top:10px" onclick="window.location.href='index.html'">🏠 חזרה לתפריט</button>
+    <button id="nbtn" style="margin-top:10px" onclick="showRecipeScreen()">המשחק הבא ▶</button>
   </div>
 </div>
 
-<!-- Recipe Modal -->
-<div id="recipe-modal" onclick="closeRecipeOutside(event)">
-  <div id="recipe-sheet">
-    <div class="s-handle"></div>
-    <div class="s-body">
-      <div class="s-title">🍝 פסטה סגולה</div>
-      <p style="font-size:12px;color:#7F8C8D;font-weight:700;margin-bottom:8px">🛒 מה צריך?</p>
-      <div class="ingr-grid">
-        <div class="ingr-item">🍝 פסטה קצרה</div>
-        <div class="ingr-item">🟣 2-3 סלקים</div>
-        <div class="ingr-item">🧅 בצל סגול</div>
-        <div class="ingr-item">🧄 3 שיני שום</div>
-        <div class="ingr-item">🥛 שמנת קוקוס</div>
-        <div class="ingr-item">🌿 עשבי תיבול</div>
-      </div>
-      <p style="font-size:12px;color:#7F8C8D;font-weight:700;margin-bottom:8px">👨‍🍳 איך מכינים?</p>
-      <div class="steps-list">
-        <div class="step-row"><div class="step-num">1</div><div class="step-txt">מבשלים פסטה במים רותחים עם מלח עד לריכוך.</div></div>
-        <div class="step-row"><div class="step-num">2</div><div class="step-txt">צולים סלקים בתנור ב-200° כשעתיים עד שמתרככים.</div></div>
-        <div class="step-row"><div class="step-num">3</div><div class="step-txt">מטגנים בצל סגול ושום במחבת עד להשחמה.</div></div>
-        <div class="step-row"><div class="step-num">4</div><div class="step-txt">מעבדים סלקים, בצל, שום ושמנת קוקוס במעבד מזון לרוטב חלק.</div></div>
-        <div class="step-row"><div class="step-num">5</div><div class="step-txt">מערבבים פסטה מסוננת עם הרוטב הסגול במחבת.</div></div>
-        <div class="step-row"><div class="step-num">6</div><div class="step-txt">מגישים לצלחת עם עשבי תיבול.</div></div>
-      </div>
-    </div>
-    <button class="s-close" onclick="closeRecipe()">✕ סגור</button>
+<!-- Recipe Screen -->
+<div id="recipe-screen">
+  <div id="recipe-screen-hdr">
+    <div id="recipe-screen-title">הנה המתכון המלא! 🍝</div>
+  </div>
+  <div id="recipe-scroll">
+    <img src="assets/recipe_pasta_segula.png" alt="מתכון פסטה סגולה">
+  </div>
+  <div id="recipe-screen-foot">
+    <button id="next-btn" onclick="window.location.href='game3.html'">המשחק הבא ▶</button>
   </div>
 </div>
+
 
 <script>
 const STEPS=[
@@ -281,10 +258,8 @@ function showDone(stars){
   localStorage.setItem('italy_stars',d.reduce((a,b)=>a+b,0));
 }
 
+function showRecipeScreen(){document.getElementById('recipe-screen').style.display='flex';}
 function skipGame(){if(!checked){checked=true;showDone(1);}}
-function openRecipe(){document.getElementById('recipe-modal').classList.add('open');document.body.style.overflow='hidden';}
-function closeRecipe(){document.getElementById('recipe-modal').classList.remove('open');document.body.style.overflow='';}
-function closeRecipeOutside(e){if(e.target===document.getElementById('recipe-modal'))closeRecipe();}
 
 function aud(ok){
   try{
