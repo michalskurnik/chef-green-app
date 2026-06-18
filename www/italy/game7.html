@@ -172,8 +172,8 @@ function pour() {
   }
 }
 
-gw.addEventListener('click',      () => pour());
-gw.addEventListener('touchstart', e  => { e.preventDefault(); pour(); }, { passive: false });
+gw.addEventListener('click',      e  => { if (e.target.closest('button')) return; pour(); });
+gw.addEventListener('touchstart', e  => { if (e.target.closest('button')) return; e.preventDefault(); pour(); }, { passive: false });
 
 // ── Loop ──────────────────────────────────────────────────────────
 function loop(ts) {
