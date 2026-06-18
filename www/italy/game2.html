@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@700;800&display=swap" rel="stylesheet">
+<title>פסטה סגולה – סדר שלבים</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36px;font-family:'Assistant',sans-serif;direction:rtl;min-height:100vh}
+#app{width:100%;max-width:360px;background:#fff;border-radius:26px;box-shadow:0 12px 40px rgba(0,0,0,.13);overflow:hidden;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes starPop{from{transform:scale(0) rotate(-15deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes correctPop{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+#hdr{padding:13px 18px 15px;color:#fff;text-align:center;background:linear-gradient(135deg,#6A1B9A,#AB47BC);transition:background .6s}
+#hdr.done{background:linear-gradient(135deg,#FF6B35,#F7C948)}
+#badge{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:2px 13px;font-size:12px;font-weight:700;margin-bottom:6px}
+#htitle{font-family:'Fredoka One',cursive;font-size:20px;margin-bottom:4px}
+#hsub{font-size:12px;opacity:.9;font-weight:700;line-height:1.5}
+
+#top-row{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 6px}
+#prog-txt{font-size:12px;font-weight:800;color:#888}
+#top-btns{display:flex;gap:8px}
+#skip-btn{background:none;border:2px solid #DDD;border-radius:14px;padding:6px 14px;font-size:12px;font-weight:800;color:#AAA;cursor:pointer;font-family:'Assistant',sans-serif}
+#check-btn{background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border:none;border-radius:14px;padding:6px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Assistant',sans-serif;opacity:.4;pointer-events:none;transition:all .25s}
+#check-btn.ready{opacity:1;pointer-events:auto;box-shadow:0 3px 12px rgba(106,27,154,.4)}
+
+#list{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;padding:4px 16px 8px}
+
+.card{border:2px solid #EDD8B0;border-radius:16px;overflow:hidden;position:relative;cursor:grab;transition:box-shadow .2s,transform .2s,border-color .2s;aspect-ratio:1/1}
+.card:active{cursor:grabbing}
+.card.dragging{opacity:.3;transform:scale(.97)}
+.card.over{border-color:#6A1B9A;transform:scale(1.02);box-shadow:0 4px 12px rgba(106,27,154,.3)}
+.card.correct{border-color:#4CAF50;animation:correctPop .35s ease}
+.card.wrong{border-color:#EF5350;animation:shake .4s ease}
+
+.card-img{width:100%;height:100%;object-fit:cover;display:block}
+.card-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;pointer-events:none}
+
+#hint-bar{text-align:center;padding:2px 16px 10px;font-size:12px;font-weight:700;color:#888;min-height:22px}
+
+#recipe-btn{background:linear-gradient(135deg,#388E3C,#66BB6A);color:#fff;border:none;border-radius:18px;padding:12px 28px;font-size:15px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 4px 14px rgba(56,142,60,.4);margin-top:4px}
+#recipe-modal{display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:999;background:rgba(0,0,0,.55);align-items:flex-end;justify-content:center}
+#recipe-modal.open{display:flex}
+#recipe-sheet{background:#fff;border-radius:26px 26px 0 0;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;padding:0 0 28px}
+#recipe-sheet::-webkit-scrollbar{width:0}
+.s-handle{width:44px;height:5px;background:#E0E0E0;border-radius:4px;margin:12px auto 0}
+.s-body{padding:14px 18px 0}
+.s-title{font-family:'Fredoka One',cursive;font-size:20px;color:#2C3E50;margin-bottom:12px}
+.ingr-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px}
+.ingr-item{background:#FFF8EE;border:1.5px solid #F0D8A0;border-radius:10px;padding:7px 9px;font-size:12px;font-weight:700;color:#4A3000;display:flex;align-items:center;gap:5px}
+.steps-list{display:flex;flex-direction:column;gap:8px}
+.step-row{display:flex;gap:9px;align-items:flex-start}
+.step-num{min-width:24px;height:24px;border-radius:50%;background:#6A1B9A;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0}
+.step-txt{font-size:12px;font-weight:700;color:#2C3E50;line-height:1.5;padding-top:3px}
+.s-close{display:block;margin:18px 18px 0;width:calc(100% - 36px);background:#F0F3F7;border:none;border-radius:14px;padding:12px;font-size:14px;font-weight:800;color:#636e72;cursor:pointer;font-family:'Assistant',sans-serif}
+
+#done-panel{display:none;flex-direction:column;align-items:center;padding:10px 20px 24px}
+#stars{display:flex;gap:12px;padding:4px 0 10px}
+.str{font-size:40px;filter:drop-shadow(0 2px 6px gold)}
+#dmsg{font-size:14px;font-weight:700;color:#636e72;text-align:center;line-height:1.65;margin-bottom:14px}
+#nbtn{background:linear-gradient(135deg,#FF6B35,#FF8C42);color:#fff;border:none;border-radius:18px;padding:14px 44px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(255,107,53,.42)}
+</style>
+<style>
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{overflow-y:auto;overflow-x:hidden;position:relative;height:auto;overscroll-behavior-y:none;padding-bottom:80px}
+[draggable=true],.pitem,.draggable{touch-action:none;-webkit-user-drag:none}
+canvas{touch-action:none}
+button,.btn,[role=button]{touch-action:manipulation}
+</style>
+<style>
+@media(min-width:768px){
+  body{max-width:680px;margin-left:auto;margin-right:auto}
+  #app,.app-container,.game-container{max-width:680px;margin-left:auto;margin-right:auto}
+  h1,#htitle{font-size:38px}
+  h2{font-size:28px}
+  p,.card-text{font-size:20px}
+  .pitem,.draggable,.card{min-width:90px;min-height:90px}
+  .btn,#nbtn,#start-btn,.cta-btn{font-size:22px;padding:20px}
+  img{max-width:100%;object-fit:contain}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hdr">
+    <div id="badge">🇮🇹 פסטה סגולה - משחק 2</div>
+    <h2 id="htitle">🧩 סדרו את שלבי המתכון!</h2>
+    <p id="hsub">גררו את הכרטיסים לסדר הנכון של הכנת פסטה סגולה</p>
+  </div>
+
+  <div id="top-row">
+    <span id="prog-txt">6 שלבים לסדר</span>
+    <div id="top-btns">
+      <button id="skip-btn" onclick="skipGame()">דלג ←</button>
+      <button id="check-btn" onclick="checkOrder()">✅ בדקו!</button>
+    </div>
+  </div>
+
+  <div id="list"></div>
+  <div id="hint-bar">🔀 גררו כרטיסים להחלפה בין המיקומים</div>
+
+  <div id="done-panel">
+    <div id="stars">
+      <span class="str" id="s0" style="animation:starPop .5s 0s both">⭐</span>
+      <span class="str" id="s1" style="animation:starPop .5s .18s both">⭐</span>
+      <span class="str" id="s2" style="animation:starPop .5s .36s both">⭐</span>
+    </div>
+    <p id="dmsg">🎉 סדרתם את המתכון בצורה מושלמת!</p>
+    <button id="recipe-btn" onclick="openRecipe()">📋 צפו במתכון המלא</button>
+    <button id="nbtn" style="margin-top:10px" onclick="window.location.href='index.html'">🏠 חזרה לתפריט</button>
+  </div>
+</div>
+
+<!-- Recipe Modal -->
+<div id="recipe-modal" onclick="closeRecipeOutside(event)">
+  <div id="recipe-sheet">
+    <div class="s-handle"></div>
+    <div class="s-body">
+      <div class="s-title">🍝 פסטה סגולה</div>
+      <p style="font-size:12px;color:#7F8C8D;font-weight:700;margin-bottom:8px">🛒 מה צריך?</p>
+      <div class="ingr-grid">
+        <div class="ingr-item">🍝 פסטה קצרה</div>
+        <div class="ingr-item">🟣 2-3 סלקים</div>
+        <div class="ingr-item">🧅 בצל סגול</div>
+        <div class="ingr-item">🧄 3 שיני שום</div>
+        <div class="ingr-item">🥛 שמנת קוקוס</div>
+        <div class="ingr-item">🌿 עשבי תיבול</div>
+      </div>
+      <p style="font-size:12px;color:#7F8C8D;font-weight:700;margin-bottom:8px">👨‍🍳 איך מכינים?</p>
+      <div class="steps-list">
+        <div class="step-row"><div class="step-num">1</div><div class="step-txt">מבשלים פסטה במים רותחים עם מלח עד לריכוך.</div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-txt">צולים סלקים בתנור ב-200° כשעתיים עד שמתרככים.</div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-txt">מטגנים בצל סגול ושום במחבת עד להשחמה.</div></div>
+        <div class="step-row"><div class="step-num">4</div><div class="step-txt">מעבדים סלקים, בצל, שום ושמנת קוקוס במעבד מזון לרוטב חלק.</div></div>
+        <div class="step-row"><div class="step-num">5</div><div class="step-txt">מערבבים פסטה מסוננת עם הרוטב הסגול במחבת.</div></div>
+        <div class="step-row"><div class="step-num">6</div><div class="step-txt">מגישים לצלחת עם עשבי תיבול.</div></div>
+      </div>
+    </div>
+    <button class="s-close" onclick="closeRecipe()">✕ סגור</button>
+  </div>
+</div>
+
+<script>
+const STEPS=[
+  {id:1, img:'images/pasta-salak/step1.png'},
+  {id:2, img:'images/pasta-salak/step2.png'},
+  {id:3, img:'images/pasta-salak/step3.png'},
+  {id:4, img:'images/pasta-salak/step4.png'},
+  {id:5, img:'images/pasta-salak/step5.png'},
+  {id:6, img:'images/pasta-salak/step6.png'},
+];
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];
+  }
+  return a.every((s,i)=>s.id===i+1)?shuffle(arr):a;
+}
+
+let order=shuffle(STEPS);
+let checked=false;
+let dragSrc=null;
+let touchCard=null, touchClone=null, touchSrcIdx=null;
+
+function buildList(){
+  const list=document.getElementById('list');
+  list.innerHTML='';
+  order.forEach((step,i)=>{
+    const card=document.createElement('div');
+    card.className='card';card.dataset.idx=i;card.draggable=true;
+    card.innerHTML=`<img class="card-img" src="${step.img}" alt="שלב ${step.id}"><div class="card-badge">${i+1}</div>`;
+    card.addEventListener('dragstart',onDragStart);
+    card.addEventListener('dragover',onDragOver);
+    card.addEventListener('dragleave',onDragLeave);
+    card.addEventListener('drop',onDrop);
+    card.addEventListener('dragend',onDragEnd);
+    card.addEventListener('touchstart',onTouchStart,{passive:true});
+    card.addEventListener('touchmove',onTouchMove,{passive:false});
+    card.addEventListener('touchend',onTouchEnd);
+    list.appendChild(card);
+  });
+  document.getElementById('check-btn').classList.add('ready');
+}
+
+function onDragStart(e){if(checked)return;dragSrc=this;this.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function onDragOver(e){e.preventDefault();if(this!==dragSrc)this.classList.add('over');}
+function onDragLeave(){this.classList.remove('over');}
+function onDrop(e){
+  e.preventDefault();if(this===dragSrc||checked)return;
+  const a=parseInt(dragSrc.dataset.idx),b=parseInt(this.dataset.idx);
+  [order[a],order[b]]=[order[b],order[a]];buildList();
+}
+function onDragEnd(){document.querySelectorAll('.card').forEach(c=>c.classList.remove('dragging','over'));}
+
+function onTouchStart(e){
+  if(checked)return;
+  touchCard=this;touchSrcIdx=parseInt(this.dataset.idx);
+  const t=e.touches[0],r=this.getBoundingClientRect();
+  touchClone=this.cloneNode(true);
+  touchClone.style.cssText=`position:fixed;z-index:9999;width:${r.width}px;opacity:.88;top:${r.top}px;left:${r.left}px;pointer-events:none;border-radius:16px;box-shadow:0 8px 28px rgba(0,0,0,.22);background:#F3E5F5;border:2px solid #6A1B9A;transform:scale(1.04);`;
+  document.body.appendChild(touchClone);
+  this.classList.add('dragging');
+  this._oy=t.clientY-r.top;this._ox=t.clientX-r.left;
+}
+function onTouchMove(e){
+  if(!touchClone)return;e.preventDefault();
+  const t=e.touches[0];
+  touchClone.style.top=(t.clientY-this._oy)+'px';
+  touchClone.style.left=(t.clientX-this._ox)+'px';
+  touchClone.style.display='none';
+  const el=document.elementFromPoint(t.clientX,t.clientY);
+  touchClone.style.display='';
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('over'));
+  const tgt=el?.closest('.card');
+  if(tgt&&tgt!==touchCard)tgt.classList.add('over');
+}
+function onTouchEnd(e){
+  if(!touchClone)return;
+  const t=e.changedTouches[0];
+  touchClone.remove();touchClone=null;
+  touchCard.classList.remove('dragging');
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('over'));
+  const el=document.elementFromPoint(t.clientX,t.clientY);
+  const tgt=el?.closest('.card');
+  if(tgt&&tgt!==touchCard){
+    const b=parseInt(tgt.dataset.idx);
+    [order[touchSrcIdx],order[b]]=[order[b],order[touchSrcIdx]];
+    buildList();
+  }
+  touchCard=null;touchSrcIdx=null;
+}
+
+function checkOrder(){
+  if(checked)return;
+  const correct=order.filter((s,i)=>s.id===i+1).length;
+  const cards=document.querySelectorAll('.card');
+  if(correct===STEPS.length){
+    checked=true;
+    cards.forEach(c=>c.classList.add('correct'));
+    document.getElementById('hint-bar').textContent='🎉 מושלם! הסדר נכון לגמרי!';
+    document.getElementById('check-btn').style.display='none';
+    aud(true);setTimeout(()=>showDone(3),900);
+  } else {
+    cards.forEach((c,i)=>{
+      c.classList.remove('correct','wrong');
+      c.classList.add(order[i].id===i+1?'correct':'wrong');
+    });
+    const stars=correct>=STEPS.length-2?2:1;
+    document.getElementById('hint-bar').textContent=`${correct} מתוך ${STEPS.length} במקום הנכון – נסו שוב! 💪`;
+    aud(false);
+    setTimeout(()=>{
+      if(correct>=STEPS.length-2){checked=true;setTimeout(()=>showDone(stars),400);}
+      else document.querySelectorAll('.card').forEach(c=>c.classList.remove('correct','wrong'));
+    },1200);
+  }
+}
+
+function showDone(stars){
+  document.getElementById('hdr').classList.add('done');
+  document.getElementById('htitle').textContent='🍝 מעולה – פסטה סגולה מוכנה!';
+  document.getElementById('hsub').textContent='השלמתם את שני המשחקים! 🎉';
+  document.getElementById('list').style.display='none';
+  document.getElementById('top-row').style.display='none';
+  document.getElementById('hint-bar').style.display='none';
+  for(let i=stars;i<3;i++){
+    const s=document.getElementById('s'+i);
+    s.style.filter='grayscale(1) opacity(.25)';s.style.animation='none';
+  }
+  const msgs=['💪 ניסיון טוב!','👍 כמעט מושלם!','🎉 סדרתם את המתכון בצורה מושלמת!'];
+  document.getElementById('dmsg').textContent=msgs[stars-1];
+  document.getElementById('done-panel').style.display='flex';
+  const d=JSON.parse(localStorage.getItem('italy_stars_detail')||'[]');
+  while(d.length<2)d.push(0);
+  d[1]=stars;
+  localStorage.setItem('italy_stars_detail',JSON.stringify(d));
+  localStorage.setItem('italy_stars',d.reduce((a,b)=>a+b,0));
+}
+
+function skipGame(){if(!checked){checked=true;showDone(1);}}
+function openRecipe(){document.getElementById('recipe-modal').classList.add('open');document.body.style.overflow='hidden';}
+function closeRecipe(){document.getElementById('recipe-modal').classList.remove('open');document.body.style.overflow='';}
+function closeRecipeOutside(e){if(e.target===document.getElementById('recipe-modal'))closeRecipe();}
+
+function aud(ok){
+  try{
+    const a=new(window.AudioContext||window.webkitAudioContext)();
+    const o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    if(ok){
+      o.frequency.setValueAtTime(440,a.currentTime);o.frequency.setValueAtTime(554,a.currentTime+.12);o.frequency.setValueAtTime(660,a.currentTime+.24);
+      g.gain.setValueAtTime(.15,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.5);
+      o.start();o.stop(a.currentTime+.5);
+    }else{
+      o.type='sawtooth';o.frequency.setValueAtTime(220,a.currentTime);o.frequency.exponentialRampToValueAtTime(110,a.currentTime+.2);
+      g.gain.setValueAtTime(.1,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.25);
+      o.start();o.stop(a.currentTime+.28);
+    }
+  }catch(e){}
+}
+
+buildList();
+</script>
+<script src="../dinner/station-flow.js"></script>
+</body>
+</html>
