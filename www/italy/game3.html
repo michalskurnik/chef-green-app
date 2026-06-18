@@ -2,12 +2,13 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>ברוסקטה חיפושית – תפסו מרכיבים</title>
 <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 <style>
 :root { --green:#2d8a4e; --green-dark:#1a5e35; --yellow:#f7c948; --orange:#ff6b35; }
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+button { touch-action:manipulation; }
 html, body { width:100%; height:100%; overflow:hidden; }
 body {
   font-family:'Varela Round',Arial,sans-serif; direction:rtl;
@@ -68,7 +69,7 @@ body {
 .rule-item { border-radius:12px; padding:8px 14px; font-size:13px; font-weight:700; text-align:center; }
 .rule-item.good { background:rgba(255,255,255,0.18); color:white; border:1px solid rgba(255,255,255,0.3); }
 .rule-item.bad2 { background:rgba(229,57,53,0.2); color:#ffb3b3; border:1px solid rgba(229,57,53,0.35); }
-.btn-play { background:var(--yellow); color:#1a1a1a; font-family:inherit; font-size:18px; font-weight:900; padding:13px 40px; border:none; border-radius:50px; cursor:pointer; box-shadow:0 5px 18px rgba(247,201,72,0.5); transition:all 0.2s; }
+.btn-play { background:var(--yellow); color:#1a1a1a; font-family:inherit; font-size:18px; font-weight:900; padding:13px 40px; border:none; border-radius:50px; cursor:pointer; box-shadow:0 5px 18px rgba(247,201,72,0.5); transition:all 0.2s; touch-action:manipulation; }
 .btn-play:hover { transform:scale(1.05); }
 
 /* GAME AREA — fills remaining space */
@@ -200,7 +201,7 @@ body {
 
 <script>
 const HEALTHY=[{emoji:'🍞',name:'לחם'},{emoji:'🌿',name:'פסטו'},{emoji:'🧀',name:'מוצרלה'},{emoji:'🌱',name:'בזיליקום'},{emoji:'🍅',name:'עגבניות שרי'},{emoji:'🫒',name:'שמן זית'}];
-const JUNK=[{emoji:'🍫',name:'שוקולד'},{emoji:'🍟',name:'צ'יפס'},{emoji:'🍬',name:'סוכריות'}];
+const JUNK=[{emoji:'🍫',name:'שוקולד'},{emoji:'🍟',name:"צ'יפס"},{emoji:'🍬',name:'סוכריות'}];
 const GOOD_R=['כל הכבוד! 🌿','בריא! ✅','השף יאהב! 🍴','מושלם! 👨‍🍳','ירוק ובריא! 💚'];
 const BAD_R=["ג'אנק פוד! ❌",'השף לא יאשר! 🚫','לא בריא! ⚠️'];
 
