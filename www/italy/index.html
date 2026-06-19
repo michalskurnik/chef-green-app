@@ -1,684 +1,496 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>הרפתקת איטליה 🍝</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg:         #1A3D1F;
-      --card:       #F5F0DC;
-      --orange:     #F5921E;
-      --gold:       #F5C842;
-      --text-dark:  #1A3D1F;
-      --text-light: #F5F0DC;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>הרפתקת איטליה 🍝</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #1A3D1F;
+  --card:  #F5F0DC;
+  --orange:#F5921E;
+  --gold:  #F7C948;
+  --green: #2E7D32;
+  --red:   #C62828;
+  --dark:  #1A3D1F;
+  --light: #F5F0DC;
+}
 
-    *, *::before, *::after {
-      box-sizing: border-box; margin: 0; padding: 0;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-    html, body {
-      min-height: 100%;
-      background: var(--bg);
-      font-family: 'Rubik', 'Varela Round', sans-serif;
-      direction: rtl;
-      -webkit-text-size-adjust: 100%;
-    }
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
-    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{min-height:100%;background:var(--bg);font-family:'Assistant',sans-serif;direction:rtl;-webkit-text-size-adjust:100%}
+body{display:flex;flex-direction:column;align-items:center;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 32px)}
+button,[role=button]{touch-action:manipulation;-webkit-appearance:none}
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(-2deg); }
-      50%       { transform: translateY(-12px) rotate(2deg); }
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1);    box-shadow: 0 6px 28px rgba(245,146,30,.45); }
-      50%       { transform: scale(1.04); box-shadow: 0 10px 36px rgba(245,146,30,.65); }
-    }
-    @keyframes twinkle {
-      0%, 100% { opacity: .35; transform: scale(.8) rotate(0deg); }
-      50%       { opacity: 1;   transform: scale(1.2) rotate(15deg); }
-    }
-    @keyframes lockWiggle {
-      0%, 100% { transform: rotate(0deg); }
-      25%       { transform: rotate(-10deg); }
-      75%       { transform: rotate(10deg); }
-    }
-    @keyframes stationSlide {
-      from { opacity: 0; transform: translateX(24px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-11px) rotate(2deg)}}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 6px 28px rgba(245,146,30,.45)}50%{transform:scale(1.04);box-shadow:0 10px 36px rgba(245,146,30,.7)}}
+@keyframes twinkle{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.2) rotate(12deg)}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
 
-    .page {
-      width: 100%;
-      max-width: 480px;
-      padding: 0 16px;
-    }
+/* ── Page wrapper ── */
+.page{width:100%;max-width:420px;padding:0 16px}
 
-    /* HERO BANNER */
-    #hero-banner {
-      width: 100%;
-      max-width: 480px;
-      background: var(--card);
-      border-radius: 0 0 32px 32px;
-      padding: calc(env(safe-area-inset-top, 0px) + 28px) 24px 28px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      animation: fadeUp .5s ease both;
-      box-shadow: 0 10px 40px rgba(0,0,0,.35);
-    }
-    #hero-banner::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: repeating-linear-gradient(
-        0deg, transparent, transparent 30px,
-        rgba(26,61,31,.04) 30px, rgba(26,61,31,.04) 31px
-      );
-      pointer-events: none;
-    }
-    .hero-deco {
-      position: absolute;
-      animation: twinkle ease-in-out infinite;
-      pointer-events: none;
-      z-index: 0;
-    }
-    #chef-img {
-      width: 120px; height: 120px;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 20px rgba(0,0,0,.2));
-      animation: float 3.5s ease-in-out infinite;
-      position: relative; z-index: 1;
-      margin-bottom: 14px;
-    }
-    #hero-title {
-      font-family: 'Fredoka One', cursive;
-      font-size: 34px;
-      line-height: 1.1;
-      color: var(--text-dark);
-      position: relative; z-index: 1;
-      margin-bottom: 8px;
-    }
-    #hero-sub {
-      font-family: 'Rubik', sans-serif;
-      font-size: 18px;
-      font-weight: 500;
-      color: rgba(26,61,31,.6);
-      position: relative; z-index: 1;
-      margin-bottom: 22px;
-    }
-    #dishes-row {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      position: relative; z-index: 1;
-    }
-    .dish {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #3a3a3a, #555);
-      border: 3px solid rgba(26,61,31,.15);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.25);
-    }
-    .dish .lock { animation: lockWiggle 3.5s ease-in-out infinite; display: block; }
+/* ═══════════════════════════════════════════
+   INTRO SCREEN
+═══════════════════════════════════════════ */
+#intro-screen{width:100%;max-width:420px}
 
-    /* STORY TEXT */
-    .story-text {
-      padding: 20px 4px 18px;
-      text-align: center;
-    }
-    .story-text p {
-      font-family: 'Rubik', sans-serif;
-      font-size: 18px;
-      font-weight: 400;
-      color: rgba(245,240,220,.7);
-      line-height: 1.8;
-    }
-    .story-text strong { font-weight: 700; color: var(--gold); }
+#hero-banner{
+  background:var(--card);
+  border-radius:0 0 36px 36px;
+  padding:calc(env(safe-area-inset-top,0px) + 26px) 24px 28px;
+  text-align:center;
+  position:relative;overflow:hidden;
+  animation:fadeUp .5s ease both;
+  box-shadow:0 10px 40px rgba(0,0,0,.35);
+}
+#hero-banner::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(26,61,31,.05) 28px,rgba(26,61,31,.05) 29px);
+  pointer-events:none;
+}
+/* Italian flag stripe accent at top */
+#hero-banner::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--green) 33%,#fff 33%,#fff 66%,var(--red) 66%);
+}
+.hero-deco{position:absolute;animation:twinkle ease-in-out infinite;pointer-events:none;z-index:0}
+#chef-img{
+  width:110px;height:110px;object-fit:contain;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,.18));
+  animation:float 3.5s ease-in-out infinite;
+  position:relative;z-index:1;margin-bottom:12px;
+}
+#hero-title{font-family:'Fredoka One',cursive;font-size:32px;line-height:1.1;color:var(--dark);position:relative;z-index:1;margin-bottom:6px}
+#hero-sub{font-size:16px;font-weight:700;color:rgba(26,61,31,.6);position:relative;z-index:1;margin-bottom:20px;line-height:1.5}
 
-    /* CTA BUTTONS */
-    #cta-primary {
-      background: var(--orange);
-      color: #fff;
-      border: none;
-      border-radius: 22px;
-      padding: 20px 24px;
-      font-size: 24px;
-      font-family: 'Fredoka One', cursive;
-      cursor: pointer;
-      width: 100%;
-      margin-bottom: 12px;
-      box-shadow: 0 6px 28px rgba(245,146,30,.5);
-      animation: pulse 2.5s ease-in-out infinite;
-      -webkit-appearance: none;
-    }
-    #cta-primary:active { transform: scale(.97); animation: none; }
+#flag-dishes{display:flex;gap:10px;justify-content:center;position:relative;z-index:1}
+.dish{
+  width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,#3a3a3a,#555);
+  border:3px solid rgba(26,61,31,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.22);
+}
 
-    /* QUEST MAP SCREEN */
-    #menu-screen {
-      display: none;
-      width: 100%;
-      max-width: 480px;
-      animation: fadeUp .4s ease;
-    }
+.story-text{padding:20px 4px 16px;text-align:center}
+.story-text p{font-size:17px;font-weight:400;color:rgba(245,240,220,.72);line-height:1.85}
+.story-text strong{font-weight:800;color:var(--gold)}
 
-    #map-header {
-      background: var(--card);
-      border-radius: 0 0 32px 32px;
-      padding: calc(env(safe-area-inset-top, 0px) + 22px) 24px 26px;
-      text-align: center;
-      box-shadow: 0 8px 28px rgba(0,0,0,.28);
-      margin-bottom: 20px;
-    }
-    #map-header h2 {
-      font-family: 'Fredoka One', cursive;
-      font-size: 32px;
-      color: var(--text-dark);
-      margin-bottom: 6px;
-    }
-    #map-header p {
-      font-family: 'Rubik', sans-serif;
-      font-size: 18px;
-      color: rgba(26,61,31,.6);
-      margin-bottom: 16px;
-    }
-    .stars-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--text-dark);
-      border-radius: 30px;
-      padding: 10px 20px;
-      box-shadow: 0 3px 14px rgba(0,0,0,.2);
-    }
-    #stars-count {
-      font-family: 'Fredoka One', cursive;
-      font-size: 26px;
-      color: var(--gold);
-    }
-    .stars-label {
-      font-family: 'Rubik', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      color: rgba(245,240,220,.7);
-    }
+#cta-primary{
+  background:var(--orange);color:#fff;border:none;border-radius:22px;
+  padding:18px 24px;font-size:22px;font-family:'Fredoka One',cursive;
+  cursor:pointer;width:100%;margin-bottom:12px;
+  box-shadow:0 6px 28px rgba(245,146,30,.5);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+#cta-primary:active{transform:scale(.97);animation:none}
 
-    #success-banner {
-      display: none;
-      margin: 0 16px 16px;
-      background: linear-gradient(135deg, #43A047, #66BB6A);
-      border-radius: 20px;
-      padding: 16px 20px;
-      text-align: center;
-      box-shadow: 0 4px 18px rgba(67,160,71,.35);
-      animation: fadeUp .5s ease;
-    }
-    #success-banner p {
-      font-family: 'Fredoka One', cursive;
-      font-size: 20px;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-    #success-banner small {
-      font-family: 'Rubik', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      color: rgba(255,255,255,.85);
-    }
+/* ═══════════════════════════════════════════
+   MENU SCREEN
+═══════════════════════════════════════════ */
+#menu-screen{display:none;width:100%;max-width:420px;animation:fadeUp .4s ease}
 
-    #progress-card {
-      margin: 0 16px 20px;
-      background: rgba(245,240,220,.08);
-      border: 2px solid rgba(245,240,220,.12);
-      border-radius: 20px;
-      padding: 14px 18px;
-    }
-    .progress-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .progress-row span {
-      font-family: 'Rubik', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      color: rgba(245,240,220,.6);
-    }
-    #progress-txt {
-      font-family: 'Fredoka One', cursive;
-      font-size: 18px;
-      color: var(--orange);
-    }
-    .progress-track {
-      background: rgba(245,240,220,.12);
-      border-radius: 8px;
-      height: 10px;
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
-    #progress-fill {
-      height: 100%;
-      border-radius: 8px;
-      background: linear-gradient(90deg, var(--orange), var(--gold));
-      transition: width .6s ease;
-      width: 0%;
-    }
-    #progress-dots {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-    }
+#map-header{
+  background:var(--card);
+  border-radius:0 0 32px 32px;
+  padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 22px;
+  text-align:center;
+  box-shadow:0 8px 28px rgba(0,0,0,.28);
+  margin-bottom:16px;
+  position:relative;
+}
+#map-header::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--green) 33%,#fff 33%,#fff 66%,var(--red) 66%);
+}
+#back-btn{
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);left:16px;
+  background:rgba(26,61,31,.1);border:none;border-radius:12px;
+  padding:7px 14px;font-size:14px;font-weight:800;color:var(--dark);
+  cursor:pointer;font-family:'Assistant',sans-serif;
+}
+#map-header h2{font-family:'Fredoka One',cursive;font-size:28px;color:var(--dark);margin-bottom:4px}
+#map-header p{font-size:15px;font-weight:700;color:rgba(26,61,31,.55);margin-bottom:14px}
 
-    #adventure-map { padding: 0 16px; }
+.stars-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--dark);border-radius:30px;padding:9px 20px;
+  box-shadow:0 3px 14px rgba(0,0,0,.18);
+}
+#stars-count{font-family:'Fredoka One',cursive;font-size:24px;color:var(--gold)}
+.stars-label{font-size:14px;font-weight:700;color:rgba(245,240,220,.65)}
 
-    .station-wrap {
-      margin-bottom: 12px;
-      animation: stationSlide .4s ease both;
-    }
-    .station {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 18px 20px;
-      border-radius: 22px;
-      width: 100%;
-      border: none;
-      cursor: pointer;
-      direction: rtl;
-      text-align: right;
-      transition: transform .15s ease, box-shadow .15s ease;
-      min-height: 86px;
-    }
-    .station:active { transform: scale(.975); }
-    .station-num {
-      width: 54px; height: 54px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Fredoka One', cursive;
-      font-size: 24px;
-      flex-shrink: 0;
-    }
-    .station-text { flex: 1; min-width: 0; }
-    .station-name {
-      font-family: 'Fredoka One', cursive;
-      font-size: 22px;
-      line-height: 1.2;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .station-sub {
-      font-family: 'Rubik', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .station-chip {
-      flex-shrink: 0;
-      font-family: 'Fredoka One', cursive;
-      font-size: 15px;
-      padding: 7px 14px;
-      border-radius: 16px;
-      white-space: nowrap;
-    }
+/* Progress */
+#progress-card{
+  margin:0 16px 16px;
+  background:rgba(245,240,220,.07);
+  border:2px solid rgba(245,240,220,.11);
+  border-radius:20px;padding:13px 18px;
+}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prog-row span{font-size:14px;font-weight:700;color:rgba(245,240,220,.55)}
+#progress-txt{font-family:'Fredoka One',cursive;font-size:17px;color:var(--orange)}
+.prog-track{background:rgba(245,240,220,.12);border-radius:8px;height:9px;overflow:hidden;margin-bottom:10px}
+#progress-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--orange),var(--gold));transition:width .6s ease;width:0%}
+#prog-dots{display:flex;gap:8px;justify-content:center}
 
-    .station.unlocked { box-shadow: 0 6px 24px rgba(0,0,0,.3); }
-    .station.unlocked .station-num  { background: rgba(255,255,255,.2); color: #fff; }
-    .station.unlocked .station-name { color: #fff; }
-    .station.unlocked .station-sub  { color: rgba(255,255,255,.65); }
-    .station.unlocked .station-chip { background: rgba(255,255,255,.22); color: #fff; }
+/* Recipe cards */
+#recipe-list{padding:0 16px}
 
-    .station.fresh {
-      box-shadow: 0 8px 32px rgba(245,200,66,.55);
-      border: 3px solid var(--gold) !important;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    .station.fresh .station-chip { background: var(--gold); color: var(--text-dark); }
+.recipe-wrap{margin-bottom:10px;animation:fadeUp .4s ease both}
+.connector{display:flex;flex-direction:column;align-items:center;gap:3px;margin-bottom:10px}
+.conn-dot{width:6px;height:6px;border-radius:50%;background:rgba(245,240,220,.18)}
 
-    .station.done { box-shadow: 0 4px 18px rgba(0,0,0,.2); }
-    .station.done .station-num  { background: rgba(255,255,255,.18); font-size: 26px; }
-    .station.done .station-name { color: #fff; }
-    .station.done .station-sub  { color: rgba(255,255,255,.7); }
-    .station.done .station-chip { background: rgba(255,255,255,.18); color: rgba(255,255,255,.85); }
+.recipe-card{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;border-radius:20px;
+  width:100%;border:none;cursor:pointer;
+  direction:rtl;text-align:right;
+  transition:transform .15s,box-shadow .15s;
+  min-height:80px;
+}
+.recipe-card:active{transform:scale(.976)}
+.recipe-card.locked{
+  background:rgba(245,240,220,.05) !important;
+  border:2px dashed rgba(245,240,220,.14) !important;
+  box-shadow:none;cursor:not-allowed;
+}
+.recipe-card.unlocked{box-shadow:0 6px 24px rgba(0,0,0,.28)}
+.recipe-card.fresh{
+  box-shadow:0 8px 32px rgba(247,201,72,.55);
+  border:3px solid var(--gold) !important;
+  animation:pulse 2s ease-in-out infinite;
+}
+.recipe-card.done{box-shadow:0 4px 16px rgba(0,0,0,.2)}
 
-    .station.locked {
-      background: rgba(245,240,220,.05) !important;
-      border: 2px dashed rgba(245,240,220,.15) !important;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-    .station.locked .station-num  { background: rgba(245,240,220,.08); color: rgba(245,240,220,.3); }
-    .station.locked .station-name { color: rgba(245,240,220,.3); }
-    .station.locked .station-sub  { color: rgba(245,240,220,.2); }
-    .station.locked .station-chip { color: rgba(245,240,220,.25); }
+/* Icon circle */
+.r-icon{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+}
+.recipe-card.unlocked .r-icon,.recipe-card.done .r-icon{background:rgba(255,255,255,.2)}
+.recipe-card.locked .r-icon{background:rgba(245,240,220,.08);font-size:20px;color:rgba(245,240,220,.3)}
 
-    .path-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: rgba(245,240,220,.2);
-      margin: 0 auto 3px;
-    }
-    .path-connector {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0;
-      margin-bottom: 12px;
-      gap: 3px;
-    }
+/* Text */
+.r-text{flex:1;min-width:0}
+.r-name{
+  font-family:'Fredoka One',cursive;font-size:18px;line-height:1.25;
+  margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.r-sub{font-size:13px;font-weight:700}
+.recipe-card.unlocked .r-name,.recipe-card.done .r-name{color:#fff}
+.recipe-card.locked .r-name{color:rgba(245,240,220,.28)}
+.recipe-card.unlocked .r-sub{color:rgba(255,255,255,.6)}
+.recipe-card.done .r-sub{color:rgba(255,255,255,.7)}
+.recipe-card.locked .r-sub{color:rgba(245,240,220,.2)}
 
-    #map-footer { padding: 4px 16px 0; }
-    #adventure-trophy-btn {
-      display: none;
-      width: 100%;
-      background: linear-gradient(135deg, var(--gold), var(--orange));
-      color: #fff;
-      border: none;
-      border-radius: 22px;
-      padding: 20px;
-      font-size: 24px;
-      font-family: 'Fredoka One', cursive;
-      cursor: pointer;
-      box-shadow: 0 6px 24px rgba(245,200,66,.5);
-      animation: pulse 2s ease-in-out infinite;
-      margin-bottom: 12px;
-      -webkit-appearance: none;
-    }
+/* Stars row inside card */
+.r-stars{font-size:13px;letter-spacing:1px;margin-top:3px}
 
-    @media (min-width: 768px) {
-      .page, #hero-banner, #menu-screen { max-width: 640px; }
-      #chef-img { width: 150px; height: 150px; }
-      #hero-title { font-size: 42px; }
-      #hero-sub { font-size: 20px; }
-      #cta-primary, #adventure-trophy-btn { font-size: 28px; padding: 22px; }
-      #map-header h2 { font-size: 38px; }
-      #map-header p  { font-size: 20px; }
-      .station-name  { font-size: 26px; }
-    }
-  </style>
-  <style>
-    *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
-    html{touch-action:pan-y;overscroll-behavior-y:none}
-    body{overflow-y:auto;overflow-x:hidden;position:relative;height:auto;overscroll-behavior-y:none;padding-bottom:80px}
-    button,[role=button]{touch-action:manipulation}
-  </style>
+/* Right chip */
+.r-chip{
+  flex-shrink:0;font-family:'Fredoka One',cursive;font-size:14px;
+  padding:7px 13px;border-radius:14px;white-space:nowrap;
+}
+.recipe-card.unlocked .r-chip{background:rgba(255,255,255,.2);color:#fff}
+.recipe-card.fresh .r-chip{background:var(--gold);color:var(--dark)}
+.recipe-card.done .r-chip{background:rgba(255,255,255,.18);color:rgba(255,255,255,.85)}
+.recipe-card.locked .r-chip{color:rgba(245,240,220,.22);font-size:20px}
+
+/* Trophy button */
+#trophy-btn{
+  display:none;width:calc(100% - 32px);margin:8px 16px 0;
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:#fff;border:none;border-radius:22px;padding:18px;
+  font-size:22px;font-family:'Fredoka One',cursive;
+  cursor:pointer;box-shadow:0 6px 24px rgba(245,200,66,.5);
+  animation:pulse 2s ease-in-out infinite;
+}
+
+/* Success toast */
+#success-toast{
+  display:none;margin:0 16px 12px;
+  background:linear-gradient(135deg,#2E7D32,#43A047);
+  border-radius:18px;padding:14px 18px;text-align:center;
+  box-shadow:0 4px 18px rgba(46,125,50,.35);animation:fadeUp .4s ease;
+}
+#success-toast p{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;margin-bottom:2px}
+#success-toast small{font-size:13px;font-weight:700;color:rgba(255,255,255,.82)}
+
+@media(min-width:420px){
+  #hero-title{font-size:36px}
+  .recipe-card{padding:18px 20px}
+  .r-name{font-size:20px}
+}
+</style>
 </head>
 <body>
 
-<!-- INTRO SCREEN -->
+<!-- ══ INTRO ══════════════════════════════════════════════════════ -->
 <div id="intro-screen">
-
   <header id="hero-banner">
-    <div class="hero-deco" style="top:18px;right:20px;font-size:22px;animation-duration:2.2s;animation-delay:.0s">🍝</div>
-    <div class="hero-deco" style="top:22px;left:24px; font-size:18px;animation-duration:3s;  animation-delay:.4s">⭐</div>
-    <div class="hero-deco" style="bottom:26px;right:38px;font-size:16px;animation-duration:2.6s;animation-delay:.8s">🌟</div>
-    <div class="hero-deco" style="bottom:22px;left:34px; font-size:20px;animation-duration:2s;  animation-delay:.2s">🇮🇹</div>
-
+    <div class="hero-deco" style="top:16px;right:22px;font-size:22px;animation-duration:2.2s">🍝</div>
+    <div class="hero-deco" style="top:20px;left:26px;font-size:17px;animation-duration:3s;animation-delay:.4s">⭐</div>
+    <div class="hero-deco" style="bottom:28px;right:40px;font-size:15px;animation-duration:2.6s;animation-delay:.8s">🌟</div>
+    <div class="hero-deco" style="bottom:24px;left:36px;font-size:19px;animation-duration:2s;animation-delay:.2s">🇮🇹</div>
     <img id="chef-img" src="/assets/images/chef-green.png" alt="השף הירוק">
     <h1 id="hero-title">הרפתקת איטליה</h1>
-    <p id="hero-sub">4 מתכונים סודיים מהמטבח האיטלקי</p>
-
-    <div id="dishes-row">
-      <div class="dish" style="animation-delay:.10s"><span class="lock">🔒</span></div>
-      <div class="dish" style="animation-delay:.20s"><span class="lock">🔒</span></div>
-      <div class="dish" style="animation-delay:.30s"><span class="lock">🔒</span></div>
-      <div class="dish" style="animation-delay:.40s"><span class="lock">🔒</span></div>
+    <p id="hero-sub">4 מתכונים סודיים מהמטבח האיטלקי 🇮🇹</p>
+    <div id="flag-dishes">
+      <div class="dish"><span id="d0">🔒</span></div>
+      <div class="dish"><span id="d1">🔒</span></div>
+      <div class="dish"><span id="d2">🔒</span></div>
+      <div class="dish"><span id="d3">🔒</span></div>
     </div>
   </header>
 
-  <div class="page" style="padding-top:20px">
-
+  <div class="page" style="padding-top:18px">
     <div class="story-text">
       <p>
-        השף הירוק וביטו הגיעו לאיטליה...<br>
+        השף הירוק וביטו הגיעו לאיטליה…<br>
         אבל 4 המתכונים הסודיים <strong>נעלמו!</strong><br>
         רק אתם תוכלו לשחזר אותם דרך משחקים ורמזים.
       </p>
     </div>
-
     <button id="cta-primary" onclick="goMenu()">🍝 צאו לגלות את המתכונים!</button>
-
   </div>
 </div>
 
 
-<!-- QUEST MAP SCREEN -->
+<!-- ══ MENU ═══════════════════════════════════════════════════════ -->
 <div id="menu-screen">
-
   <div id="map-header">
+    <button id="back-btn" onclick="goBack()">← חזרה</button>
     <h2>🍝 המטבח האיטלקי</h2>
-    <p>כל תחנה מגלה מתכון סודי חדש!</p>
+    <p id="map-sub">כל תחנה מגלה מתכון סודי חדש!</p>
     <div class="stars-badge">
-      <span style="font-size:24px">⭐</span>
+      <span style="font-size:22px">⭐</span>
       <span id="stars-count">0</span>
       <span class="stars-label">כוכבים שנצברו</span>
     </div>
   </div>
 
-  <div id="success-banner">
-    <p>🎉 כל הכבוד! השלמתם את פסטה סגולה!</p>
-    <small>המשימה הבאה נפתחה! 🔓</small>
+  <div id="success-toast">
+    <p>🎉 מתכון חדש נפתח!</p>
+    <small>המשיכו לשלב הבא 🔓</small>
   </div>
 
   <div id="progress-card">
-    <div class="progress-row">
+    <div class="prog-row">
       <span>התקדמות</span>
-      <span id="progress-txt">0/4 תחנות</span>
+      <span id="progress-txt">0/4 מתכונים</span>
     </div>
-    <div class="progress-track">
-      <div id="progress-fill"></div>
-    </div>
-    <div id="progress-dots"></div>
+    <div class="prog-track"><div id="progress-fill"></div></div>
+    <div id="prog-dots"></div>
   </div>
 
-  <div id="adventure-map">
-    <div id="recipe-list"></div>
-  </div>
+  <div id="recipe-list"></div>
 
-  <div id="map-footer">
-    <button id="adventure-trophy-btn" onclick="window.location.href='completion.html'">
-      🏆 השלמתם את הרפתקת איטליה — ראו את ההישג!
-    </button>
-  </div>
-
+  <button id="trophy-btn" onclick="window.location.href='completion.html'">
+    🏆 סיימתם את הרפתקת איטליה — ראו את ההישג!
+  </button>
 </div>
 
 
 <script>
-  const RECIPES = [
-    { name: 'פסטה סגולה 🍝',          color: '#7B2D8B', href: 'game1.html', games: [0,1] },
-    { name: 'ברוסקטה חיפושית 🐞',      color: '#8B4513', href: 'game3.html', games: [2,3]   },
-    { name: 'מאפה פסטה וגבינות 🧀',    color: '#D4872A', href: 'game3.html', games: [5,6]   },
-    { name: 'פנקוטה עם פירות 🍮',      color: '#B5186A', href: 'game4.html', games: [7,8]   },
-  ];
+const RECIPES = [
+  { name:'פסטה סגולה',                    emoji:'🍝', color:'#7B2D8B', href:'game1.html' },
+  { name:'ברוסקטה חיפושית',              emoji:'🐞', color:'#8B4513', href:'game3.html' },
+  { name:'מאפה פסטה וגבינות',            emoji:'🧀', color:'#D4872A', href:'game5.html' },
+  { name:'פנקוטה וניל עם סירופ רימונים', emoji:'🍮', color:'#B5186A', href:'game7.html' },
+];
 
-  const COMPLETION_KEYS = [
-    'italy_station1_completed','italy_station2_completed',
-    'italy_station3_completed','italy_station4_completed'
-  ];
+// ── localStorage helpers ──────────────────────────────────────────
+function getStars() {
+  return JSON.parse(localStorage.getItem('italy_stars_detail') || '[]');
+}
+function recipeStars(i) {
+  return getStars()[i] || 0;
+}
+function isUnlocked(i) {
+  if (i === 0) return true;
+  return recipeStars(i - 1) > 0;
+}
+function isDone(i) {
+  return recipeStars(i) > 0;
+}
+function getTotalStars() {
+  return getStars().slice(0, 4).reduce(function(a, b){ return a + b; }, 0);
+}
+function getDoneCount() {
+  var n = 0;
+  for (var i = 0; i < RECIPES.length; i++) if (isDone(i)) n++;
+  return n;
+}
 
-  function isCompleted(i) {
-    return localStorage.getItem(COMPLETION_KEYS[i]) === '1';
-  }
-  function isUnlocked(i) {
-    if (i === 0) return true;
-    if (isCompleted(i)) return true;
-    if (isCompleted(i - 1)) return true;
-    const d = JSON.parse(localStorage.getItem('italy_stars_detail') || '[]');
-    return RECIPES[i - 1].games.some(g => d[g] > 0);
-  }
-  function isNewlyUnlocked(i) {
-    if (!isUnlocked(i) || i === 0) return false;
-    const d = JSON.parse(localStorage.getItem('italy_stars_detail') || '[]');
-    return !RECIPES[i].games.some(g => d[g] > 0) && !isCompleted(i);
-  }
-  function getTotalStars() {
-    return JSON.parse(localStorage.getItem('italy_stars_detail') || '[]')
-           .reduce(function(a, b) { return a + b; }, 0);
-  }
-  function getCompletedCount() {
-    return RECIPES.filter(function(_, i) { return isCompleted(i); }).length;
-  }
+// ── Navigation ────────────────────────────────────────────────────
+function goBack() {
+  window.location.href = '../app/start.html';
+}
 
-  function buildMenu() {
-    document.getElementById('stars-count').textContent = getTotalStars();
+function goMenu() {
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('menu-screen').style.display  = 'block';
+  buildMenu();
+}
 
-    if (getCompletedCount() === RECIPES.length) {
-      if (!localStorage.getItem('italy_adventure_completed_seen')) {
-        localStorage.setItem('italy_adventure_completed_seen', '1');
-        window.location.href = 'completion.html';
-        return;
-      }
-      document.getElementById('adventure-trophy-btn').style.display = 'block';
-    }
-
-    const done = getCompletedCount();
-    document.getElementById('progress-txt').textContent = done + '/4 תחנות';
-    document.getElementById('progress-fill').style.width = ((done / RECIPES.length) * 100) + '%';
-
-    const dotsEl = document.getElementById('progress-dots');
-    dotsEl.innerHTML = '';
-    RECIPES.forEach(function(_, i) {
-      const dot = document.createElement('div');
-      Object.assign(dot.style, {
-        width: '12px', height: '12px', borderRadius: '50%', flexShrink: '0',
-        background: isCompleted(i)
-          ? 'var(--orange)'
-          : isUnlocked(i)
-            ? 'rgba(245,240,220,.35)'
-            : 'rgba(245,240,220,.1)',
-        boxShadow: isCompleted(i) ? '0 1px 6px rgba(245,146,30,.6)' : 'none',
-        transition: 'all .3s',
-      });
-      dotsEl.appendChild(dot);
-    });
-
-    document.getElementById('success-banner').style.display =
-      isCompleted(0) ? 'block' : 'none';
-
-    const list = document.getElementById('recipe-list');
-    list.innerHTML = '';
-
-    RECIPES.forEach(function(r, i) {
-      const unlocked    = isUnlocked(i);
-      const completed   = isCompleted(i);
-      const freshUnlock = isNewlyUnlocked(i);
-
-      if (i > 0) {
-        const conn = document.createElement('div');
-        conn.className = 'path-connector';
-        for (let d = 0; d < 3; d++) {
-          const dot = document.createElement('div');
-          dot.className = 'path-dot';
-          conn.appendChild(dot);
-        }
-        list.appendChild(conn);
-      }
-
-      const wrap = document.createElement('div');
-      wrap.className = 'station-wrap';
-      wrap.style.animationDelay = (i * 0.08) + 's';
-
-      const btn = document.createElement('button');
-      btn.className = 'station';
-      btn.style.background = 'linear-gradient(135deg, ' + r.color + ', ' + r.color + 'BB)';
-
-      if      (completed)   btn.classList.add('done');
-      else if (freshUnlock) btn.classList.add('unlocked', 'fresh');
-      else if (unlocked)    btn.classList.add('unlocked');
-      else                  { btn.classList.add('locked'); btn.disabled = true; }
-
-      if (unlocked) btn.onclick = function() { window.location.href = r.href; };
-
-      const num = document.createElement('div');
-      num.className = 'station-num';
-      if      (completed) { num.textContent = '✅'; num.style.background = 'rgba(255,255,255,.18)'; }
-      else if (unlocked)  { num.textContent = i + 1; num.style.background = 'rgba(255,255,255,.2)'; num.style.color = '#fff'; }
-      else                { num.textContent = '🔒'; num.style.background = 'rgba(245,240,220,.07)'; }
-
-      const text = document.createElement('div');
-      text.className = 'station-text';
-
-      const nameEl = document.createElement('div');
-      nameEl.className = 'station-name';
-      nameEl.textContent = unlocked ? r.name : '??? מתכון סודי';
-
-      const subEl = document.createElement('div');
-      subEl.className = 'station-sub';
-      if      (completed)   { subEl.textContent = '✓ הושלם';         subEl.style.color = 'rgba(255,255,255,.7)'; }
-      else if (freshUnlock) { subEl.textContent = '✨ נפתח עכשיו!';   subEl.style.color = 'var(--gold)'; }
-      else if (unlocked)    { subEl.textContent = 'לחצו להתחיל ▶';  subEl.style.color = 'rgba(255,255,255,.6)'; }
-      else                  { subEl.textContent = '🔒 עדיין נעול';   subEl.style.color = 'rgba(245,240,220,.25)'; }
-
-      text.appendChild(nameEl);
-      text.appendChild(subEl);
-
-      const chip = document.createElement('div');
-      chip.className = 'station-chip';
-      if      (completed)   { chip.textContent = 'שחקו שוב'; }
-      else if (freshUnlock) { chip.textContent = 'התחילו!'; chip.style.background = 'var(--gold)'; chip.style.color = 'var(--text-dark)'; }
-      else if (unlocked)    { chip.textContent = '▶'; chip.style.fontSize = '22px'; chip.style.padding = '6px 10px'; }
-      else                  { chip.textContent = '🔒'; chip.style.fontSize = '22px'; }
-
-      btn.appendChild(num);
-      btn.appendChild(text);
-      btn.appendChild(chip);
-      wrap.appendChild(btn);
-      list.appendChild(wrap);
-    });
+// ── Build menu ────────────────────────────────────────────────────
+function buildMenu() {
+  var chefName = localStorage.getItem('chefName');
+  if (chefName) {
+    document.getElementById('map-sub').textContent = 'שלום ' + chefName + '! כל תחנה מגלה מתכון חדש!';
   }
 
-  function goMenu() {
-    document.getElementById('intro-screen').style.display = 'none';
-    document.getElementById('menu-screen').style.display  = 'block';
-    buildMenu();
-  }
+  var done  = getDoneCount();
+  var total = RECIPES.length;
 
-  const DISH_EMOJIS = ['🍝', '🐛', '🧀', '🍮'];
-  function updateDishRow() {
-    document.querySelectorAll('#dishes-row .dish').forEach(function(d, i) {
-      const span = d.querySelector('.lock');
-      if (!span) return;
-      if (isCompleted(i)) {
-        span.textContent = '✅';
-        span.style.animation = 'none';
-        d.style.background = 'linear-gradient(135deg,#43A047,#66BB6A)';
-        d.style.borderColor = '#43A047';
-      } else if (isUnlocked(i)) {
-        span.textContent = DISH_EMOJIS[i];
-        span.style.animation = 'none';
-        d.style.background = 'linear-gradient(135deg,rgba(245,146,30,.6),rgba(245,200,66,.5))';
-      }
-    });
-  }
+  document.getElementById('stars-count').textContent = getTotalStars();
+  document.getElementById('progress-txt').textContent = done + '/' + total + ' מתכונים';
+  document.getElementById('progress-fill').style.width = (done / total * 100) + '%';
 
-  document.addEventListener('DOMContentLoaded', function() {
-    updateDishRow();
-    const chefName = localStorage.getItem('chefName');
-    if (chefName) {
-      document.getElementById('hero-sub').textContent = 'שלום ' + chefName + '! 4 מתכונים סודיים מהמטבח האיטלקי';
-      document.querySelector('#map-header p').textContent = 'שלום ' + chefName + '! כל תחנה מגלה מתכון סודי חדש!';
-    }
-    const hasProgress = RECIPES.some(function(_, i) { return isCompleted(i); }) || getTotalStars() > 0;
-    if (hasProgress) goMenu();
+  // Progress dots
+  var dotsEl = document.getElementById('prog-dots');
+  dotsEl.innerHTML = '';
+  RECIPES.forEach(function(_, i) {
+    var dot = document.createElement('div');
+    dot.style.cssText = [
+      'width:12px','height:12px','border-radius:50%','flex-shrink:0',
+      'background:' + (isDone(i) ? 'var(--orange)' : isUnlocked(i) ? 'rgba(245,240,220,.32)' : 'rgba(245,240,220,.1)'),
+      'box-shadow:' + (isDone(i) ? '0 1px 6px rgba(245,146,30,.6)' : 'none'),
+      'transition:all .3s',
+    ].join(';');
+    dotsEl.appendChild(dot);
   });
+
+  // Show success toast if any recipe just became unlocked
+  var anyFresh = false;
+  for (var k = 1; k < RECIPES.length; k++) {
+    if (isUnlocked(k) && !isDone(k)) { anyFresh = true; break; }
+  }
+  document.getElementById('success-toast').style.display = anyFresh ? 'block' : 'none';
+
+  // Trophy button if all done
+  document.getElementById('trophy-btn').style.display = done === total ? 'block' : 'none';
+
+  // Build recipe cards
+  var list = document.getElementById('recipe-list');
+  list.innerHTML = '';
+
+  RECIPES.forEach(function(r, i) {
+    var unlocked = isUnlocked(i);
+    var done_i   = isDone(i);
+    var fresh    = unlocked && !done_i && i > 0 && isDone(i - 1);
+    var stars    = recipeStars(i);
+
+    // Connector dots between cards
+    if (i > 0) {
+      var conn = document.createElement('div');
+      conn.className = 'connector';
+      for (var d = 0; d < 3; d++) {
+        var dot = document.createElement('div');
+        dot.className = 'conn-dot';
+        conn.appendChild(dot);
+      }
+      list.appendChild(conn);
+    }
+
+    var wrap = document.createElement('div');
+    wrap.className = 'recipe-wrap';
+    wrap.style.animationDelay = (i * 0.07) + 's';
+
+    var card = document.createElement('button');
+    card.className = 'recipe-card';
+    card.style.background = 'linear-gradient(135deg,' + r.color + ',' + r.color + 'BB)';
+
+    if      (done_i)  card.classList.add('done');
+    else if (fresh)   card.classList.add('unlocked', 'fresh');
+    else if (unlocked) card.classList.add('unlocked');
+    else              { card.classList.add('locked'); card.disabled = true; }
+
+    if (unlocked) {
+      card.onclick = function(href){ return function(){ window.location.href = href; }; }(r.href);
+    }
+
+    // Icon
+    var icon = document.createElement('div');
+    icon.className = 'r-icon';
+    icon.textContent = unlocked ? (done_i ? '✅' : r.emoji) : '🔒';
+
+    // Text
+    var text = document.createElement('div');
+    text.className = 'r-text';
+
+    var name = document.createElement('div');
+    name.className = 'r-name';
+    name.textContent = unlocked ? r.name : '??? מתכון סודי';
+
+    var sub = document.createElement('div');
+    sub.className = 'r-sub';
+    if      (done_i)   { sub.textContent = '✓ שוחק'; sub.style.color = 'rgba(255,255,255,.7)'; }
+    else if (fresh)    { sub.textContent = '✨ נפתח!'; sub.style.color = 'var(--gold)'; }
+    else if (unlocked) { sub.textContent = 'לחצו להתחיל ▶'; sub.style.color = 'rgba(255,255,255,.6)'; }
+    else               { sub.textContent = '🔒 עדיין נעול'; sub.style.color = 'rgba(245,240,220,.22)'; }
+
+    // Stars row if has score
+    if (done_i && stars > 0) {
+      var starsEl = document.createElement('div');
+      starsEl.className = 'r-stars';
+      starsEl.textContent = '⭐'.repeat(stars) + '☆'.repeat(Math.max(0, 3 - stars));
+      text.appendChild(name);
+      text.appendChild(sub);
+      text.appendChild(starsEl);
+    } else {
+      text.appendChild(name);
+      text.appendChild(sub);
+    }
+
+    // Chip
+    var chip = document.createElement('div');
+    chip.className = 'r-chip';
+    if      (done_i)   chip.textContent = 'שחקו שוב';
+    else if (fresh)    { chip.textContent = 'התחילו!'; chip.style.background = 'var(--gold)'; chip.style.color = 'var(--dark)'; }
+    else if (unlocked) { chip.textContent = '▶'; chip.style.fontSize = '22px'; chip.style.padding = '5px 10px'; }
+    else               { chip.textContent = '🔒'; chip.style.fontSize = '20px'; }
+
+    card.appendChild(icon);
+    card.appendChild(text);
+    card.appendChild(chip);
+    wrap.appendChild(card);
+    list.appendChild(wrap);
+  });
+}
+
+// ── Intro dishes ──────────────────────────────────────────────────
+function updateDishes() {
+  var emojis = ['🍝','🐞','🧀','🍮'];
+  RECIPES.forEach(function(_, i) {
+    var span = document.getElementById('d' + i);
+    if (!span) return;
+    if (isDone(i)) {
+      span.textContent = '✅';
+      span.parentElement.style.background = 'linear-gradient(135deg,#2E7D32,#43A047)';
+    } else if (isUnlocked(i)) {
+      span.textContent = emojis[i];
+      span.parentElement.style.background = 'linear-gradient(135deg,rgba(245,146,30,.55),rgba(247,201,72,.45))';
+    }
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  updateDishes();
+  var chefName = localStorage.getItem('chefName');
+  if (chefName) {
+    document.getElementById('hero-sub').textContent = 'שלום ' + chefName + '! 🇮🇹 4 מתכונים סודיים מחכים לך';
+  }
+  // Auto-jump to menu if there's any progress
+  if (getTotalStars() > 0) goMenu();
+});
 </script>
 </body>
 </html>
