@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@700;800&display=swap" rel="stylesheet">
+<title>מאפה פסטה וגבינות – מה נכנס לסל?</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assistant',sans-serif;direction:rtl;min-height:100vh;overflow:hidden}
+#app{width:100%;max-width:360px;background:#fff;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+
+/* Header */
+#hdr{padding:10px 16px 8px;color:#fff;text-align:center;background:linear-gradient(135deg,#D4872A,#F0A850);flex-shrink:0}
+#badge{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:2px 13px;font-size:12px;font-weight:700;margin-bottom:4px}
+#htitle{font-family:'Fredoka One',cursive;font-size:19px;margin-bottom:2px}
+#hsub{font-size:11px;opacity:.9;font-weight:700}
+
+/* Progress row */
+#top-row{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 2px;flex-shrink:0}
+#prog-txt{font-size:12px;font-weight:800;color:#888}
+#skip-btn{background:none;border:2px solid #DDD;border-radius:14px;padding:5px 12px;font-size:12px;font-weight:800;color:#AAA;cursor:pointer;font-family:'Assistant',sans-serif;touch-action:manipulation}
+#prog-wrap{padding:2px 14px 6px;flex-shrink:0}
+#prog-bg{height:7px;background:#EEE;border-radius:4px;overflow:hidden}
+#prog-bar{height:100%;width:0%;background:linear-gradient(90deg,#D4872A,#F0A850);border-radius:4px;transition:width .4s ease}
+
+/* Items grid */
+#items-area{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:8px 12px 4px;flex-shrink:0;min-height:80px}
+.ing-card{display:flex;flex-direction:column;align-items:center;gap:2px;background:#FFF8EE;border:2px solid #EDD8B0;border-radius:12px;padding:5px 3px 4px;cursor:grab;transition:opacity .2s,transform .15s,box-shadow .15s;touch-action:none;-webkit-user-drag:none}
+.ing-card.dragging{opacity:.25}
+.ing-card.sorted{display:none}
+.ing-card img{width:46px;height:46px;object-fit:contain;pointer-events:none;display:block}
+.ing-card .lbl{font-size:8.5px;font-weight:800;color:#5D4037;text-align:center;line-height:1.2;pointer-events:none;word-break:keep-all}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.ing-card.shake{animation:shake .45s ease}
+
+/* Feedback */
+#feedback{min-height:26px;text-align:center;font-size:12px;font-weight:800;padding:2px 14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity .3s}
+#feedback.good{color:#388E3C;opacity:1}
+#feedback.bad{color:#C62828;opacity:1}
+#feedback.empty{opacity:0}
+
+/* Drop zones with background image */
+#zones-wrap{flex:1;display:flex;gap:8px;padding:8px 10px 12px;background:url('assets/pasta_bake_bg.png') center/cover no-repeat;position:relative;overflow:hidden;min-height:0}
+#zones-wrap::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.18);pointer-events:none}
+
+.drop-zone{flex:1;display:flex;flex-direction:column;border-radius:16px;border:3px solid transparent;transition:border-color .2s,box-shadow .2s;position:relative;overflow:hidden;min-height:0}
+.drop-zone.over{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.5)}
+
+.zone-hdr{text-align:center;padding:8px 4px 5px;flex-shrink:0}
+.zone-icon{font-size:24px;display:block;margin-bottom:1px}
+.zone-lbl{font-family:'Fredoka One',cursive;font-size:12px;display:block;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+
+#zone-yes{background:rgba(46,125,50,.82)}
+#zone-no {background:rgba(183,28,28,.82)}
+
+.zone-items{flex:1;display:flex;flex-wrap:wrap;gap:4px;padding:4px 6px 6px;align-content:flex-start;overflow-y:auto}
+.z-thumb{width:46px;height:46px;border-radius:9px;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);overflow:hidden;flex-shrink:0}
+.z-thumb img{width:100%;height:100%;object-fit:contain;display:block}
+
+/* Drag clone */
+#drag-clone{position:fixed;z-index:9999;pointer-events:none;opacity:.88;transform:scale(1.08);border-radius:12px}
+
+/* Win overlay */
+#win-screen{display:none;position:fixed;inset:0;z-index:200;background:rgba(212,135,42,.94);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 20px}
+#win-screen.show{display:flex}
+.w-icon{font-size:60px;margin-bottom:10px}
+.w-title{font-family:'Fredoka One',cursive;font-size:26px;color:#fff;margin-bottom:6px}
+#w-stars{font-size:34px;letter-spacing:5px;margin-bottom:12px}
+.w-sub{font-size:14px;color:rgba(255,255,255,.92);font-weight:700;line-height:1.7;margin-bottom:22px}
+.w-btn{background:linear-gradient(135deg,#FF6B35,#F7C948);color:#fff;border:none;border-radius:20px;padding:14px 40px;font-size:18px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(255,107,53,.5);touch-action:manipulation}
+
+/* Confetti */
+@keyframes cfFall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hdr">
+    <div id="badge">🇮🇹 משחק 1 - מאפה פסטה וגבינות</div>
+    <h2 id="htitle">🧺 מה נכנס לסל?</h2>
+    <p id="hsub">גררו את המרכיבים למקום המתאים</p>
+  </div>
+
+  <div id="top-row">
+    <span id="prog-txt">0 / 10</span>
+    <button id="skip-btn" onclick="skipGame()">דלג ←</button>
+  </div>
+  <div id="prog-wrap"><div id="prog-bg"><div id="prog-bar"></div></div></div>
+
+  <div id="items-area"></div>
+
+  <div id="feedback" class="empty"> </div>
+
+  <div id="zones-wrap">
+    <div id="zone-yes" class="drop-zone" data-zone="yes">
+      <div class="zone-hdr">
+        <span class="zone-icon">🧺</span>
+        <span class="zone-lbl">נכנס לסל</span>
+      </div>
+      <div class="zone-items" id="items-yes"></div>
+    </div>
+    <div id="zone-no" class="drop-zone" data-zone="no">
+      <div class="zone-hdr">
+        <span class="zone-icon">🚫</span>
+        <span class="zone-lbl">לא למתכון הזה</span>
+      </div>
+      <div class="zone-items" id="items-no"></div>
+    </div>
+  </div>
+
+  <div id="win-screen">
+    <div class="w-icon">🎉</div>
+    <div class="w-title">כל הכבוד!</div>
+    <div id="w-stars">⭐⭐⭐</div>
+    <div class="w-sub">סל הקניות מוכן!<br>מאפה פסטה וגבינות מחכה לכם 🍝</div>
+    <button class="w-btn" onclick="window.location.href='game6.html'">המשך לבישול ▶</button>
+  </div>
+</div>
+
+<script>
+const INGREDIENTS = [
+  {id:'pasta',        img:'assets/ing_pasta.png',        label:'פסטה קצרה',    correct:true},
+  {id:'carrot',       img:'assets/ing_carrot.png',       label:'גזר',          correct:true},
+  {id:'sweet_potato', img:'assets/ing_sweet_potato.png', label:'בטטה',         correct:true},
+  {id:'cream',        img:'assets/ing_cream.png',        label:'שמנת לבישול',  correct:true},
+  {id:'milk',         img:'assets/ing_milk.png',         label:'חלב',          correct:true},
+  {id:'cheese',       img:'assets/ing_cheese.png',       label:'גבינה מגורדת', correct:true},
+  {id:'cottage',      img:'assets/ing_cottage.png',      label:'גבינת קוטג׳',  correct:true},
+  {id:'chocolate',    img:'assets/ing_chocolate.png',    label:'שוקולד',       correct:false},
+  {id:'sugar',        img:'assets/ing_sugar.png',        label:'סוכר',         correct:false},
+  {id:'chips',        img:'assets/ing_chips.png',        label:'חטיפים',       correct:false},
+];
+
+let sortedCount = 0;
+let mistakes    = 0;
+let dragEl      = null;
+let clone       = null;
+let cloneOX     = 0, cloneOY = 0;
+let fbTimer     = null;
+
+// ── Build shuffled items ─────────────────────────────────────────
+const shuffled = [...INGREDIENTS].sort(() => Math.random() - 0.5);
+const area = document.getElementById('items-area');
+
+shuffled.forEach(ing => {
+  const card = document.createElement('div');
+  card.className = 'ing-card';
+  card.dataset.id      = ing.id;
+  card.dataset.correct = ing.correct;
+  card.draggable = true;
+  card.innerHTML = `<img src="${ing.img}" alt="${ing.label}"><span class="lbl">${ing.label}</span>`;
+
+  // Desktop drag
+  card.addEventListener('dragstart', e => {
+    dragEl = card;
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => card.classList.add('dragging'), 0);
+  });
+  card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
+  // Touch drag
+  card.addEventListener('touchstart', onTouchStart, {passive: false});
+  card.addEventListener('touchmove',  onTouchMove,  {passive: false});
+  card.addEventListener('touchend',   onTouchEnd);
+
+  area.appendChild(card);
+});
+
+// ── Drop zones ───────────────────────────────────────────────────
+document.querySelectorAll('.drop-zone').forEach(zone => {
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', e => { if (!zone.contains(e.relatedTarget)) zone.classList.remove('over'); });
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('over');
+    if (dragEl) { handleDrop(dragEl, zone.dataset.zone); dragEl = null; }
+  });
+});
+
+// ── Touch handlers ───────────────────────────────────────────────
+function onTouchStart(e) {
+  e.preventDefault();
+  const card = e.currentTarget;
+  if (card.classList.contains('sorted')) return;
+  dragEl = card;
+  const t = e.touches[0];
+  const r = card.getBoundingClientRect();
+  cloneOX = t.clientX - r.left;
+  cloneOY = t.clientY - r.top;
+
+  clone = card.cloneNode(true);
+  clone.id = 'drag-clone';
+  clone.style.width  = r.width  + 'px';
+  clone.style.height = r.height + 'px';
+  clone.style.top    = r.top    + 'px';
+  clone.style.left   = r.left   + 'px';
+  document.body.appendChild(clone);
+  card.classList.add('dragging');
+}
+
+function onTouchMove(e) {
+  e.preventDefault();
+  if (!clone) return;
+  const t = e.touches[0];
+  clone.style.top  = (t.clientY - cloneOY) + 'px';
+  clone.style.left = (t.clientX - cloneOX) + 'px';
+
+  clone.style.display = 'none';
+  const under = document.elementFromPoint(t.clientX, t.clientY);
+  clone.style.display = '';
+  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('over'));
+  under?.closest('.drop-zone')?.classList.add('over');
+}
+
+function onTouchEnd(e) {
+  if (!clone || !dragEl) return;
+  const t = e.changedTouches[0];
+  clone.remove(); clone = null;
+  dragEl.classList.remove('dragging');
+  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('over'));
+
+  const under = document.elementFromPoint(t.clientX, t.clientY);
+  const zone  = under?.closest('.drop-zone');
+  if (zone) handleDrop(dragEl, zone.dataset.zone);
+  dragEl = null;
+}
+
+// ── Drop logic ───────────────────────────────────────────────────
+function handleDrop(card, zoneId) {
+  const itemCorrect    = card.dataset.correct === 'true';
+  const droppedInYes   = zoneId === 'yes';
+  const isCorrectDrop  = itemCorrect === droppedInYes;
+
+  if (isCorrectDrop) {
+    card.classList.add('sorted');
+
+    const thumb = document.createElement('div');
+    thumb.className = 'z-thumb';
+    const img = card.querySelector('img').cloneNode();
+    thumb.appendChild(img);
+    document.getElementById(droppedInYes ? 'items-yes' : 'items-no').appendChild(thumb);
+
+    sortedCount++;
+    updateProgress();
+    showFeedback(droppedInYes ? '🎉 מעולה! זה מתאים למתכון' : '✅ נכון! זה לא נכנס למתכון הזה', true);
+
+    if (sortedCount >= INGREDIENTS.length) setTimeout(showWin, 900);
+  } else {
+    mistakes++;
+    showFeedback('❌ כמעט! נסו שוב', false);
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 500);
+  }
+}
+
+// ── UI helpers ────────────────────────────────────────────────────
+function updateProgress() {
+  document.getElementById('prog-bar').style.width = (sortedCount / INGREDIENTS.length * 100) + '%';
+  document.getElementById('prog-txt').textContent = `${sortedCount} / ${INGREDIENTS.length}`;
+}
+
+function showFeedback(msg, good) {
+  const el = document.getElementById('feedback');
+  el.textContent = msg;
+  el.className = good ? 'good' : 'bad';
+  if (fbTimer) clearTimeout(fbTimer);
+  fbTimer = setTimeout(() => { el.className = 'empty'; }, 1800);
+}
+
+function showWin() {
+  const stars = mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1;
+  const d = JSON.parse(localStorage.getItem('italy_stars_detail') || '[]');
+  while (d.length < 3) d.push(0);
+  if (stars > d[2]) d[2] = stars;
+  localStorage.setItem('italy_stars_detail', JSON.stringify(d));
+  localStorage.setItem('italy_stars', d.reduce((a, b) => a + b, 0));
+
+  document.getElementById('w-stars').textContent =
+    stars === 3 ? '⭐⭐⭐' : stars === 2 ? '⭐⭐☆' : '⭐☆☆';
+  document.getElementById('win-screen').classList.add('show');
+  spawnConfetti();
+}
+
+function skipGame() {
+  const d = JSON.parse(localStorage.getItem('italy_stars_detail') || '[]');
+  while (d.length < 3) d.push(0);
+  if (!d[2]) d[2] = 1;
+  localStorage.setItem('italy_stars_detail', JSON.stringify(d));
+  localStorage.setItem('italy_stars', d.reduce((a, b) => a + b, 0));
+  window.location.href = 'game6.html';
+}
+
+function spawnConfetti() {
+  const colors = ['#FF6B35','#F7C948','#4CAF50','#2196F3','#E91E63','#9C27B0','#fff'];
+  for (let i = 0; i < 48; i++) {
+    const el = document.createElement('div');
+    const size = 6 + Math.random() * 6;
+    el.style.cssText = [
+      'position:fixed','z-index:199',
+      `width:${size}px`,`height:${size}px`,
+      `background:${colors[i % colors.length]}`,
+      `border-radius:${Math.random() > 0.5 ? '50%' : '2px'}`,
+      `left:${Math.random() * 100}vw`,
+      'top:-12px',
+      `animation:cfFall ${1.4 + Math.random() * 1.4}s ${Math.random() * 0.9}s ease-in forwards`,
+    ].join(';');
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+}
+</script>
+</body>
+</html>
