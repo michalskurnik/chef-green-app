@@ -21,7 +21,7 @@ body{background:#FFF8E7;display:flex;flex-direction:column;align-items:center;mi
 #skip-btn{background:none;border:2px solid #DDD;border-radius:12px;padding:4px 11px;font-size:11px;font-weight:800;color:#AAA;cursor:pointer;font-family:'Assistant',sans-serif;touch-action:manipulation}
 
 #gw{flex:1;position:relative;overflow:hidden;cursor:pointer}
-canvas{display:block;width:100%;height:100%;touch-action:none}
+canvas{display:block;width:100%;height:100%;touch-action:none;pointer-events:none}
 
 .pop{position:absolute;font-size:28px;pointer-events:none;animation:popUp .9s ease forwards;z-index:10}
 @keyframes popUp{0%{transform:scale(0) translateY(0);opacity:1}55%{transform:scale(1.4) translateY(-16px);opacity:1}100%{transform:scale(0.9) translateY(-50px);opacity:0}}
