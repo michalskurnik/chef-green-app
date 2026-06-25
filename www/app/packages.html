@@ -467,9 +467,14 @@
     let rcPurchases = null;
 
     async function initRC() {
-      rcPurchases = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases;
-      if (!rcPurchases) return;
+      if (!(window.Capacitor && window.Capacitor.isNativePlatform())) {
+        // Browser / web preview — skip RC, rely on localStorage only
+        if (localStorage.getItem('italy_unlocked') === 'true') updateItalyButton(true);
+        return;
+      }
       try {
+        rcPurchases = window.Capacitor.Plugins.Purchases;
+        if (!rcPurchases) return;
         await rcPurchases.configure({ apiKey: RC_API_KEY });
         const { customerInfo } = await rcPurchases.getCustomerInfo();
         if (customerInfo.entitlements.active[ITALY_ENTITLEMENT]) {
