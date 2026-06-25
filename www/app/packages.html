@@ -416,6 +416,14 @@
 
   </div><!-- /page -->
 
+  <div style="text-align:center;padding:18px 0 4px">
+    <button id="restore-btn" style="background:none;border:none;color:rgba(255,255,255,0.35);font-family:'Varela Round',sans-serif;font-size:13px;cursor:pointer;text-decoration:underline;">שחזור רכישות</button>
+  </div>
+
+  <div id="debug-bar" style="display:none;text-align:center;padding:8px 0 16px">
+    <button onclick="localStorage.setItem('italy_unlocked','true');window.location.href='/italy/index.html';" style="background:#c0392b;color:#fff;border:none;border-radius:16px;padding:10px 22px;font-family:'Varela Round',sans-serif;font-size:14px;cursor:pointer;">🔓 פתח איטליה (debug)</button>
+  </div>
+
   <script>
     // ── Greeting ─────────────────────────────────────────────
     const name = localStorage.getItem('chefName');
@@ -451,14 +459,91 @@
       window.location.href = '/dinner/index.html';
     });
 
-    function showIAPPlaceholder(packageName) {
-      alert('רכישה: ' + packageName + '\n\n(IAP עדיין לא מחובר — יופעל דרך App Store)');
+    // ── RevenueCat ────────────────────────────────────────────
+    const RC_API_KEY        = 'test_TYEmRvRfueLRNELSYDaSNCynNtH';
+    const ITALY_ENTITLEMENT = 'italy';
+    const ITALY_PRODUCT_ID  = 'com.michalskurnik.chefapp.italy';
+
+    let rcPurchases = null;
+
+    async function initRC() {
+      rcPurchases = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases;
+      if (!rcPurchases) return;
+      try {
+        await rcPurchases.configure({ apiKey: RC_API_KEY });
+        const { customerInfo } = await rcPurchases.getCustomerInfo();
+        if (customerInfo.entitlements.active[ITALY_ENTITLEMENT]) {
+          localStorage.setItem('italy_unlocked', 'true');
+          updateItalyButton(true);
+        }
+      } catch (e) {
+        console.error('RC init', e);
+      }
     }
 
-    navigate(document.getElementById('card-italy'),   function() { showIAPPlaceholder('מסביב לעולם: איטליה — ₪14.99'); });
-    navigate(document.getElementById('card-plant'),   function() { showIAPPlaceholder('חלבונים מהצומח — ₪14.99'); });
-    navigate(document.getElementById('card-science'), function() { showIAPPlaceholder('ניסויים פשוטים במטבח — ₪14.99'); });
-    navigate(document.getElementById('card-bundle'),  function() { showIAPPlaceholder('חבילת הכל כלול — ₪34.99'); });
+    function updateItalyButton(purchased) {
+      const btn = document.querySelector('#card-italy .btn-price');
+      if (!btn) return;
+      if (purchased) {
+        btn.innerHTML = '✅ נרכש — כניסה';
+        btn.style.background = 'linear-gradient(135deg,#2E7D32,#1B5E20)';
+      }
+    }
+
+    async function purchaseItaly() {
+      if (!rcPurchases) { alert('רכישות לא זמינות כרגע.'); return; }
+      try {
+        const { current } = await rcPurchases.getOfferings();
+        const pkg = current && current.availablePackages &&
+          current.availablePackages.find(p => p.product && p.product.identifier === ITALY_PRODUCT_ID);
+        if (!pkg) { alert('המוצר לא נמצא. נסו שוב מאוחר יותר.'); return; }
+        const { customerInfo } = await rcPurchases.purchasePackage({ aPackage: pkg });
+        if (customerInfo.entitlements.active[ITALY_ENTITLEMENT]) {
+          localStorage.setItem('italy_unlocked', 'true');
+          window.location.href = '/italy/index.html';
+        }
+      } catch (e) {
+        const cancelled = e.code === 'PURCHASE_CANCELLED' || e.userCancelled === true;
+        if (!cancelled) alert('שגיאה ברכישה: ' + (e.message || ''));
+      }
+    }
+
+    async function restorePurchases() {
+      if (!rcPurchases) { alert('שחזור לא זמין כרגע.'); return; }
+      try {
+        const { customerInfo } = await rcPurchases.restorePurchases();
+        if (customerInfo.entitlements.active[ITALY_ENTITLEMENT]) {
+          localStorage.setItem('italy_unlocked', 'true');
+          window.location.href = '/italy/index.html';
+        } else {
+          alert('לא נמצאה רכישה קודמת.');
+        }
+      } catch (e) {
+        alert('שגיאה בשחזור: ' + (e.message || ''));
+      }
+    }
+
+    // Update italy button immediately from localStorage (before RC responds)
+    if (localStorage.getItem('italy_unlocked') === 'true') updateItalyButton(true);
+
+    navigate(document.getElementById('card-italy'), function() {
+      if (localStorage.getItem('italy_unlocked') === 'true') {
+        window.location.href = '/italy/index.html';
+      } else {
+        purchaseItaly();
+      }
+    });
+    navigate(document.getElementById('card-plant'),   function() { alert('בקרוב!'); });
+    navigate(document.getElementById('card-science'), function() { alert('בקרוב!'); });
+    navigate(document.getElementById('card-bundle'),  function() { alert('בקרוב!'); });
+
+    document.getElementById('restore-btn').addEventListener('click', restorePurchases);
+
+    initRC();
+
+    if (window.location.search.includes('debug=true')) {
+      document.getElementById('debug-bar').style.display = 'block';
+    }
   </script>
 </body>
 </html>
