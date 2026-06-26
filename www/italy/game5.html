@@ -121,6 +121,7 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
   </div>
 </div>
 
+<script src="drag-zones.js"></script>
 <script>
 const INGREDIENTS = [
   {id:'pasta',        img:'assets/ing_pasta.png',        label:'פסטה קצרה',    correct:true},
@@ -142,122 +143,29 @@ let clone       = null;
 let cloneOX     = 0, cloneOY = 0;
 let fbTimer     = null;
 
-// ── Zone geometry — pixel coords in the original 941×1672 image ──
-const IMAGE_ZONES = {
-  correct: { x: 255, y: 720, width: 405, height: 365 },
-  wrong:   { x: 660, y: 850, width: 265, height: 285 },
-};
+// ── Drop zone system ─────────────────────────────────────────────
+// Pixel coords in the original 941×1672 background image.
+// Separate hit (detection) and visual (highlight glow) rects allow
+// fine-tuning without changing the visible zone position.
+const dz = new DragZones({
+  img: document.getElementById('game-bg'),
+  zones: {
+    correct: {
+      hit:    { x: 255, y: 720, width: 405, height: 365 },
+      visual: { x: 255, y: 720, width: 405, height: 365 },
+      el: document.getElementById('zone-yes'),
+    },
+    wrong: {
+      hit:    { x: 660, y: 850, width: 265, height: 285 },
+      visual: { x: 660, y: 850, width: 265, height: 285 },
+      el: document.getElementById('zone-no'),
+    },
+  },
+  debug: window.location.search.includes('debug=true'),
+});
 
-// Map image-pixel zone to viewport rect, accounting for object-fit:cover scaling/offset
-function imageZoneToRenderedZone(zone, img) {
-  const rect  = img.getBoundingClientRect();
-  const scale = Math.max(rect.width / img.naturalWidth, rect.height / img.naturalHeight);
-  const ox    = (rect.width  - img.naturalWidth  * scale) / 2;
-  const oy    = (rect.height - img.naturalHeight * scale) / 2;
-  return {
-    left:   rect.left + ox + zone.x * scale,
-    top:    rect.top  + oy + zone.y * scale,
-    right:  rect.left + ox + (zone.x + zone.width)  * scale,
-    bottom: rect.top  + oy + (zone.y + zone.height) * scale,
-  };
-}
-
-function checkDropZoneAtPoint(px, py) {
-  const img = document.getElementById('game-bg');
-  for (const [result, zone] of Object.entries(IMAGE_ZONES)) {
-    const r = imageZoneToRenderedZone(zone, img);
-    if (px >= r.left && px <= r.right && py >= r.top && py <= r.bottom) return result;
-  }
-  return null;
-}
-
-function checkDropZone(cloneEl) {
-  const r = cloneEl.getBoundingClientRect();
-  return checkDropZoneAtPoint(r.left + r.width / 2, r.top + r.height / 2);
-}
-
-function positionZoneDivs() {
-  const img  = document.getElementById('game-bg');
-  if (!img.naturalWidth) return;
-  const wrap = document.querySelector('.game-area').getBoundingClientRect();
-  const yes  = document.getElementById('zone-yes');
-  const no   = document.getElementById('zone-no');
-  const c = imageZoneToRenderedZone(IMAGE_ZONES.correct, img);
-  const w = imageZoneToRenderedZone(IMAGE_ZONES.wrong,   img);
-  yes.style.left   = (c.left   - wrap.left) + 'px';
-  yes.style.top    = (c.top    - wrap.top)  + 'px';
-  yes.style.width  = (c.right  - c.left)    + 'px';
-  yes.style.height = (c.bottom - c.top)     + 'px';
-  no.style.left    = (w.left   - wrap.left) + 'px';
-  no.style.top     = (w.top    - wrap.top)  + 'px';
-  no.style.width   = (w.right  - w.left)    + 'px';
-  no.style.height  = (w.bottom - w.top)     + 'px';
-}
-
-// ── Debug mode (?debug=true) ─────────────────────────────────────
-const DEBUG = window.location.search.includes('debug=true');
-
-if (DEBUG) {
-  document.querySelectorAll('.zone-hdr').forEach(h => h.style.display = 'block');
-
-  const panel = document.createElement('div');
-  panel.id = 'dbg-panel';
-  panel.style.cssText = [
-    'position:fixed','top:165px','left:0','right:0','z-index:9998',
-    'background:rgba(0,0,0,.82)','color:#0f0','font:11px/1.7 monospace',
-    'padding:5px 10px','pointer-events:none','white-space:pre'
-  ].join(';');
-  document.body.appendChild(panel);
-
-  function drawDebugOverlays() {
-    document.querySelectorAll('.dbg-overlay').forEach(e => e.remove());
-    const img    = document.getElementById('game-bg');
-    const colors = { correct: ['rgba(0,200,0,.35)', 'lime'], wrong: ['rgba(200,0,0,.35)', 'red'] };
-    for (const [result, zone] of Object.entries(IMAGE_ZONES)) {
-      const abs = imageZoneToRenderedZone(zone, img);
-      const el  = document.createElement('div');
-      el.className = 'dbg-overlay';
-      el.style.cssText = [
-        'position:fixed','z-index:9997','border-radius:12px','pointer-events:none',
-        `left:${abs.left}px`, `top:${abs.top}px`,
-        `width:${abs.right - abs.left}px`, `height:${abs.bottom - abs.top}px`,
-        `background:${colors[result][0]}`,
-        `border:3px solid ${colors[result][1]}`,
-        'color:#fff','font:bold 13px sans-serif','display:flex','align-items:center','justify-content:center'
-      ].join(';');
-      el.textContent = result;
-      document.body.appendChild(el);
-    }
-  }
-  window.addEventListener('resize', drawDebugOverlays);
-  document.getElementById('game-bg').addEventListener('load', drawDebugOverlays);
-  setTimeout(drawDebugOverlays, 120);
-
-  // Click logs image-pixel coordinates for calibration
-  document.querySelector('.game-area').addEventListener('click', e => {
-    const img   = document.getElementById('game-bg');
-    const rect  = img.getBoundingClientRect();
-    const scale = Math.max(rect.width / img.naturalWidth, rect.height / img.naturalHeight);
-    const ox    = (rect.width  - img.naturalWidth  * scale) / 2;
-    const oy    = (rect.height - img.naturalHeight * scale) / 2;
-    const imgX  = Math.round((e.clientX - rect.left - ox) / scale);
-    const imgY  = Math.round((e.clientY - rect.top  - oy) / scale);
-    const msg   = `[calibrate] imgX:${imgX}  imgY:${imgY}  (of 941×1672)`;
-    console.log(msg);
-    document.getElementById('dbg-panel').textContent = msg;
-  });
-}
-
-function dbgUpdate(card, cloneEl) {
-  if (!DEBUG) return;
-  const r  = cloneEl.getBoundingClientRect();
-  const cx = Math.round(r.left + r.width  / 2);
-  const cy = Math.round(r.top  + r.height / 2);
-  const result = checkDropZoneAtPoint(cx, cy);
-  const line = `item:${card.dataset.id}  cx:${cx}  cy:${cy}  zone:${result || 'none'}`;
-  document.getElementById('dbg-panel').textContent = line;
-  console.log('[game5-debug]', line);
-}
+const DEBUG = dz.debug;
+if (DEBUG) document.querySelectorAll('.zone-hdr').forEach(h => h.style.display = 'block');
 
 // ── Build shuffled items ─────────────────────────────────────────
 const shuffled = [...INGREDIENTS].sort(() => Math.random() - 0.5);
@@ -291,22 +199,16 @@ shuffled.forEach(ing => {
 const gameAreaEl = document.querySelector('.game-area');
 gameAreaEl.addEventListener('dragover', e => {
   e.preventDefault();
-  const result = checkDropZoneAtPoint(e.clientX, e.clientY);
-  document.getElementById('zone-yes').classList.toggle('over', result === 'correct');
-  document.getElementById('zone-no').classList.toggle('over',  result === 'wrong');
+  dz.highlight(dz.zoneAtPoint(e.clientX, e.clientY));
 });
 gameAreaEl.addEventListener('dragleave', e => {
-  if (!gameAreaEl.contains(e.relatedTarget)) {
-    document.getElementById('zone-yes').classList.remove('over');
-    document.getElementById('zone-no').classList.remove('over');
-  }
+  if (!gameAreaEl.contains(e.relatedTarget)) dz.clearHighlight();
 });
 gameAreaEl.addEventListener('drop', e => {
   e.preventDefault();
-  document.getElementById('zone-yes').classList.remove('over');
-  document.getElementById('zone-no').classList.remove('over');
+  dz.clearHighlight();
   if (dragEl) {
-    const result = checkDropZoneAtPoint(e.clientX, e.clientY);
+    const result = dz.zoneAtPoint(e.clientX, e.clientY);
     if (result) handleDrop(dragEl, result);
     dragEl = null;
   }
@@ -339,19 +241,16 @@ function onTouchMove(e) {
   const t = e.touches[0];
   clone.style.top  = (t.clientY - cloneOY) + 'px';
   clone.style.left = (t.clientX - cloneOX) + 'px';
-  const result = checkDropZone(clone);
-  document.getElementById('zone-yes').classList.toggle('over', result === 'correct');
-  document.getElementById('zone-no').classList.toggle('over',  result === 'wrong');
-  dbgUpdate(dragEl, clone);
+  dz.highlight(dz.zoneAtElement(clone));
+  dz.logDrag(dragEl.dataset.id, clone);
 }
 
 function onTouchEnd(e) {
   if (!clone || !dragEl) return;
-  const result = checkDropZone(clone);
+  const result = dz.zoneAtElement(clone);
   clone.remove(); clone = null;
   dragEl.classList.remove('dragging');
-  document.getElementById('zone-yes').classList.remove('over');
-  document.getElementById('zone-no').classList.remove('over');
+  dz.clearHighlight();
   if (result) handleDrop(dragEl, result);
   dragEl = null;
 }
@@ -420,14 +319,6 @@ function skipGame() {
   localStorage.setItem('italy_stars', d.reduce((a, b) => a + b, 0));
   window.location.href = 'game6.html';
 }
-
-const _bgImg = document.getElementById('game-bg');
-if (_bgImg.complete && _bgImg.naturalWidth) {
-  positionZoneDivs();
-} else {
-  _bgImg.addEventListener('load', positionZoneDivs);
-}
-window.addEventListener('resize', positionZoneDivs);
 
 function spawnConfetti() {
   const colors = ['#FF6B35','#F7C948','#4CAF50','#2196F3','#E91E63','#9C27B0','#fff'];
