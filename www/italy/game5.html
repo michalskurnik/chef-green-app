@@ -25,7 +25,7 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 #prog-bar{height:100%;width:0%;background:linear-gradient(90deg,#D4872A,#F0A850);border-radius:4px;transition:width .4s ease}
 
 /* Items grid — absolutely positioned at bottom of game area */
-#items-area{position:absolute;bottom:0;left:0;right:0;height:25%;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:6px 10px 8px;background:rgba(255,248,231,.92);border-radius:16px 16px 0 0;align-content:center;z-index:5}
+#items-area{position:absolute;bottom:0;left:0;right:0;height:28%;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:6px 10px 8px;background:rgba(255,245,220,.9);border-radius:12px 12px 0 0;align-content:center;z-index:5}
 .ing-card{display:flex;flex-direction:column;align-items:center;gap:2px;background:#FFF8EE;border:2px solid #EDD8B0;border-radius:12px;padding:5px 3px 4px;cursor:grab;transition:opacity .2s,transform .15s,box-shadow .15s;touch-action:none;-webkit-user-drag:none}
 .ing-card.dragging{opacity:.25}
 .ing-card.sorted{display:none}
@@ -52,10 +52,10 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 .zone-lbl{font-family:'Fredoka One',cursive;font-size:10px;display:block;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 
 /* Basket — center, upper portion */
-#zone-yes{background:rgba(46,125,50,.3);border-radius:50%;left:20%;top:45%;width:55%;height:30%}
+#zone-yes{background:rgba(46,125,50,.4);border-radius:50%;left:22%;top:42%;width:48%;height:32%}
 
 /* Shelf/drawer — right side, next to basket */
-#zone-no{background:rgba(183,28,28,.3);border-radius:10px;left:68%;top:52%;width:28%;height:20%}
+#zone-no{background:rgba(183,28,28,.4);border-radius:8px;left:68%;top:50%;width:26%;height:22%}
 
 .zone-items{flex:1;display:flex;flex-wrap:wrap;gap:3px;padding:3px 5px 5px;align-content:flex-start;overflow-y:auto}
 .z-thumb{width:46px;height:46px;border-radius:9px;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);overflow:hidden;flex-shrink:0}
