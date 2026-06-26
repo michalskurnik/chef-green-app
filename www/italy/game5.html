@@ -43,19 +43,21 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 /* Game area — background image fills remaining space */
 #zones-wrap{flex:1;background:url('assets/pasta_bake_bg.png') center/cover no-repeat;position:relative;overflow:hidden;min-height:0}
 
-/* Drop zones as positioned overlays */
-.drop-zone{position:absolute;display:flex;flex-direction:column;border:3px dashed rgba(255,255,255,.85);transition:border-color .2s,box-shadow .2s;overflow:hidden}
-.drop-zone.over{border-color:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.55)}
+/* Drop zones — invisible by default, only detection areas */
+.drop-zone{position:absolute;display:flex;flex-direction:column;background:transparent;border:none;transition:background .15s,box-shadow .15s;overflow:hidden}
 
-.zone-hdr{text-align:center;padding:5px 4px 3px;flex-shrink:0}
-.zone-icon{font-size:18px;display:block}
-.zone-lbl{font-family:'Fredoka One',cursive;font-size:10px;display:block;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+/* Hover feedback only — no colored panel */
+#zone-yes.over{background:rgba(46,125,50,.22);box-shadow:inset 0 0 0 3px rgba(100,220,100,.8)}
+#zone-no.over {background:rgba(183,28,28,.22);box-shadow:inset 0 0 0 3px rgba(220,80,80,.8)}
+
+/* Zone labels hidden in production — only shown in debug mode */
+.zone-hdr{display:none}
 
 /* Basket — right container (pixel ref: x:216 y:505 w:190 h:175 on 421×519 game area) */
-#zone-yes{background:rgba(46,125,50,.4);border-radius:16px;left:51%;top:66%;width:45%;height:34%}
+#zone-yes{border-radius:16px;left:51%;top:66%;width:45%;height:34%}
 
 /* Wrong drawer — left container (pixel ref: x:12 y:505 w:195 h:175 on 421×519 game area) */
-#zone-no{background:rgba(183,28,28,.4);border-radius:16px;left:3%;top:66%;width:46%;height:34%}
+#zone-no{border-radius:16px;left:3%;top:66%;width:46%;height:34%}
 
 .zone-items{flex:1;display:flex;flex-wrap:wrap;gap:3px;padding:3px 5px 5px;align-content:flex-start;overflow-y:auto}
 .z-thumb{width:46px;height:46px;border-radius:9px;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);overflow:hidden;flex-shrink:0}
@@ -144,11 +146,13 @@ let fbTimer     = null;
 const DEBUG = window.location.search.includes('debug=true');
 
 if (DEBUG) {
-  // Boost zone visibility
+  // Boost zone visibility — show exact container shapes
   const yes = document.getElementById('zone-yes');
   const no  = document.getElementById('zone-no');
-  yes.style.cssText += ';background:rgba(0,200,0,.45)!important;border:3px solid lime!important;';
-  no.style.cssText  += ';background:rgba(200,0,0,.45)!important;border:3px solid red!important;';
+  yes.style.cssText += ';background:rgba(0,200,0,.35)!important;border:3px solid lime!important;';
+  no.style.cssText  += ';background:rgba(200,0,0,.35)!important;border:3px solid red!important;';
+  // Show labels in debug
+  document.querySelectorAll('.zone-hdr').forEach(h => h.style.display = 'block');
 
   // Floating log panel
   const panel = document.createElement('div');
