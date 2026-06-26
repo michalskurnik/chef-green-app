@@ -117,15 +117,15 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 <script src="drag-zones.js"></script>
 <script>
 const INGREDIENTS = [
-  {id:'milk',           image:'assets/game_5_true_7(1).png',  label:'חלב',           isCorrect:true},
-  {id:'sweet_potato',   image:'assets/game_5_true_5(1).png',  label:'בטטה',          isCorrect:true},
-  {id:'shredded_cheese',image:'assets/game_5_true_3(1).png',  label:'גבינה מגורדת', isCorrect:true},
-  {id:'cottage',        image:'assets/game_5_true_1(1).png',  label:'גבינה קוטג׳',  isCorrect:true},
-  {id:'carrot',         image:'assets/game_5_true_4(1).png',  label:'גזר',           isCorrect:true},
-  {id:'cream',          image:'assets/game_5_true_6(1).png',  label:'שמנת לבישול',  isCorrect:true},
-  {id:'sugar',          image:'assets/game_5_true_2(1).png',  label:'סוכר',          isCorrect:true},
-  {id:'chocolate',      image:'assets/game_5_wrong_2(1).png', label:'שוקולד',        isCorrect:false},
-  {id:'snacks',         image:'assets/game_5_wrong_1(1).png', label:'חטיפים',        isCorrect:false},
+  {id:'milk',           image:'assets/game5/milk.png',           label:'חלב',          isCorrect:true},
+  {id:'sweet_potato',   image:'assets/game5/sweet_potato.png',   label:'בטטה',         isCorrect:true},
+  {id:'shredded_cheese',image:'assets/game5/shredded_cheese.png',label:'גבינה מגורדת',isCorrect:true},
+  {id:'cottage',        image:'assets/game5/cottage.png',        label:'גבינה קוטג׳', isCorrect:true},
+  {id:'carrot',         image:'assets/game5/carrot.png',         label:'גזר',          isCorrect:true},
+  {id:'cooking_cream',  image:'assets/game5/cooking_cream.png',  label:'שמנת לבישול', isCorrect:true},
+  {id:'sugar',          image:'assets/game5/sugar.png',          label:'סוכר',         isCorrect:true},
+  {id:'chocolate',      image:'assets/game5/chocolate.png',      label:'שוקולד',       isCorrect:false},
+  {id:'snacks',         image:'assets/game5/snacks.png',         label:'חטיפים',       isCorrect:false},
 ];
 
 let sortedCount = 0;
@@ -173,7 +173,7 @@ shuffled.forEach(ing => {
   card.dataset.correct = ing.isCorrect;
   card.dataset.image   = ing.image;
   card.draggable = true;
-  card.innerHTML = `<img src="${ing.image}" alt="${ing.label}"><span class="lbl">${ing.label}</span>`;
+  card.innerHTML = `<img src="${ing.image}" alt="${ing.label}" onerror="console.error('Missing image:',this.src)"><span class="lbl">${ing.label}</span>`;
 
   // Desktop drag
   card.addEventListener('dragstart', e => {
