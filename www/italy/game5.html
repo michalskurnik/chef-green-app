@@ -24,37 +24,40 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 #prog-bg{height:7px;background:#EEE;border-radius:4px;overflow:hidden}
 #prog-bar{height:100%;width:0%;background:linear-gradient(90deg,#D4872A,#F0A850);border-radius:4px;transition:width .4s ease}
 
-/* Items grid */
-#items-area{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:8px 12px 4px;flex-shrink:0;min-height:80px}
+/* Items grid — absolutely positioned at bottom of game area */
+#items-area{position:absolute;bottom:0;left:0;right:0;height:25%;display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:6px 10px 8px;background:rgba(255,248,231,.92);border-radius:16px 16px 0 0;align-content:center;z-index:5}
 .ing-card{display:flex;flex-direction:column;align-items:center;gap:2px;background:#FFF8EE;border:2px solid #EDD8B0;border-radius:12px;padding:5px 3px 4px;cursor:grab;transition:opacity .2s,transform .15s,box-shadow .15s;touch-action:none;-webkit-user-drag:none}
 .ing-card.dragging{opacity:.25}
 .ing-card.sorted{display:none}
-.ing-card img{width:46px;height:46px;object-fit:contain;pointer-events:none;display:block}
-.ing-card .lbl{font-size:8.5px;font-weight:800;color:#5D4037;text-align:center;line-height:1.2;pointer-events:none;word-break:keep-all}
+.ing-card img{width:40px;height:40px;object-fit:contain;pointer-events:none;display:block}
+.ing-card .lbl{font-size:8px;font-weight:800;color:#5D4037;text-align:center;line-height:1.2;pointer-events:none;word-break:keep-all}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 .ing-card.shake{animation:shake .45s ease}
 
-/* Feedback */
-#feedback{min-height:26px;text-align:center;font-size:12px;font-weight:800;padding:2px 14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:opacity .3s}
-#feedback.good{color:#388E3C;opacity:1}
-#feedback.bad{color:#C62828;opacity:1}
+/* Feedback — floating overlay */
+#feedback{position:absolute;top:38%;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(0,0,0,.62);color:#fff;padding:5px 16px;border-radius:20px;font-size:12px;font-weight:800;z-index:10;transition:opacity .3s;pointer-events:none}
+#feedback.good{opacity:1}
+#feedback.bad{opacity:1}
 #feedback.empty{opacity:0}
 
-/* Drop zones with background image */
-#zones-wrap{flex:1;display:flex;gap:8px;padding:8px 10px 12px;background:url('assets/pasta_bake_bg.png') center/cover no-repeat;position:relative;overflow:hidden;min-height:0}
-#zones-wrap::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.18);pointer-events:none}
+/* Game area — background image fills remaining space */
+#zones-wrap{flex:1;background:url('assets/pasta_bake_bg.png') center/cover no-repeat;position:relative;overflow:hidden;min-height:0}
 
-.drop-zone{flex:1;display:flex;flex-direction:column;border-radius:16px;border:3px solid transparent;transition:border-color .2s,box-shadow .2s;position:relative;overflow:hidden;min-height:0}
-.drop-zone.over{border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.5)}
+/* Drop zones as positioned overlays */
+.drop-zone{position:absolute;display:flex;flex-direction:column;border:3px dashed rgba(255,255,255,.85);transition:border-color .2s,box-shadow .2s;overflow:hidden}
+.drop-zone.over{border-color:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.55)}
 
-.zone-hdr{text-align:center;padding:8px 4px 5px;flex-shrink:0}
-.zone-icon{font-size:24px;display:block;margin-bottom:1px}
-.zone-lbl{font-family:'Fredoka One',cursive;font-size:12px;display:block;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.zone-hdr{text-align:center;padding:5px 4px 3px;flex-shrink:0}
+.zone-icon{font-size:18px;display:block}
+.zone-lbl{font-family:'Fredoka One',cursive;font-size:10px;display:block;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
 
-#zone-yes{background:rgba(46,125,50,.82)}
-#zone-no {background:rgba(183,28,28,.82)}
+/* Basket — center, upper portion */
+#zone-yes{background:rgba(46,125,50,.3);border-radius:50%;left:20%;top:45%;width:55%;height:30%}
 
-.zone-items{flex:1;display:flex;flex-wrap:wrap;gap:4px;padding:4px 6px 6px;align-content:flex-start;overflow-y:auto}
+/* Shelf/drawer — right side, next to basket */
+#zone-no{background:rgba(183,28,28,.3);border-radius:10px;left:68%;top:52%;width:28%;height:20%}
+
+.zone-items{flex:1;display:flex;flex-wrap:wrap;gap:3px;padding:3px 5px 5px;align-content:flex-start;overflow-y:auto}
 .z-thumb{width:46px;height:46px;border-radius:9px;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);overflow:hidden;flex-shrink:0}
 .z-thumb img{width:100%;height:100%;object-fit:contain;display:block}
 
@@ -88,10 +91,6 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
   </div>
   <div id="prog-wrap"><div id="prog-bg"><div id="prog-bar"></div></div></div>
 
-  <div id="items-area"></div>
-
-  <div id="feedback" class="empty"> </div>
-
   <div id="zones-wrap">
     <div id="zone-yes" class="drop-zone" data-zone="yes">
       <div class="zone-hdr">
@@ -107,6 +106,8 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
       </div>
       <div class="zone-items" id="items-no"></div>
     </div>
+    <div id="feedback" class="empty"> </div>
+    <div id="items-area"></div>
   </div>
 
   <div id="win-screen">
