@@ -53,11 +53,9 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 /* Zone labels hidden in production — only shown in debug mode */
 .zone-hdr{display:none}
 
-/* Basket — right container (pixel ref: x:216 y:505 w:190 h:175 on 421×519 game area) */
-#zone-yes{border-radius:16px;left:51%;top:66%;width:45%;height:34%}
-
-/* Wrong drawer — left container (pixel ref: x:12 y:505 w:195 h:175 on 421×519 game area) */
-#zone-no{border-radius:16px;left:3%;top:66%;width:46%;height:34%}
+/* Zone positions set dynamically by positionZoneDivs() */
+#zone-yes{border-radius:16px}
+#zone-no{border-radius:16px}
 
 .zone-items{flex:1;display:flex;flex-wrap:wrap;gap:3px;padding:3px 5px 5px;align-content:flex-start;overflow-y:auto}
 .z-thumb{width:46px;height:46px;border-radius:9px;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);overflow:hidden;flex-shrink:0}
@@ -93,7 +91,7 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
   </div>
   <div id="prog-wrap"><div id="prog-bg"><div id="prog-bar"></div></div></div>
 
-  <div id="zones-wrap">
+  <div id="zones-wrap" class="game-area">
     <div id="zone-yes" class="drop-zone" data-zone="yes">
       <div class="zone-hdr">
         <span class="zone-icon">🧺</span>
@@ -142,19 +140,60 @@ let clone       = null;
 let cloneOX     = 0, cloneOY = 0;
 let fbTimer     = null;
 
+// ── Zone geometry (percentages of game-area size) ────────────────
+const DROP_ZONES_PERCENT = {
+  wrong:   { x: 0.04, y: 0.62, width: 0.43, height: 0.28 },
+  correct: { x: 0.53, y: 0.62, width: 0.43, height: 0.28 },
+};
+
+function getAbsoluteZone(zone, rect) {
+  return {
+    left:   rect.left + zone.x * rect.width,
+    top:    rect.top  + zone.y * rect.height,
+    right:  rect.left + (zone.x + zone.width)  * rect.width,
+    bottom: rect.top  + (zone.y + zone.height) * rect.height,
+  };
+}
+
+function isPointInsideZone(px, py, abs) {
+  return px >= abs.left && px <= abs.right && py >= abs.top && py <= abs.bottom;
+}
+
+function checkDropZoneAtPoint(px, py) {
+  const rect = document.querySelector('.game-area').getBoundingClientRect();
+  for (const [result, zone] of Object.entries(DROP_ZONES_PERCENT)) {
+    if (isPointInsideZone(px, py, getAbsoluteZone(zone, rect))) return result;
+  }
+  return null;
+}
+
+function checkDropZone(cloneEl) {
+  const r = cloneEl.getBoundingClientRect();
+  return checkDropZoneAtPoint(r.left + r.width / 2, r.top + r.height / 2);
+}
+
+function positionZoneDivs() {
+  const rect = document.querySelector('.game-area').getBoundingClientRect();
+  const yes = document.getElementById('zone-yes');
+  const no  = document.getElementById('zone-no');
+  const c = getAbsoluteZone(DROP_ZONES_PERCENT.correct, rect);
+  const w = getAbsoluteZone(DROP_ZONES_PERCENT.wrong,   rect);
+  yes.style.left   = (c.left   - rect.left) + 'px';
+  yes.style.top    = (c.top    - rect.top)  + 'px';
+  yes.style.width  = (c.right  - c.left)    + 'px';
+  yes.style.height = (c.bottom - c.top)     + 'px';
+  no.style.left    = (w.left   - rect.left) + 'px';
+  no.style.top     = (w.top    - rect.top)  + 'px';
+  no.style.width   = (w.right  - w.left)    + 'px';
+  no.style.height  = (w.bottom - w.top)     + 'px';
+}
+
 // ── Debug mode (?debug=true) ─────────────────────────────────────
 const DEBUG = window.location.search.includes('debug=true');
 
 if (DEBUG) {
-  // Boost zone visibility — show exact container shapes
-  const yes = document.getElementById('zone-yes');
-  const no  = document.getElementById('zone-no');
-  yes.style.cssText += ';background:rgba(0,200,0,.35)!important;border:3px solid lime!important;';
-  no.style.cssText  += ';background:rgba(200,0,0,.35)!important;border:3px solid red!important;';
-  // Show labels in debug
   document.querySelectorAll('.zone-hdr').forEach(h => h.style.display = 'block');
 
-  // Floating log panel
   const panel = document.createElement('div');
   panel.id = 'dbg-panel';
   panel.style.cssText = [
@@ -163,6 +202,38 @@ if (DEBUG) {
     'padding:5px 10px','pointer-events:none','white-space:pre'
   ].join(';');
   document.body.appendChild(panel);
+
+  function drawDebugOverlays() {
+    document.querySelectorAll('.dbg-overlay').forEach(e => e.remove());
+    const rect = document.querySelector('.game-area').getBoundingClientRect();
+    const colors = { correct: ['rgba(0,200,0,.35)', 'lime'], wrong: ['rgba(200,0,0,.35)', 'red'] };
+    for (const [result, zone] of Object.entries(DROP_ZONES_PERCENT)) {
+      const abs = getAbsoluteZone(zone, rect);
+      const el = document.createElement('div');
+      el.className = 'dbg-overlay';
+      el.style.cssText = [
+        'position:fixed','z-index:9997','border-radius:12px','pointer-events:none',
+        `left:${abs.left}px`, `top:${abs.top}px`,
+        `width:${abs.right - abs.left}px`, `height:${abs.bottom - abs.top}px`,
+        `background:${colors[result][0]}`,
+        `border:3px solid ${colors[result][1]}`,
+        'color:#fff','font:bold 13px sans-serif','display:flex','align-items:center','justify-content:center'
+      ].join(';');
+      el.textContent = result;
+      document.body.appendChild(el);
+    }
+  }
+  window.addEventListener('resize', drawDebugOverlays);
+  setTimeout(drawDebugOverlays, 120);
+
+  document.querySelector('.game-area').addEventListener('click', e => {
+    const rect = document.querySelector('.game-area').getBoundingClientRect();
+    const relX = ((e.clientX - rect.left) / rect.width).toFixed(3);
+    const relY = ((e.clientY - rect.top)  / rect.height).toFixed(3);
+    const msg = `[calibrate] relX:${relX}  relY:${relY}`;
+    console.log(msg);
+    document.getElementById('dbg-panel').textContent = msg;
+  });
 }
 
 function dbgUpdate(card, cloneEl) {
@@ -170,14 +241,8 @@ function dbgUpdate(card, cloneEl) {
   const r  = cloneEl.getBoundingClientRect();
   const cx = Math.round(r.left + r.width  / 2);
   const cy = Math.round(r.top  + r.height / 2);
-  let inBasket = false, inDrawer = false;
-  for (const z of document.querySelectorAll('.drop-zone')) {
-    const zr = z.getBoundingClientRect();
-    const hit = cx >= zr.left && cx <= zr.right && cy >= zr.top && cy <= zr.bottom;
-    if (hit && z.id === 'zone-yes') inBasket = true;
-    if (hit && z.id === 'zone-no')  inDrawer = true;
-  }
-  const line = `item: ${card.dataset.id}  |  cx:${cx}  cy:${cy}  |  ✅basket:${inBasket}  ❌drawer:${inDrawer}`;
+  const result = checkDropZoneAtPoint(cx, cy);
+  const line = `item:${card.dataset.id}  cx:${cx}  cy:${cy}  zone:${result || 'none'}`;
   document.getElementById('dbg-panel').textContent = line;
   console.log('[game5-debug]', line);
 }
@@ -210,15 +275,29 @@ shuffled.forEach(ing => {
   area.appendChild(card);
 });
 
-// ── Drop zones ───────────────────────────────────────────────────
-document.querySelectorAll('.drop-zone').forEach(zone => {
-  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('over'); });
-  zone.addEventListener('dragleave', e => { if (!zone.contains(e.relatedTarget)) zone.classList.remove('over'); });
-  zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('over');
-    if (dragEl) { handleDrop(dragEl, zone.dataset.zone); dragEl = null; }
-  });
+// ── Drop zones (game-area level) ─────────────────────────────────
+const gameAreaEl = document.querySelector('.game-area');
+gameAreaEl.addEventListener('dragover', e => {
+  e.preventDefault();
+  const result = checkDropZoneAtPoint(e.clientX, e.clientY);
+  document.getElementById('zone-yes').classList.toggle('over', result === 'correct');
+  document.getElementById('zone-no').classList.toggle('over',  result === 'wrong');
+});
+gameAreaEl.addEventListener('dragleave', e => {
+  if (!gameAreaEl.contains(e.relatedTarget)) {
+    document.getElementById('zone-yes').classList.remove('over');
+    document.getElementById('zone-no').classList.remove('over');
+  }
+});
+gameAreaEl.addEventListener('drop', e => {
+  e.preventDefault();
+  document.getElementById('zone-yes').classList.remove('over');
+  document.getElementById('zone-no').classList.remove('over');
+  if (dragEl) {
+    const result = checkDropZoneAtPoint(e.clientX, e.clientY);
+    if (result) handleDrop(dragEl, result);
+    dragEl = null;
+  }
 });
 
 // ── Touch handlers ───────────────────────────────────────────────
@@ -242,46 +321,34 @@ function onTouchStart(e) {
   card.classList.add('dragging');
 }
 
-// Center-point collision: check center of dragged clone against each zone rect
-function getZoneAtCenter(el) {
-  const r  = el.getBoundingClientRect();
-  const cx = r.left + r.width  / 2;
-  const cy = r.top  + r.height / 2;
-  for (const zone of document.querySelectorAll('.drop-zone')) {
-    const zr = zone.getBoundingClientRect();
-    if (cx >= zr.left && cx <= zr.right && cy >= zr.top && cy <= zr.bottom) {
-      return zone;
-    }
-  }
-  return null;
-}
-
 function onTouchMove(e) {
   e.preventDefault();
   if (!clone) return;
   const t = e.touches[0];
   clone.style.top  = (t.clientY - cloneOY) + 'px';
   clone.style.left = (t.clientX - cloneOX) + 'px';
-  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('over'));
-  getZoneAtCenter(clone)?.classList.add('over');
+  const result = checkDropZone(clone);
+  document.getElementById('zone-yes').classList.toggle('over', result === 'correct');
+  document.getElementById('zone-no').classList.toggle('over',  result === 'wrong');
   dbgUpdate(dragEl, clone);
 }
 
 function onTouchEnd(e) {
   if (!clone || !dragEl) return;
-  const zone = getZoneAtCenter(clone);
+  const result = checkDropZone(clone);
   clone.remove(); clone = null;
   dragEl.classList.remove('dragging');
-  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('over'));
-  if (zone) handleDrop(dragEl, zone.dataset.zone);
+  document.getElementById('zone-yes').classList.remove('over');
+  document.getElementById('zone-no').classList.remove('over');
+  if (result) handleDrop(dragEl, result);
   dragEl = null;
 }
 
 // ── Drop logic ───────────────────────────────────────────────────
-function handleDrop(card, zoneId) {
-  const itemCorrect    = card.dataset.correct === 'true';
-  const droppedInYes   = zoneId === 'yes';
-  const isCorrectDrop  = itemCorrect === droppedInYes;
+function handleDrop(card, result) {
+  const itemCorrect   = card.dataset.correct === 'true';
+  const droppedYes    = result === 'correct';
+  const isCorrectDrop = itemCorrect === droppedYes;
 
   if (isCorrectDrop) {
     card.classList.add('sorted');
@@ -290,11 +357,11 @@ function handleDrop(card, zoneId) {
     thumb.className = 'z-thumb';
     const img = card.querySelector('img').cloneNode();
     thumb.appendChild(img);
-    document.getElementById(droppedInYes ? 'items-yes' : 'items-no').appendChild(thumb);
+    document.getElementById(droppedYes ? 'items-yes' : 'items-no').appendChild(thumb);
 
     sortedCount++;
     updateProgress();
-    showFeedback(droppedInYes ? '🎉 מעולה! זה מתאים למתכון' : '✅ נכון! זה לא נכנס למתכון הזה', true);
+    showFeedback(droppedYes ? '🎉 מעולה! זה מתאים למתכון' : '✅ נכון! זה לא נכנס למתכון הזה', true);
 
     if (sortedCount >= INGREDIENTS.length) setTimeout(showWin, 900);
   } else {
@@ -341,6 +408,9 @@ function skipGame() {
   localStorage.setItem('italy_stars', d.reduce((a, b) => a + b, 0));
   window.location.href = 'game6.html';
 }
+
+positionZoneDivs();
+window.addEventListener('resize', positionZoneDivs);
 
 function spawnConfetti() {
   const colors = ['#FF6B35','#F7C948','#4CAF50','#2196F3','#E91E63','#9C27B0','#fff'];
