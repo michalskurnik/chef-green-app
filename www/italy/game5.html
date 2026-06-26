@@ -29,7 +29,7 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 .ing-card{display:flex;flex-direction:column;align-items:center;gap:2px;background:#FFF8EE;border:2px solid #EDD8B0;border-radius:12px;padding:5px 3px 4px;cursor:grab;transition:opacity .2s,transform .15s,box-shadow .15s;touch-action:none;-webkit-user-drag:none}
 .ing-card.dragging{opacity:.25}
 .ing-card.sorted{display:none}
-.ing-card img{width:40px;height:40px;object-fit:contain;pointer-events:none;display:block}
+.ing-card img{width:52px;height:52px;object-fit:contain;pointer-events:none;display:block;margin:0 auto}
 .ing-card .lbl{font-size:8px;font-weight:800;color:#5D4037;text-align:center;line-height:1.2;pointer-events:none;word-break:keep-all}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 .ing-card.shake{animation:shake .45s ease}
@@ -58,9 +58,9 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 #zone-yes{border-radius:16px}
 #zone-no{border-radius:16px}
 
-.zone-items{flex:1;display:flex;flex-wrap:wrap;gap:3px;padding:3px 5px 5px;align-content:flex-start;overflow-y:auto}
-.z-thumb{width:46px;height:46px;border-radius:9px;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);overflow:hidden;flex-shrink:0}
-.z-thumb img{width:100%;height:100%;object-fit:contain;display:block}
+/* Collected items — anchored over the bright surface panel in the background */
+.surface-items-layer{position:absolute;left:34px;right:34px;bottom:155px;height:135px;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:8px;pointer-events:none;z-index:20;overflow:hidden}
+.surface-item{width:62px;height:62px;object-fit:contain;display:block}
 
 /* Drag clone */
 #drag-clone{position:fixed;z-index:9999;pointer-events:none;opacity:.88;transform:scale(1.08);border-radius:12px}
@@ -87,7 +87,7 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
   </div>
 
   <div id="top-row">
-    <span id="prog-txt">0 / 10</span>
+    <span id="prog-txt">0 / 9</span>
     <button id="skip-btn" onclick="skipGame()">דלג ←</button>
   </div>
   <div id="prog-wrap"><div id="prog-bg"><div id="prog-bar"></div></div></div>
@@ -95,19 +95,12 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
   <div id="zones-wrap" class="game-area">
     <img id="game-bg" src="assets/pasta_bake_bg.png" alt="">
     <div id="zone-yes" class="drop-zone" data-zone="yes">
-      <div class="zone-hdr">
-        <span class="zone-icon">🧺</span>
-        <span class="zone-lbl">נכנס לסל</span>
-      </div>
-      <div class="zone-items" id="items-yes"></div>
+      <div class="zone-hdr"><span class="zone-icon">🧺</span><span class="zone-lbl">נכנס לסל</span></div>
     </div>
     <div id="zone-no" class="drop-zone" data-zone="no">
-      <div class="zone-hdr">
-        <span class="zone-icon">🚫</span>
-        <span class="zone-lbl">לא למתכון הזה</span>
-      </div>
-      <div class="zone-items" id="items-no"></div>
+      <div class="zone-hdr"><span class="zone-icon">🚫</span><span class="zone-lbl">לא למתכון הזה</span></div>
     </div>
+    <div class="surface-items-layer"></div>
     <div id="feedback" class="empty"> </div>
   </div>
   <div id="items-area"></div>
@@ -124,16 +117,15 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 <script src="drag-zones.js"></script>
 <script>
 const INGREDIENTS = [
-  {id:'pasta',        img:'assets/ing_pasta.png',        label:'פסטה קצרה',    correct:true},
-  {id:'carrot',       img:'assets/ing_carrot.png',       label:'גזר',          correct:true},
-  {id:'sweet_potato', img:'assets/ing_sweet_potato.png', label:'בטטה',         correct:true},
-  {id:'cream',        img:'assets/ing_cream.png',        label:'שמנת לבישול',  correct:true},
-  {id:'milk',         img:'assets/ing_milk.png',         label:'חלב',          correct:true},
-  {id:'cheese',       img:'assets/ing_cheese.png',       label:'גבינה מגורדת', correct:true},
-  {id:'cottage',      img:'assets/ing_cottage.png',      label:'גבינת קוטג׳',  correct:true},
-  {id:'chocolate',    img:'assets/ing_chocolate.png',    label:'שוקולד',       correct:false},
-  {id:'sugar',        img:'assets/ing_sugar.png',        label:'סוכר',         correct:false},
-  {id:'chips',        img:'assets/ing_chips.png',        label:'חטיפים',       correct:false},
+  {id:'milk',           image:'assets/game_5_true_7(1).png',  label:'חלב',           isCorrect:true},
+  {id:'sweet_potato',   image:'assets/game_5_true_5(1).png',  label:'בטטה',          isCorrect:true},
+  {id:'shredded_cheese',image:'assets/game_5_true_3(1).png',  label:'גבינה מגורדת', isCorrect:true},
+  {id:'cottage',        image:'assets/game_5_true_1(1).png',  label:'גבינה קוטג׳',  isCorrect:true},
+  {id:'carrot',         image:'assets/game_5_true_4(1).png',  label:'גזר',           isCorrect:true},
+  {id:'cream',          image:'assets/game_5_true_6(1).png',  label:'שמנת לבישול',  isCorrect:true},
+  {id:'sugar',          image:'assets/game_5_true_2(1).png',  label:'סוכר',          isCorrect:true},
+  {id:'chocolate',      image:'assets/game_5_wrong_2(1).png', label:'שוקולד',        isCorrect:false},
+  {id:'snacks',         image:'assets/game_5_wrong_1(1).png', label:'חטיפים',        isCorrect:false},
 ];
 
 let sortedCount = 0;
@@ -165,7 +157,10 @@ const dz = new DragZones({
 });
 
 const DEBUG = dz.debug;
-if (DEBUG) document.querySelectorAll('.zone-hdr').forEach(h => h.style.display = 'block');
+if (DEBUG) {
+  document.querySelectorAll('.zone-hdr').forEach(h => h.style.display = 'block');
+  document.querySelector('.surface-items-layer').style.outline = '2px solid blue';
+}
 
 // ── Build shuffled items ─────────────────────────────────────────
 const shuffled = [...INGREDIENTS].sort(() => Math.random() - 0.5);
@@ -175,9 +170,10 @@ shuffled.forEach(ing => {
   const card = document.createElement('div');
   card.className = 'ing-card';
   card.dataset.id      = ing.id;
-  card.dataset.correct = ing.correct;
+  card.dataset.correct = ing.isCorrect;
+  card.dataset.image   = ing.image;
   card.draggable = true;
-  card.innerHTML = `<img src="${ing.img}" alt="${ing.label}"><span class="lbl">${ing.label}</span>`;
+  card.innerHTML = `<img src="${ing.image}" alt="${ing.label}"><span class="lbl">${ing.label}</span>`;
 
   // Desktop drag
   card.addEventListener('dragstart', e => {
@@ -264,11 +260,13 @@ function handleDrop(card, result) {
   if (isCorrectDrop) {
     card.classList.add('sorted');
 
-    const thumb = document.createElement('div');
-    thumb.className = 'z-thumb';
-    const img = card.querySelector('img').cloneNode();
-    thumb.appendChild(img);
-    document.getElementById(droppedYes ? 'items-yes' : 'items-no').appendChild(thumb);
+    if (droppedYes) {
+      const img = document.createElement('img');
+      img.src       = card.dataset.image;
+      img.alt       = '';
+      img.className = 'surface-item';
+      document.querySelector('.surface-items-layer').appendChild(img);
+    }
 
     sortedCount++;
     updateProgress();
