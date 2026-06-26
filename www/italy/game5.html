@@ -40,8 +40,9 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
 #feedback.bad{opacity:1}
 #feedback.empty{opacity:0}
 
-/* Game area — background image fills remaining space */
-#zones-wrap{flex:1;background:url('assets/pasta_bake_bg.png') center/cover no-repeat;position:relative;overflow:hidden;min-height:0}
+/* Game area — background rendered as <img> so we can map image coordinates */
+#zones-wrap{flex:1;position:relative;overflow:hidden;min-height:0}
+#game-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:0}
 
 /* Drop zones — invisible by default, only detection areas */
 .drop-zone{position:absolute;display:flex;flex-direction:column;background:transparent;border:none;transition:background .15s,box-shadow .15s;overflow:hidden}
@@ -92,6 +93,7 @@ body{background:#FFF8E7;display:flex;justify-content:center;font-family:'Assista
   <div id="prog-wrap"><div id="prog-bg"><div id="prog-bar"></div></div></div>
 
   <div id="zones-wrap" class="game-area">
+    <img id="game-bg" src="assets/pasta_bake_bg.png" alt="">
     <div id="zone-yes" class="drop-zone" data-zone="yes">
       <div class="zone-hdr">
         <span class="zone-icon">🧺</span>
@@ -140,29 +142,31 @@ let clone       = null;
 let cloneOX     = 0, cloneOY = 0;
 let fbTimer     = null;
 
-// ── Zone geometry (percentages of game-area size) ────────────────
-const DROP_ZONES_PERCENT = {
-  wrong:   { x: 0.04, y: 0.62, width: 0.43, height: 0.28 },
-  correct: { x: 0.53, y: 0.62, width: 0.43, height: 0.28 },
+// ── Zone geometry — pixel coords in the original 941×1672 image ──
+const IMAGE_ZONES = {
+  correct: { x: 255, y: 720, width: 405, height: 365 },
+  wrong:   { x: 660, y: 850, width: 265, height: 285 },
 };
 
-function getAbsoluteZone(zone, rect) {
+// Map image-pixel zone to viewport rect, accounting for object-fit:cover scaling/offset
+function imageZoneToRenderedZone(zone, img) {
+  const rect  = img.getBoundingClientRect();
+  const scale = Math.max(rect.width / img.naturalWidth, rect.height / img.naturalHeight);
+  const ox    = (rect.width  - img.naturalWidth  * scale) / 2;
+  const oy    = (rect.height - img.naturalHeight * scale) / 2;
   return {
-    left:   rect.left + zone.x * rect.width,
-    top:    rect.top  + zone.y * rect.height,
-    right:  rect.left + (zone.x + zone.width)  * rect.width,
-    bottom: rect.top  + (zone.y + zone.height) * rect.height,
+    left:   rect.left + ox + zone.x * scale,
+    top:    rect.top  + oy + zone.y * scale,
+    right:  rect.left + ox + (zone.x + zone.width)  * scale,
+    bottom: rect.top  + oy + (zone.y + zone.height) * scale,
   };
 }
 
-function isPointInsideZone(px, py, abs) {
-  return px >= abs.left && px <= abs.right && py >= abs.top && py <= abs.bottom;
-}
-
 function checkDropZoneAtPoint(px, py) {
-  const rect = document.querySelector('.game-area').getBoundingClientRect();
-  for (const [result, zone] of Object.entries(DROP_ZONES_PERCENT)) {
-    if (isPointInsideZone(px, py, getAbsoluteZone(zone, rect))) return result;
+  const img = document.getElementById('game-bg');
+  for (const [result, zone] of Object.entries(IMAGE_ZONES)) {
+    const r = imageZoneToRenderedZone(zone, img);
+    if (px >= r.left && px <= r.right && py >= r.top && py <= r.bottom) return result;
   }
   return null;
 }
@@ -173,17 +177,19 @@ function checkDropZone(cloneEl) {
 }
 
 function positionZoneDivs() {
-  const rect = document.querySelector('.game-area').getBoundingClientRect();
-  const yes = document.getElementById('zone-yes');
-  const no  = document.getElementById('zone-no');
-  const c = getAbsoluteZone(DROP_ZONES_PERCENT.correct, rect);
-  const w = getAbsoluteZone(DROP_ZONES_PERCENT.wrong,   rect);
-  yes.style.left   = (c.left   - rect.left) + 'px';
-  yes.style.top    = (c.top    - rect.top)  + 'px';
+  const img  = document.getElementById('game-bg');
+  if (!img.naturalWidth) return;
+  const wrap = document.querySelector('.game-area').getBoundingClientRect();
+  const yes  = document.getElementById('zone-yes');
+  const no   = document.getElementById('zone-no');
+  const c = imageZoneToRenderedZone(IMAGE_ZONES.correct, img);
+  const w = imageZoneToRenderedZone(IMAGE_ZONES.wrong,   img);
+  yes.style.left   = (c.left   - wrap.left) + 'px';
+  yes.style.top    = (c.top    - wrap.top)  + 'px';
   yes.style.width  = (c.right  - c.left)    + 'px';
   yes.style.height = (c.bottom - c.top)     + 'px';
-  no.style.left    = (w.left   - rect.left) + 'px';
-  no.style.top     = (w.top    - rect.top)  + 'px';
+  no.style.left    = (w.left   - wrap.left) + 'px';
+  no.style.top     = (w.top    - wrap.top)  + 'px';
   no.style.width   = (w.right  - w.left)    + 'px';
   no.style.height  = (w.bottom - w.top)     + 'px';
 }
@@ -205,11 +211,11 @@ if (DEBUG) {
 
   function drawDebugOverlays() {
     document.querySelectorAll('.dbg-overlay').forEach(e => e.remove());
-    const rect = document.querySelector('.game-area').getBoundingClientRect();
+    const img    = document.getElementById('game-bg');
     const colors = { correct: ['rgba(0,200,0,.35)', 'lime'], wrong: ['rgba(200,0,0,.35)', 'red'] };
-    for (const [result, zone] of Object.entries(DROP_ZONES_PERCENT)) {
-      const abs = getAbsoluteZone(zone, rect);
-      const el = document.createElement('div');
+    for (const [result, zone] of Object.entries(IMAGE_ZONES)) {
+      const abs = imageZoneToRenderedZone(zone, img);
+      const el  = document.createElement('div');
       el.className = 'dbg-overlay';
       el.style.cssText = [
         'position:fixed','z-index:9997','border-radius:12px','pointer-events:none',
@@ -224,13 +230,19 @@ if (DEBUG) {
     }
   }
   window.addEventListener('resize', drawDebugOverlays);
+  document.getElementById('game-bg').addEventListener('load', drawDebugOverlays);
   setTimeout(drawDebugOverlays, 120);
 
+  // Click logs image-pixel coordinates for calibration
   document.querySelector('.game-area').addEventListener('click', e => {
-    const rect = document.querySelector('.game-area').getBoundingClientRect();
-    const relX = ((e.clientX - rect.left) / rect.width).toFixed(3);
-    const relY = ((e.clientY - rect.top)  / rect.height).toFixed(3);
-    const msg = `[calibrate] relX:${relX}  relY:${relY}`;
+    const img   = document.getElementById('game-bg');
+    const rect  = img.getBoundingClientRect();
+    const scale = Math.max(rect.width / img.naturalWidth, rect.height / img.naturalHeight);
+    const ox    = (rect.width  - img.naturalWidth  * scale) / 2;
+    const oy    = (rect.height - img.naturalHeight * scale) / 2;
+    const imgX  = Math.round((e.clientX - rect.left - ox) / scale);
+    const imgY  = Math.round((e.clientY - rect.top  - oy) / scale);
+    const msg   = `[calibrate] imgX:${imgX}  imgY:${imgY}  (of 941×1672)`;
     console.log(msg);
     document.getElementById('dbg-panel').textContent = msg;
   });
@@ -409,7 +421,12 @@ function skipGame() {
   window.location.href = 'game6.html';
 }
 
-positionZoneDivs();
+const _bgImg = document.getElementById('game-bg');
+if (_bgImg.complete && _bgImg.naturalWidth) {
+  positionZoneDivs();
+} else {
+  _bgImg.addEventListener('load', positionZoneDivs);
+}
 window.addEventListener('resize', positionZoneDivs);
 
 function spawnConfetti() {
