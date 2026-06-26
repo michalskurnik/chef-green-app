@@ -140,6 +140,44 @@ let clone       = null;
 let cloneOX     = 0, cloneOY = 0;
 let fbTimer     = null;
 
+// ── Debug mode (?debug=true) ─────────────────────────────────────
+const DEBUG = window.location.search.includes('debug=true');
+
+if (DEBUG) {
+  // Boost zone visibility
+  const yes = document.getElementById('zone-yes');
+  const no  = document.getElementById('zone-no');
+  yes.style.cssText += ';background:rgba(0,200,0,.45)!important;border:3px solid lime!important;';
+  no.style.cssText  += ';background:rgba(200,0,0,.45)!important;border:3px solid red!important;';
+
+  // Floating log panel
+  const panel = document.createElement('div');
+  panel.id = 'dbg-panel';
+  panel.style.cssText = [
+    'position:fixed','top:165px','left:0','right:0','z-index:9998',
+    'background:rgba(0,0,0,.82)','color:#0f0','font:11px/1.7 monospace',
+    'padding:5px 10px','pointer-events:none','white-space:pre'
+  ].join(';');
+  document.body.appendChild(panel);
+}
+
+function dbgUpdate(card, cloneEl) {
+  if (!DEBUG) return;
+  const r  = cloneEl.getBoundingClientRect();
+  const cx = Math.round(r.left + r.width  / 2);
+  const cy = Math.round(r.top  + r.height / 2);
+  let inBasket = false, inDrawer = false;
+  for (const z of document.querySelectorAll('.drop-zone')) {
+    const zr = z.getBoundingClientRect();
+    const hit = cx >= zr.left && cx <= zr.right && cy >= zr.top && cy <= zr.bottom;
+    if (hit && z.id === 'zone-yes') inBasket = true;
+    if (hit && z.id === 'zone-no')  inDrawer = true;
+  }
+  const line = `item: ${card.dataset.id}  |  cx:${cx}  cy:${cy}  |  ✅basket:${inBasket}  ❌drawer:${inDrawer}`;
+  document.getElementById('dbg-panel').textContent = line;
+  console.log('[game5-debug]', line);
+}
+
 // ── Build shuffled items ─────────────────────────────────────────
 const shuffled = [...INGREDIENTS].sort(() => Math.random() - 0.5);
 const area = document.getElementById('items-area');
@@ -222,6 +260,7 @@ function onTouchMove(e) {
   clone.style.left = (t.clientX - cloneOX) + 'px';
   document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('over'));
   getZoneAtCenter(clone)?.classList.add('over');
+  dbgUpdate(dragEl, clone);
 }
 
 function onTouchEnd(e) {
