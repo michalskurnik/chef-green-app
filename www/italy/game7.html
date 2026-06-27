@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@700;800&display=swap" rel="stylesheet">
-<title>פנקוטה וניל – מזגו את הסירופ!</title>
+<title>פנקוטה וניל – תפסו את סירופ הרימונים!</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-tap-highlight-color:transparent}
 body{background:#FFF8E7;display:flex;flex-direction:column;align-items:center;min-height:100vh;font-family:'Assistant',sans-serif;direction:rtl;overflow:hidden;touch-action:none}
@@ -16,7 +16,9 @@ body{background:#FFF8E7;display:flex;flex-direction:column;align-items:center;mi
 #hsub{font-size:11px;opacity:.9;font-weight:700}
 
 #hud{display:flex;justify-content:space-between;align-items:center;padding:6px 16px;background:#fff;border-bottom:2px solid #FCE4EC;flex-shrink:0}
-#hearts{font-size:20px;letter-spacing:2px}
+#hearts{display:flex;gap:4px;align-items:center}
+.heart-img{width:22px;height:22px;object-fit:contain;transition:opacity .3s}
+.heart-img.lost{opacity:0.2;filter:grayscale(1)}
 #score-txt{font-size:13px;font-weight:800;color:#B5186A}
 #skip-btn{background:none;border:2px solid #DDD;border-radius:12px;padding:4px 11px;font-size:11px;font-weight:800;color:#AAA;cursor:pointer;font-family:'Assistant',sans-serif;touch-action:manipulation}
 
@@ -31,19 +33,23 @@ canvas{display:block;width:100%;height:100%;touch-action:none;pointer-events:non
 .ov-icon{font-size:58px;margin-bottom:10px}
 .ov-title{font-family:'Fredoka One',cursive;font-size:24px;color:#FFD54F;margin-bottom:8px}
 .ov-sub{font-size:13px;color:rgba(255,255,255,.92);font-weight:700;line-height:1.8;margin-bottom:22px}
-.ov-btn{background:linear-gradient(135deg,#FF6B35,#F7C948);color:#fff;border:none;border-radius:20px;padding:14px 44px;font-size:18px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(255,107,53,.5);touch-action:manipulation}
+.ov-btn{background:linear-gradient(135deg,#FF6B35,#F7C948);color:#fff;border:none;border-radius:20px;padding:14px 44px;font-size:18px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(255,107,53,.5);touch-action:manipulation;pointer-events:auto}
 #stars-row{font-size:34px;letter-spacing:5px;margin-bottom:12px}
 </style>
 </head>
 <body>
 <div id="app">
   <div id="hdr">
-    <div id="badge">🇮🇹 משחק 1 - פנקוטה וניל</div>
-    <h2 id="htitle">🍮 מזגו סירופ רימונים לגביעים!</h2>
-    <p id="hsub">הקישו על המסך כשגביע נמצא מתחת לבקבוק 🍹</p>
+    <div id="badge">משחק 1 - פנקוטה וניל</div>
+    <h2 id="htitle">תפסו את סירופ הרימונים!</h2>
+    <p id="hsub">הקישו על המסך כשגביע נמצא מתחת לבקבוק</p>
   </div>
   <div id="hud">
-    <div id="hearts">❤️❤️❤️</div>
+    <div id="hearts">
+      <img class="heart-img" src="assets/game1/heart.png" alt="לב">
+      <img class="heart-img" src="assets/game1/heart.png" alt="לב">
+      <img class="heart-img" src="assets/game1/heart.png" alt="לב">
+    </div>
     <div id="score-txt">גביעים: 0 / 5</div>
     <button id="skip-btn" onclick="skipGame()">דלג ←</button>
   </div>
@@ -51,10 +57,10 @@ canvas{display:block;width:100%;height:100%;touch-action:none;pointer-events:non
     <canvas id="canvas"></canvas>
 
     <div id="start-screen">
-      <div class="ov-icon">🍹</div>
+      <div class="ov-icon">🍮</div>
       <div class="ov-title">סירופ רימונים!</div>
-      <div class="ov-sub">הגביעים נעים על הרצועה ◀<br>הקישו על המסך כשגביע<br>נמצא מתחת לבקבוק 🎯<br><small style="opacity:.75">מלאו 5 גביעים כדי לנצח!</small></div>
-      <button class="ov-btn" onclick="startGame()">▶ התחילו!</button>
+      <div class="ov-sub">הגביעים נעים על המגש<br>הקישו על המסך כשגביע<br>נמצא מתחת לבקבוק<br><small style="opacity:.75">מלאו 5 גביעים כדי לנצח!</small></div>
+      <button class="ov-btn" onclick="startGame()">התחילו!</button>
     </div>
 
     <div id="win-screen">
@@ -62,14 +68,14 @@ canvas{display:block;width:100%;height:100%;touch-action:none;pointer-events:non
       <div class="ov-title">כל הכבוד!</div>
       <div id="stars-row">⭐⭐⭐</div>
       <div class="ov-sub" id="win-msg">מילאתם את כל הגביעים בצורה מושלמת!</div>
-      <button class="ov-btn" onclick="goNext()">המשחק הבא ▶</button>
+      <button class="ov-btn" onclick="goNext()">המשחק הבא</button>
     </div>
 
     <div id="lose-screen">
       <div class="ov-icon">💧</div>
       <div class="ov-title">אוי! הסירופ נגמר...</div>
-      <div class="ov-sub">נסו שוב!<br>המתינו שהגביע יגיע ממש<br>מתחת לבקבוק 🎯</div>
-      <button class="ov-btn" onclick="restartGame()">🔄 שוב!</button>
+      <div class="ov-sub">נסו שוב!<br>המתינו שהגביע יגיע ממש<br>מתחת לבקבוק</div>
+      <button class="ov-btn" onclick="restartGame()">שוב!</button>
     </div>
   </div>
 </div>
@@ -79,30 +85,56 @@ const canvas = document.getElementById('canvas');
 const ctx    = canvas.getContext('2d');
 const gw     = document.getElementById('gw');
 
-// ── Layout ───────────────────────────────────────────────────────
-const CUP_W = 54, CUP_H = 60, BELT_H = 20;
-let W, H, BELT_Y, BOTTLE_X, BOTTLE_TIP;
+// ── Assets ────────────────────────────────────────────────────────
+const ASSET_MAP = {
+  bg:        'assets/game1/bg_panna_kitchen.png',
+  tray:      'assets/game1/wooden_tray.png',
+  bottle:    'assets/game1/pomegranate_syrup_bottle.png',
+  cupEmpty:  'assets/game1/panna_cotta_cup.png',
+  cupFilled: 'assets/game1/panna_cotta_cup_filled.png',
+  stream:    'assets/game1/syrup_stream.png',
+  splash:    'assets/game1/syrup_splash.png',
+};
+const IMG = {};
+
+function loadImage(key, src) {
+  return new Promise(resolve => {
+    const i = new Image();
+    i.onload  = () => { IMG[key] = i; resolve(); };
+    i.onerror = () => { console.warn('Missing asset:', src); IMG[key] = null; resolve(); };
+    i.src = src;
+  });
+}
+
+// ── Layout ────────────────────────────────────────────────────────
+const CUP_W   = 74, CUP_H    = 82;
+const BOTTLE_W = 64, BOTTLE_H = 115;
+const TRAY_H   = 44;
+let W, H, dpr, TRAY_Y, BOTTLE_X, BOTTLE_TIP;
 
 function resize() {
-  canvas.width  = gw.clientWidth  || 360;
-  canvas.height = gw.clientHeight || 460;
+  dpr = window.devicePixelRatio || 1;
+  const cw = gw.clientWidth  || 360;
+  const ch = gw.clientHeight || 460;
+  canvas.width  = cw * dpr;
+  canvas.height = ch * dpr;
 }
-function layout() {
-  W = canvas.width; H = canvas.height;
-  BELT_Y     = Math.round(H * 0.69);
-  BOTTLE_X   = Math.round(W / 2);
-  BOTTLE_TIP = 94;
-}
-resize(); layout();
-window.addEventListener('resize', () => { resize(); layout(); });
 
-// ── State ────────────────────────────────────────────────────────
+function layout() {
+  W = canvas.width  / dpr;
+  H = canvas.height / dpr;
+  TRAY_Y     = Math.round(H * 0.68);
+  BOTTLE_X   = Math.round(W / 2);
+  BOTTLE_TIP = 145;
+}
+
+// ── State ─────────────────────────────────────────────────────────
 let state, cups, speed, lives, filled, misses,
-    spawnTimer, spawnInterval, beltOff, pours, rafId, lastTs;
+    spawnTimer, spawnInterval, beltOff, pours, splashes, rafId, lastTs;
 
 function initState() {
   cups = []; speed = 2.1; lives = 3; filled = 0; misses = 0;
-  spawnTimer = 55; spawnInterval = 118; beltOff = 0; pours = [];
+  spawnTimer = 55; spawnInterval = 118; beltOff = 0; pours = []; splashes = [];
   rafId = null; lastTs = 0;
 }
 initState();
@@ -112,9 +144,7 @@ function show(id){ document.getElementById(id).style.display = 'flex'; }
 function hide(id){ document.getElementById(id).style.display = 'none'; }
 
 function updateHUD() {
-  let h = '';
-  for (let i = 0; i < 3; i++) h += i < lives ? '❤️' : '🖤';
-  document.getElementById('hearts').textContent = h;
+  document.querySelectorAll('.heart-img').forEach((h, i) => h.classList.toggle('lost', i >= lives));
   document.getElementById('score-txt').textContent = `גביעים: ${filled} / 5`;
 }
 
@@ -129,10 +159,8 @@ function saveScore(stars) {
 function popEmoji(cx, cy, text) {
   const el = document.createElement('div');
   el.className = 'pop'; el.textContent = text;
-  const scaleX = gw.clientWidth  / W;
-  const scaleY = gw.clientHeight / H;
-  el.style.left = (cx * scaleX - 14) + 'px';
-  el.style.top  = (cy * scaleY - 14) + 'px';
+  el.style.left = (cx - 14) + 'px';
+  el.style.top  = (cy - 14) + 'px';
   gw.appendChild(el);
   setTimeout(() => el.remove(), 950);
 }
@@ -167,13 +195,13 @@ function pour() {
   pours.push({ y: BOTTLE_TIP, hit, resolved: false });
   if (!hit) {
     misses++; lives--; updateHUD();
-    popEmoji(BOTTLE_X, BELT_Y - 24, '❌');
+    popEmoji(BOTTLE_X, TRAY_Y - 24, '❌');
     if (lives <= 0) { state = 'losing'; setTimeout(() => { state = 'lose'; show('lose-screen'); }, 500); }
   }
 }
 
-gw.addEventListener('click',      e  => { if (e.target.closest('button')) return; pour(); });
-gw.addEventListener('touchstart', e  => { if (e.target.closest('button')) return; e.preventDefault(); pour(); }, { passive: false });
+gw.addEventListener('click',      e => { if (e.target.closest('button')) return; pour(); });
+gw.addEventListener('touchstart', e => { if (e.target.closest('button')) return; e.preventDefault(); pour(); }, { passive: false });
 
 // ── Loop ──────────────────────────────────────────────────────────
 function loop(ts) {
@@ -191,33 +219,32 @@ function update(dt) {
   layout();
   beltOff = (beltOff + speed * dt) % 40;
 
-  // Move cups left; animate fill
   for (const c of cups) {
     c.x -= speed * dt;
     if (c.filled && c.fillAnim < 1) c.fillAnim = Math.min(c.fillAnim + 0.09 * dt, 1);
+    if (c.bounce > 0) c.bounce = Math.max(0, c.bounce - 0.12 * dt);
   }
   cups = cups.filter(c => c.x > -CUP_W);
 
-  // Spawn
   spawnTimer -= dt;
   if (spawnTimer <= 0) {
-    cups.push({ x: W + CUP_W / 2, filled: false, fillAnim: 0 });
+    cups.push({ x: W + CUP_W / 2, filled: false, fillAnim: 0, bounce: 0 });
     spawnTimer = spawnInterval + (Math.random() * 50 - 25);
   }
 
-  // Pour animations
-  const TARGET_Y = BELT_Y - CUP_H;
+  const TARGET_Y = TRAY_Y - CUP_H;
   for (const p of pours) {
     p.y += 13 * dt;
     if (!p.resolved && p.y >= TARGET_Y) {
       p.resolved = true;
       if (p.hit && !p.hit.filled) {
-        p.hit.filled = true; p.hit.fillAnim = 0;
+        p.hit.filled = true; p.hit.fillAnim = 0; p.hit.bounce = 1;
+        splashes.push({ x: p.hit.x, y: TARGET_Y, t: 0 });
         filled++;
         speed = Math.min(speed + 0.35, 7.5);
         spawnInterval = Math.max(spawnInterval - 5, 68);
         updateHUD();
-        popEmoji(p.hit.x, BELT_Y - CUP_H - 6, '✅');
+        popEmoji(p.hit.x, TRAY_Y - CUP_H - 6, '✅');
         if (filled >= 5) {
           state = 'ending';
           const stars = misses === 0 ? 3 : misses === 1 ? 2 : 1;
@@ -227,165 +254,151 @@ function update(dt) {
             document.getElementById('stars-row').textContent =
               stars === 3 ? '⭐⭐⭐' : stars === 2 ? '⭐⭐☆' : '⭐☆☆';
             document.getElementById('win-msg').textContent =
-              ['','💪 ניסיון טוב!','👍 כמעט מושלם!','🎉 מילאתם את כל הגביעים בצורה מושלמת!'][stars];
+              ['','💪 ניסיון טוב!','👍 כמעט מושלם!','מילאתם את כל הגביעים בצורה מושלמת!'][stars];
             show('win-screen');
           }, 800);
         }
       }
     }
   }
-  pours = pours.filter(p => p.y < BELT_Y + 30);
+  pours = pours.filter(p => p.y < TRAY_Y + 30);
+
+  for (const s of splashes) s.t += dt * 0.04;
+  splashes = splashes.filter(s => s.t < 1);
 }
 
 // ── Draw ──────────────────────────────────────────────────────────
 function draw() {
+  ctx.save();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.clearRect(0, 0, W, H);
   drawBg();
+  drawTray();
   drawGuide();
-  drawBelt();
   cups.forEach(drawCup);
+  splashes.forEach(drawSplash);
   drawBottle();
   pours.forEach(drawStream);
+  ctx.restore();
 }
 
 function drawBg() {
-  const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0,    '#FFF8E7');
-  g.addColorStop(0.62, '#FCE4EC');
-  g.addColorStop(1,    '#F3E0D8');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  if (IMG.bg) {
+    const img = IMG.bg;
+    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    const sw = img.naturalWidth  * scale;
+    const sh = img.naturalHeight * scale;
+    ctx.drawImage(img, (W - sw) / 2, (H - sh) / 2, sw, sh);
+  } else {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0,    '#FFF8E7');
+    g.addColorStop(0.62, '#FCE4EC');
+    g.addColorStop(1,    '#F3E0D8');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  }
+}
+
+function drawTray() {
+  if (IMG.tray) {
+    ctx.drawImage(IMG.tray, 0, TRAY_Y - TRAY_H / 2, W, TRAY_H);
+  } else {
+    const g = ctx.createLinearGradient(0, TRAY_Y, 0, TRAY_Y + TRAY_H);
+    g.addColorStop(0, '#8D6E63'); g.addColorStop(1, '#5D4037');
+    ctx.fillStyle = g; ctx.fillRect(0, TRAY_Y, W, TRAY_H);
+  }
 }
 
 function drawGuide() {
   ctx.save();
   ctx.setLineDash([5, 8]);
-  ctx.strokeStyle = 'rgba(181,24,106,0.18)';
+  ctx.strokeStyle = 'rgba(181,24,106,0.25)';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(BOTTLE_X, BOTTLE_TIP + 6);
-  ctx.lineTo(BOTTLE_X, BELT_Y - CUP_H - 10);
+  ctx.lineTo(BOTTLE_X, TRAY_Y - CUP_H - 10);
   ctx.stroke();
   ctx.restore();
 }
 
-function drawBelt() {
-  const bg = ctx.createLinearGradient(0, BELT_Y, 0, BELT_Y + BELT_H);
-  bg.addColorStop(0, '#6D4C41'); bg.addColorStop(1, '#4E342E');
-  ctx.fillStyle = bg; ctx.fillRect(0, BELT_Y, W, BELT_H);
-
-  ctx.save();
-  ctx.strokeStyle = 'rgba(0,0,0,0.28)'; ctx.lineWidth = 2;
-  const off = beltOff % 40;
-  for (let x = -off; x < W + 40; x += 40) {
-    ctx.beginPath(); ctx.moveTo(x, BELT_Y); ctx.lineTo(x, BELT_Y + BELT_H); ctx.stroke();
-  }
-  ctx.restore();
-
-  // Shine
-  ctx.fillStyle = 'rgba(255,255,255,0.11)'; ctx.fillRect(0, BELT_Y, W, 5);
-
-  // Rollers
-  [12, W - 12].forEach(rx => {
-    ctx.fillStyle = '#5D4037';
-    ctx.beginPath(); ctx.arc(rx, BELT_Y + BELT_H / 2, 13, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#A1887F';
-    ctx.beginPath(); ctx.arc(rx, BELT_Y + BELT_H / 2, 6, 0, Math.PI * 2); ctx.fill();
-  });
-}
-
 function drawCup(c) {
-  const tw = CUP_W * 0.78, bw = CUP_W;
-  const tx = c.x, topY = BELT_Y - CUP_H;
-
-  ctx.save();
+  const topY = TRAY_Y - CUP_H;
+  const bounceOff = c.bounce ? -Math.sin(c.bounce * Math.PI) * 7 : 0;
+  const dy = topY + bounceOff;
+  const img = (c.filled && c.fillAnim > 0.5) ? IMG.cupFilled : IMG.cupEmpty;
 
   // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.08)';
-  ctx.beginPath(); ctx.ellipse(tx, BELT_Y + 1, bw * 0.5, 4, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+  ctx.beginPath(); ctx.ellipse(c.x, TRAY_Y + 3, CUP_W * 0.38, 5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
 
-  // Cup shape path
-  const p = new Path2D();
-  p.moveTo(tx - tw / 2, topY);
-  p.lineTo(tx + tw / 2, topY);
-  p.lineTo(tx + bw / 2, BELT_Y);
-  p.lineTo(tx - bw / 2, BELT_Y);
-  p.closePath();
-
-  // Glass
-  ctx.fillStyle = c.filled ? 'rgba(245,200,215,0.9)' : 'rgba(240,252,255,0.88)';
-  ctx.fill(p);
-
-  // Syrup fill animation
-  if (c.filled && c.fillAnim > 0) {
-    const fh = CUP_H * c.fillAnim;
-    ctx.save(); ctx.clip(p);
-    const fg = ctx.createLinearGradient(0, BELT_Y - fh, 0, BELT_Y);
-    fg.addColorStop(0, '#EF9A9A'); fg.addColorStop(1, '#B71C1C');
-    ctx.fillStyle = fg;
-    ctx.fillRect(tx - bw, BELT_Y - fh, bw * 2, fh + 2);
+  if (img) {
+    ctx.drawImage(img, c.x - CUP_W / 2, dy, CUP_W, CUP_H);
+  } else {
+    const tw = CUP_W * 0.78, bw = CUP_W;
+    ctx.save();
+    const p = new Path2D();
+    p.moveTo(c.x - tw / 2, dy);
+    p.lineTo(c.x + tw / 2, dy);
+    p.lineTo(c.x + bw / 2, TRAY_Y);
+    p.lineTo(c.x - bw / 2, TRAY_Y);
+    p.closePath();
+    ctx.fillStyle = c.filled ? 'rgba(245,200,215,0.9)' : 'rgba(240,252,255,0.88)';
+    ctx.fill(p);
+    ctx.strokeStyle = c.filled ? '#880E4F' : '#90CAF9'; ctx.lineWidth = 2.5;
+    ctx.stroke(p);
     ctx.restore();
   }
+}
 
-  // Outline
-  ctx.strokeStyle = c.filled ? '#880E4F' : '#90CAF9'; ctx.lineWidth = 2.5;
-  ctx.stroke(p);
-
-  // Rim
-  ctx.strokeStyle = c.filled ? 'rgba(255,140,140,0.7)' : 'rgba(255,255,255,0.85)';
-  ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.moveTo(tx - tw / 2, topY + 1); ctx.lineTo(tx + tw / 2, topY + 1); ctx.stroke();
-
+function drawSplash(s) {
+  if (!IMG.splash) return;
+  const alpha = 1 - s.t;
+  const size  = 90 * (0.6 + s.t * 0.8);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.drawImage(IMG.splash, s.x - size / 2, s.y - size / 2, size, size);
   ctx.restore();
 }
 
 function drawBottle() {
-  const x = BOTTLE_X;
-  ctx.save();
-
-  // Body gradient
-  const bg = ctx.createLinearGradient(x - 18, 0, x + 18, 0);
-  bg.addColorStop(0, '#7B0000'); bg.addColorStop(0.4, '#C62828'); bg.addColorStop(1, '#6A0000');
-  ctx.fillStyle = bg;
-  rr(ctx, x - 17, 24, 34, 60, 8); ctx.fill();
-
-  // Label
-  ctx.fillStyle = '#FFCDD2';
-  rr(ctx, x - 12, 35, 24, 30, 5); ctx.fill();
-  ctx.font = '17px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText('🍹', x, 50);
-
-  // Neck
-  ctx.fillStyle = '#C62828'; ctx.fillRect(x - 9, 14, 18, 14);
-
-  // Cap
-  const cg = ctx.createLinearGradient(x - 12, 0, x + 12, 0);
-  cg.addColorStop(0, '#4A148C'); cg.addColorStop(1, '#7B1FA2');
-  ctx.fillStyle = cg;
-  rr(ctx, x - 11, 4, 22, 13, 4); ctx.fill();
-
-  // Nozzle
-  ctx.fillStyle = '#AB47BC';
-  rr(ctx, x - 4, 15, 8, 8, 2); ctx.fill();
-
-  ctx.restore();
+  if (IMG.bottle) {
+    ctx.drawImage(IMG.bottle, BOTTLE_X - BOTTLE_W / 2, 30, BOTTLE_W, BOTTLE_H);
+  } else {
+    const x = BOTTLE_X;
+    ctx.save();
+    const bg = ctx.createLinearGradient(x - 18, 0, x + 18, 0);
+    bg.addColorStop(0, '#7B0000'); bg.addColorStop(0.4, '#C62828'); bg.addColorStop(1, '#6A0000');
+    ctx.fillStyle = bg;
+    rr(x - 17, 24, 34, 60, 8); ctx.fill();
+    ctx.fillStyle = '#C62828'; ctx.fillRect(x - 9, 14, 18, 14);
+    const cg = ctx.createLinearGradient(x - 12, 0, x + 12, 0);
+    cg.addColorStop(0, '#4A148C'); cg.addColorStop(1, '#7B1FA2');
+    ctx.fillStyle = cg;
+    rr(x - 11, 4, 22, 13, 4); ctx.fill();
+    ctx.restore();
+  }
 }
 
 function drawStream(p) {
-  const y0 = BOTTLE_TIP, y1 = Math.min(p.y, BELT_Y + 5);
+  const y0 = BOTTLE_TIP, y1 = Math.min(p.y, TRAY_Y + 5);
   if (y1 <= y0) return;
-  ctx.save();
-  const g = ctx.createLinearGradient(0, y0, 0, y1);
-  g.addColorStop(0, 'rgba(183,28,28,0.9)');
-  g.addColorStop(1, 'rgba(239,83,80,0.85)');
-  ctx.strokeStyle = g; ctx.lineWidth = 5; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(BOTTLE_X, y0); ctx.lineTo(BOTTLE_X, y1); ctx.stroke();
-  // Droplet
-  ctx.fillStyle = '#EF5350';
-  ctx.beginPath(); ctx.arc(BOTTLE_X, y1 + 3, 5, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
+  if (IMG.stream) {
+    ctx.drawImage(IMG.stream, BOTTLE_X - 9, y0, 18, y1 - y0);
+  } else {
+    ctx.save();
+    const g = ctx.createLinearGradient(0, y0, 0, y1);
+    g.addColorStop(0, 'rgba(183,28,28,0.9)');
+    g.addColorStop(1, 'rgba(239,83,80,0.85)');
+    ctx.strokeStyle = g; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(BOTTLE_X, y0); ctx.lineTo(BOTTLE_X, y1); ctx.stroke();
+    ctx.fillStyle = '#EF5350';
+    ctx.beginPath(); ctx.arc(BOTTLE_X, y1 + 3, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
 }
 
-function rr(ctx, x, y, w, h, r) {
+function rr(x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
   ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
@@ -395,9 +408,19 @@ function rr(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-// Initial static draw behind start screen
-resize(); layout();
-drawBg(); drawGuide(); drawBelt(); drawBottle();
+// ── Boot ──────────────────────────────────────────────────────────
+async function boot() {
+  resize(); layout();
+  await Promise.all(Object.entries(ASSET_MAP).map(([k, src]) => loadImage(k, src)));
+  // Static draw visible behind the start screen
+  ctx.save();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  drawBg(); drawTray(); drawGuide(); drawBottle();
+  ctx.restore();
+}
+
+window.addEventListener('resize', () => { resize(); layout(); });
+boot();
 </script>
 </body>
 </html>
