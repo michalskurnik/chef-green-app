@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debug – Asset Transparency Check</title>
+<style>
+body { margin: 0; background: #111; font-family: monospace; color: #fff; }
+h1 { text-align: center; padding: 16px; font-size: 14px; color: #aaa; letter-spacing: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; padding: 0 16px 32px; }
+.cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.box {
+  background: #C2185B;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+.box img {
+  max-width: 120px;
+  max-height: 180px;
+  object-fit: contain;
+  background: transparent;
+  border: none;
+  display: block;
+}
+.label { font-size: 10px; color: #888; text-align: center; max-width: 140px; word-break: break-all; }
+.pass { color: #4CAF50; font-weight: bold; }
+.fail { color: #F44336; font-weight: bold; }
+.rule { text-align: center; padding: 8px 16px 20px; font-size: 12px; color: #666; }
+
+/* Canvas section */
+.canvas-section { text-align: center; padding: 16px; }
+canvas { border-radius: 12px; }
+</style>
+</head>
+<body>
+<h1>ASSET TRANSPARENCY DEBUG — DARK PINK BACKGROUND (#C2185B)</h1>
+<div class="rule">
+  PASS: asset appears as clean cut-out — no white box, no checkerboard box visible<br>
+  FAIL: any rectangular white or checkerboard background is visible around the asset
+</div>
+
+<div class="row" id="grid"></div>
+
+<div class="canvas-section">
+  <h2 style="font-size:12px;color:#aaa;margin-bottom:12px">CANVAS RENDERING TEST</h2>
+  <canvas id="cv"></canvas>
+</div>
+
+<script>
+const ASSETS = [
+  { key: 'bottle',    src: 'assets/game1/pomegranate_syrup_bottle.png' },
+  { key: 'cupEmpty',  src: 'assets/game1/panna_cotta_cup.png' },
+  { key: 'cupFilled', src: 'assets/game1/panna_cotta_cup_filled.png' },
+  { key: 'stream',    src: 'assets/game1/syrup_stream.png' },
+  { key: 'splash',    src: 'assets/game1/syrup_splash.png' },
+  { key: 'heart',     src: 'assets/game1/heart.png' },
+  { key: 'tray',      src: 'assets/game1/wooden_tray.png' },
+  { key: 'bg',        src: 'assets/game1/bg_panna_kitchen.png' },
+];
+
+const grid = document.getElementById('grid');
+
+ASSETS.forEach(({ key, src }) => {
+  const cell = document.createElement('div');
+  cell.className = 'cell';
+
+  const box = document.createElement('div');
+  box.className = 'box';
+
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = key;
+  img.onerror = () => { box.style.outline = '2px solid red'; label.innerHTML = '❌ NOT FOUND<br>' + src; };
+
+  const label = document.createElement('div');
+  label.className = 'label';
+  label.textContent = src.split('/').pop();
+
+  box.appendChild(img);
+  cell.appendChild(box);
+  cell.appendChild(label);
+  grid.appendChild(cell);
+});
+
+// Canvas test: draw each asset on a dark-pink-filled canvas
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const dpr = window.devicePixelRatio || 1;
+const CW = Math.min(window.innerWidth - 32, 700);
+const CH = 220;
+cv.width  = CW * dpr;
+cv.height = CH * dpr;
+cv.style.width  = CW + 'px';
+cv.style.height = CH + 'px';
+ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+const imgs = {};
+let loaded = 0;
+
+ASSETS.forEach(({ key, src }) => {
+  const i = new Image();
+  i.onload  = () => { imgs[key] = i; if (++loaded === ASSETS.length) renderCanvas(); };
+  i.onerror = () => { imgs[key] = null; if (++loaded === ASSETS.length) renderCanvas(); };
+  i.src = src;
+});
+
+function renderCanvas() {
+  // Dark pink background
+  ctx.fillStyle = '#C2185B';
+  ctx.fillRect(0, 0, CW, CH);
+
+  const pad = 20, gap = 16;
+  let x = pad;
+
+  function drawAsset(key, label, w, h) {
+    const img = imgs[key];
+    if (!img) return;
+    ctx.drawImage(img, x, (CH - h) / 2, w, h);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '9px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x + w/2, CH - 6);
+    x += w + gap;
+  }
+
+  drawAsset('bottle',    'bottle',   50,  90);
+  drawAsset('cupEmpty',  'cup',      60,  66);
+  drawAsset('cupFilled', 'filled',   60,  66);
+  drawAsset('stream',    'stream',   18, 160);
+  drawAsset('splash',    'splash',   80,  80);
+  drawAsset('heart',     'heart',    36,  36);
+  // tray as a horizontal strip
+  if (imgs.tray) {
+    ctx.drawImage(imgs.tray, pad, CH * 0.72, CW - pad * 2, 32);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '9px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('tray (full-width strip)', CW / 2, CH - 6);
+  }
+}
+</script>
+</body>
+</html>
