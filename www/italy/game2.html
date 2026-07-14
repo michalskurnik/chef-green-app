@@ -123,12 +123,12 @@ button,.btn,[role=button]{touch-action:manipulation}
 
 <script>
 const STEPS=[
-  {id:1, img:'images/pasta-salak/step1.png'},
-  {id:2, img:'images/pasta-salak/step2.png'},
-  {id:3, img:'images/pasta-salak/step3.png'},
-  {id:4, img:'images/pasta-salak/step4.png'},
-  {id:5, img:'images/pasta-salak/step5.png'},
-  {id:6, img:'images/pasta-salak/step6.png'},
+  {id:1, img:'images/pasta-salak/step1.jpg'},
+  {id:2, img:'images/pasta-salak/step2.jpg'},
+  {id:3, img:'images/pasta-salak/step3.jpg'},
+  {id:4, img:'images/pasta-salak/step4.jpg'},
+  {id:5, img:'images/pasta-salak/step5.jpg'},
+  {id:6, img:'images/pasta-salak/step6.jpg'},
 ];
 
 function shuffle(arr){
@@ -150,7 +150,7 @@ function buildList(){
   order.forEach((step,i)=>{
     const card=document.createElement('div');
     card.className='card';card.dataset.idx=i;card.draggable=true;
-    card.innerHTML=`<img class="card-img" src="${step.img}" alt="שלב ${step.id}"><div class="card-badge">${i+1}</div>`;
+    card.innerHTML=`<img class="card-img" src="${step.img}" width="900" height="900" decoding="async" alt="שלב במתכון"><div class="card-badge">${i+1}</div>`;
     card.addEventListener('dragstart',onDragStart);
     card.addEventListener('dragover',onDragOver);
     card.addEventListener('dragleave',onDragLeave);
