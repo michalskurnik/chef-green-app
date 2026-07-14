@@ -1,1 +1,7 @@
 .vercel
+
+# Android/iOS signing keys - never commit
+*.jks
+*.keystore
+keystore.properties
+key.properties
