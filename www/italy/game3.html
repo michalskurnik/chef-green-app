@@ -125,11 +125,7 @@ body {
 .btn-next { background:var(--yellow); color:#1a1a1a; font-family:inherit; font-size:18px; font-weight:900; padding:13px 34px; border:none; border-radius:50px; cursor:pointer; box-shadow:0 5px 18px rgba(247,201,72,0.5); transition:all 0.2s; }
 .btn-next:hover { transform:scale(1.05); }
 
-/* MOBILE CONTROLS */
-.mobile-controls { display:none; position:absolute; bottom:44px; left:0; right:0; justify-content:space-between; padding:0 16px; z-index:30; pointer-events:none; }
-.ctrl-btn { width:60px; height:60px; border-radius:50%; background:rgba(255,255,255,0.7); border:2px solid rgba(45,138,78,0.4); font-size:24px; cursor:pointer; pointer-events:auto; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.15); -webkit-tap-highlight-color:transparent; }
-.ctrl-btn:active { background:rgba(255,255,255,0.95); transform:scale(0.92); }
-@media(max-width:600px) { .mobile-controls { display:flex; } .falling-emoji { font-size:28px; } }
+@media(max-width:600px) { .falling-emoji { font-size:28px; } }
 </style>
 </head>
 <body>
@@ -192,11 +188,6 @@ body {
     <div class="win-text">אספתם את כל מרכיבי<br><strong style="color:var(--yellow);font-size:17px;">הברוסקטה החיפושית! 🐞</strong><br><br>בואו נמשיך למשחק הבא!</div>
     <button class="btn-next" onclick="nextMission()">המשחק הבא ▶</button>
   </div>
-</div>
-
-<div class="mobile-controls">
-  <button class="ctrl-btn" ontouchstart="moveDir=-1" ontouchend="moveDir=0">◀️</button>
-  <button class="ctrl-btn" ontouchstart="moveDir=1"  ontouchend="moveDir=0">▶️</button>
 </div>
 
 <script>
