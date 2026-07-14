@@ -51,10 +51,8 @@ body{background:#FFF8E7;display:flex;justify-content:center;padding:16px 10px 36
 #recipe-screen{display:none;position:fixed;inset:0;z-index:300;background:#1A1A2E;flex-direction:column;overflow:hidden}
 #recipe-screen-hdr{background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;text-align:center;padding:18px 16px 14px;flex-shrink:0}
 #recipe-screen-title{font-family:'Fredoka One',cursive;font-size:22px}
-#recipe-scroll{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#recipe-iframe{flex:1;width:100%;border:none;background:#fff}
-#recipe-fallback{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 24px;text-align:center;color:rgba(255,255,255,.75);font-size:15px;font-weight:700}
-#dl-btn{background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;border:none;border-radius:18px;padding:14px 32px;font-size:17px;font-family:'Fredoka One',cursive;cursor:pointer;touch-action:manipulation}
+#recipe-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#recipe-scroll img{width:100%;display:block}
 #recipe-screen-foot{background:#1A1A2E;padding:16px 20px calc(16px + env(safe-area-inset-bottom,0px));flex-shrink:0}
 #next-btn{width:100%;background:linear-gradient(135deg,#FF6B35,#FF8C42);color:#fff;border:none;border-radius:18px;padding:16px;font-size:19px;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 5px 18px rgba(255,107,53,.42)}
 </style>
@@ -115,14 +113,7 @@ button,.btn,[role=button]{touch-action:manipulation}
     <div id="recipe-screen-title">הנה המתכון המלא! 🧀</div>
   </div>
   <div id="recipe-scroll">
-    <iframe id="recipe-iframe" src="assets/recipe_pasta_bake.pdf"
-            title="מתכון מאפה פסטה וגבינות"
-            onload="onIframeLoad(this)"
-            onerror="showFallback()"></iframe>
-    <div id="recipe-fallback">
-      <div>📄 לפתיחת המתכון לחצו על הכפתור</div>
-      <button id="dl-btn" onclick="openPDF()">פתחו את המתכון</button>
-    </div>
+    <img src="assets/recipe_pasta_bake.jpg" alt="מתכון מאפה פסטה וגבינות">
   </div>
   <div id="recipe-screen-foot">
     <button id="next-btn" onclick="window.location.href='index.html'">🏠 חזרה לתפריט</button>
@@ -267,29 +258,7 @@ function showDone(stars){
   localStorage.setItem('italy_stars',d.reduce((a,b)=>a+b,0));
 }
 
-function showRecipeScreen(){
-  document.getElementById('recipe-screen').style.display='flex';
-  // Give the iframe a moment; if it's blank after 3 s, show the fallback button
-  setTimeout(function(){
-    var f=document.getElementById('recipe-iframe');
-    try{
-      if(!f.contentDocument||!f.contentDocument.body||f.contentDocument.body.innerHTML==='')showFallback();
-    }catch(e){
-      // cross-origin or native PDF viewer — iframe is working, leave it
-    }
-  },3000);
-}
-function onIframeLoad(f){
-  // On some Android WebViews the iframe loads but renders nothing for PDF
-  try{
-    if(f.contentDocument&&f.contentDocument.body&&f.contentDocument.body.innerHTML==='')showFallback();
-  }catch(e){}
-}
-function showFallback(){
-  document.getElementById('recipe-iframe').style.display='none';
-  document.getElementById('recipe-fallback').style.display='flex';
-}
-function openPDF(){window.open('assets/recipe_pasta_bake.pdf','_blank');}
+function showRecipeScreen(){document.getElementById('recipe-screen').style.display='flex';}
 function skipGame(){if(!checked){checked=true;showDone(1);}}
 
 function aud(ok){
