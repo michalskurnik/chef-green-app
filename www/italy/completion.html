@@ -4,162 +4,411 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>סיימתם את הרפתקת איטליה! 🎉</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
+<title>תעודת שף מתחיל 🏆</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
-html,body{min-height:100%;background:#1A3D1F;font-family:'Assistant',sans-serif;direction:rtl;-webkit-text-size-adjust:100%}
-body{display:flex;flex-direction:column;align-items:center;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 40px)}
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(2deg)}}
-@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 6px 28px rgba(245,146,30,.45)}50%{transform:scale(1.04);box-shadow:0 12px 38px rgba(245,146,30,.72)}}
-@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-
-.page{width:100%;max-width:420px;padding:0 20px}
-
-/* ── Hero banner ── */
-#hero{
-  width:100%;max-width:420px;
-  background:#F5F0DC;
-  border-radius:0 0 40px 40px;
-  padding:calc(env(safe-area-inset-top,0px) + 32px) 24px 36px;
-  text-align:center;position:relative;overflow:hidden;
-  box-shadow:0 12px 44px rgba(0,0,0,.38);
-  animation:fadeUp .5s ease both;
-}
-#hero::after{
-  content:'';position:absolute;top:0;left:0;right:0;height:6px;
-  background:linear-gradient(90deg,#2E7D32 33%,#fff 33%,#fff 66%,#C62828 66%);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{
+  background:#f5f0dc;
+  font-family:'Rubik',sans-serif;
+  direction:rtl;
+  overflow-y:auto;
+  overflow-x:hidden;
+  position:relative;
+  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 32px);
 }
 
-.confetti{position:absolute;pointer-events:none;font-size:20px;animation:float ease-in-out infinite}
-
-#trophy-icon{font-size:80px;animation:pop .6s ease .1s both;display:block;margin-bottom:12px;line-height:1}
-#hero-title{font-family:'Fredoka One',cursive;font-size:28px;color:#1A3D1F;line-height:1.15;margin-bottom:8px}
-#hero-sub{font-size:16px;font-weight:700;color:rgba(26,61,31,.62);line-height:1.6;margin-bottom:24px}
-
-/* Stars display */
-#stars-box{
-  display:inline-flex;flex-direction:column;align-items:center;gap:6px;
-  background:#1A3D1F;border-radius:24px;padding:14px 32px;
+/* ── Certificate section ── */
+.cert-section{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  background:#f5f0dc;
 }
-#stars-row{font-size:30px;letter-spacing:4px;line-height:1}
-#stars-label{font-size:13px;font-weight:700;color:rgba(245,240,220,.6)}
 
-/* ── Recipe list summary ── */
-#summary{
-  width:100%;max-width:420px;padding:22px 20px 0;
-  animation:fadeUp .5s ease .15s both;opacity:0;animation-fill-mode:both;
+.cert-wrap{
+  position:relative;
+  width:100%;
+  max-width:640px;
+  flex-shrink:0;
+  overflow:visible;
 }
-#summary h3{font-family:'Fredoka One',cursive;font-size:18px;color:rgba(245,240,220,.72);margin-bottom:14px;text-align:center}
-.recipe-row{
-  display:flex;align-items:center;gap:12px;
-  background:rgba(245,240,220,.07);
-  border-radius:16px;padding:12px 16px;margin-bottom:8px;
-  border:1px solid rgba(245,240,220,.1);
+.cert-bg{
+  width:100%;
+  display:block;
+  /* image is 2400×1792 → ratio 1.3393 */
 }
-.recipe-row .icon{font-size:22px;width:36px;text-align:center;flex-shrink:0}
-.recipe-row .rname{font-size:15px;font-weight:700;color:rgba(245,240,220,.88);flex:1}
-.recipe-row .rstars{font-size:14px;letter-spacing:2px;flex-shrink:0}
 
-/* ── Bottom buttons ── */
-#actions{
-  width:100%;max-width:420px;padding:24px 20px 0;
-  display:flex;flex-direction:column;gap:12px;
-  animation:fadeUp .5s ease .25s both;opacity:0;animation-fill-mode:both;
+.cert-name{
+  position:absolute;
+  top:39%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(14px,4.8vw,36px);
+  color:#8B4513;
+  white-space:nowrap;
+  text-align:center;
+  text-shadow:0 1px 4px rgba(255,255,255,.9);
+  pointer-events:none;
+  letter-spacing:.5px;
+  max-width:55%;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
-#btn-menu{
-  background:linear-gradient(135deg,#F5921E,#F7C948);
-  color:#fff;border:none;border-radius:22px;
-  padding:18px 24px;font-size:22px;font-family:'Fredoka One',cursive;
-  cursor:pointer;width:100%;
-  box-shadow:0 6px 28px rgba(245,146,30,.5);
-  animation:pulse 2.5s ease-in-out infinite;
+
+.cert-photo-wrap{
+  position:absolute;
+  top:63%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:31%;
+  aspect-ratio:1;
+  border-radius:50%;
+  overflow:hidden;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,253,240,.15);
   touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:opacity .15s;
 }
-#btn-menu:active{transform:scale(.97);animation:none}
-#btn-again{
-  background:rgba(245,240,220,.09);
-  color:rgba(245,240,220,.7);
-  border:2px solid rgba(245,240,220,.18);
-  border-radius:22px;padding:14px 24px;
-  font-size:16px;font-weight:800;font-family:'Assistant',sans-serif;
-  cursor:pointer;width:100%;touch-action:manipulation;
+.cert-photo-wrap:active{opacity:.8}
+
+.cert-photo-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+  display:none;
 }
-#btn-again:active{opacity:.7}
+.cert-camera-hint{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  pointer-events:none;
+}
+.cam-icon{font-size:clamp(18px,6vw,48px);line-height:1}
+.cam-label{
+  font-family:'Rubik',sans-serif;
+  font-size:clamp(7px,2vw,13px);
+  font-weight:700;
+  color:#7a5c1e;
+  text-align:center;
+  line-height:1.25;
+}
+
+.cert-achievement{
+  position:absolute;
+  top:79%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Rubik',sans-serif;
+  font-size:clamp(8px,2.2vw,15px);
+  font-weight:600;
+  color:#5a3e1b;
+  white-space:nowrap;
+  text-align:center;
+  pointer-events:none;
+  text-shadow:0 1px 3px rgba(255,255,255,.8);
+}
+
+.btn-wa:disabled{opacity:.7;cursor:not-allowed;transform:none!important}
+
+/* ── Buttons ── */
+.buttons-section{
+  max-width:480px;
+  margin:0 auto;
+  padding:20px 20px 48px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.btn-wa{
+  display:block;
+  width:100%;
+  background:#25D366;
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:17px;
+  font-weight:700;
+  padding:16px 24px;
+  border-radius:50px;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(37,211,102,.4);
+  touch-action:manipulation;
+  transition:transform .1s,opacity .15s;
+}
+.btn-wa:active{transform:scale(.97);opacity:.9}
+
+.btn-print{
+  width:100%;
+  background:#fff;
+  color:#25D366;
+  border:2px solid #25D366;
+  border-radius:50px;
+  padding:15px 24px;
+  font-size:17px;
+  font-family:'Rubik',sans-serif;
+  font-weight:700;
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-print:active{transform:scale(.97)}
+
+.btn-next{
+  display:block;
+  width:100%;
+  background:#F5921E;
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:17px;
+  font-weight:700;
+  padding:16px 24px;
+  border-radius:50px;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(245,146,30,.4);
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-next:active{transform:scale(.97)}
+
+.btn-parents{
+  display:block;
+  width:100%;
+  background:none;
+  color:#7a5c1e;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  padding:12px 24px;
+  border-radius:50px;
+  border:2px dashed rgba(122,92,30,.3);
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-parents:active{transform:scale(.97)}
+
+/* ── Print ── */
+@media print{
+  .buttons-section{display:none!important}
+  body{padding:0;background:#fff}
+  .cert-section{display:block}
+  .cert-wrap{max-width:100%!important;width:100%!important}
+  .cert-camera-hint{display:none}
+}
+
+/* ── iPad ── */
+@media(min-width:768px){
+  .cert-wrap{max-width:640px;margin:0 auto}
+  .cert-name{font-size:clamp(20px,3.2vw,42px)}
+  .cert-achievement{font-size:clamp(10px,1.4vw,17px)}
+  .cam-icon{font-size:clamp(24px,3.5vw,52px)}
+  .cam-label{font-size:clamp(9px,1.2vw,15px)}
+  .buttons-section{max-width:520px;padding:24px 24px 56px}
+  .btn-wa,.btn-print,.btn-next{font-size:20px;padding:18px 28px}
+}
 </style>
 </head>
 <body>
 
-<div id="hero">
-  <div class="confetti" style="top:18px;right:24px;animation-duration:2.2s;animation-delay:0s">🎉</div>
-  <div class="confetti" style="top:22px;left:28px;animation-duration:2.8s;animation-delay:.3s">🇮🇹</div>
-  <div class="confetti" style="bottom:32px;right:44px;animation-duration:2.4s;animation-delay:.6s">⭐</div>
-  <div class="confetti" style="bottom:28px;left:38px;animation-duration:2s;animation-delay:.1s">🌟</div>
+<!-- ══ Certificate ══════════════════════════════════════ -->
+<div class="cert-section">
+  <div class="cert-wrap" id="certificate-card">
 
-  <span id="trophy-icon">🏆</span>
-  <h1 id="hero-title">כל הכבוד!<br>סיימתם את הרפתקת איטליה!</h1>
-  <p id="hero-sub">גיליתם את 4 המתכונים הסודיים מהמטבח האיטלקי</p>
+    <!-- Background image (shared generic certificate art, also used by the dinner package) -->
+    <img src="../assets/images/certificate-bg.png"
+         class="cert-bg"
+         alt="תעודת שף מתחיל">
 
-  <div id="stars-box">
-    <div id="stars-row">⭐⭐⭐</div>
-    <div id="stars-label">כוכבים שנצברו</div>
+    <!-- Child's name (read from localStorage) -->
+    <div class="cert-name" id="cert-name"></div>
+
+    <!-- Photo upload circle (over rope-bordered avatar area) -->
+    <div class="cert-photo-wrap" id="cert-photo-wrap">
+      <img id="cert-photo-img" class="cert-photo-img" alt="">
+      <div class="cert-camera-hint" id="cert-camera-hint">
+        <span class="cam-icon">📷</span>
+        <span class="cam-label">הוסיפו<br>תמונה</span>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" style="display:none">
+    </div>
+
+    <!-- Achievement text (below photo area inside circle) -->
+    <div class="cert-achievement">על השלמת הרפתקת איטליה 🇮🇹🍝</div>
+
   </div>
 </div>
 
-<div id="summary">
-  <h3>המתכונים שגיליתם</h3>
-  <div id="recipe-rows"></div>
-</div>
-
-<div id="actions">
-  <button id="btn-menu" onclick="window.location.href='/app/packages.html'">חזרה לתפריט ←</button>
-  <button id="btn-again" onclick="window.location.href='index.html'">שחקו שוב 🔄</button>
+<!-- ══ Buttons ══════════════════════════════════════════ -->
+<div class="buttons-section">
+  <button id="btn-wa" class="btn-wa" onclick="shareCertificate()">
+    שיתוף לוואטסאפ 📲
+  </button>
+  <button class="btn-print" onclick="window.print()">הדפסה 🖨️</button>
+  <a href="../app/packages.html" class="btn-next">לבחירת הרפתקה הבאה ←</a>
+  <a href="parents.html" class="btn-parents">👨‍👩‍👧‍👦 להורים</a>
 </div>
 
 <script>
 (function () {
-  var RECIPES = [
-    { name: 'פסטה סגולה',                    emoji: '🍝' },
-    { name: 'ברוסקטה חיפושית',              emoji: '🐞' },
-    { name: 'מאפה פסטה וגבינות',            emoji: '🧀' },
-    { name: 'פנקוטה וניל עם סירופ רימונים', emoji: '🍮' },
-  ];
+  'use strict';
 
-  var detail = JSON.parse(localStorage.getItem('italy_stars_detail') || '[]');
-  var total  = 0;
-  for (var i = 0; i < 4; i++) total += (detail[i] || 0);
+  // ── Load child's name ──────────────────────────────────
+  var chefName = localStorage.getItem('chefName') || '';
+  if (chefName) {
+    document.getElementById('cert-name').textContent = chefName;
+  }
 
-  // Stars display
-  var MAX = RECIPES.length * 3;
-  document.getElementById('stars-row').textContent   = '⭐'.repeat(total) + '☆'.repeat(Math.max(0, MAX - total));
-  document.getElementById('stars-label').textContent = total + ' מתוך ' + MAX + ' כוכבים';
+  // ── Photo upload — restore saved photo on load ─────────
+  var photoWrap  = document.getElementById('cert-photo-wrap');
+  var photoImg   = document.getElementById('cert-photo-img');
+  var cameraHint = document.getElementById('cert-camera-hint');
+  var photoInput = document.getElementById('photo-input');
 
-  // Recipe summary rows
-  var container = document.getElementById('recipe-rows');
-  RECIPES.forEach(function (r, i) {
-    var s   = detail[i] || 0;
-    var row = document.createElement('div');
-    row.className = 'recipe-row';
-    row.innerHTML =
-      '<div class="icon">' + (s > 0 ? '✅' : r.emoji) + '</div>' +
-      '<div class="rname">' + r.name + '</div>' +
-      '<div class="rstars">' +
-        '⭐'.repeat(s) + '☆'.repeat(Math.max(0, 3 - s)) +
-      '</div>';
-    container.appendChild(row);
+  var savedPhoto = localStorage.getItem('childPhoto');
+  if (savedPhoto) {
+    photoImg.src = savedPhoto;
+    photoImg.style.display = 'block';
+    cameraHint.style.display = 'none';
+  }
+
+  photoWrap.addEventListener('click', function () {
+    photoInput.click();
   });
 
-  // Personalise greeting
-  var name = localStorage.getItem('chefName');
-  if (name) {
-    document.getElementById('hero-sub').textContent =
-      name + ', גיליתם את 4 המתכונים הסודיים מהמטבח האיטלקי!';
-  }
+  photoInput.addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      var dataUrl = ev.target.result;
+      localStorage.setItem('childPhoto', dataUrl);
+      photoImg.src = dataUrl;
+      photoImg.style.display = 'block';
+      cameraHint.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ── Share certificate via Canvas API ──────────────────
+  window.shareCertificate = async function () {
+    var btn = document.getElementById('btn-wa');
+    var originalHTML = btn.innerHTML;
+    btn.innerHTML = '⏳ מכין תמונה...';
+    btn.disabled = true;
+
+    try {
+      // Step 1: draw certificate background
+      var canvas = document.createElement('canvas');
+      canvas.width  = 1200;
+      canvas.height = 900;
+      var ctx = canvas.getContext('2d');
+
+      var bg = new Image();
+      bg.crossOrigin = 'anonymous';
+      bg.src = '../assets/images/certificate-bg.png';
+      await new Promise(function (resolve, reject) {
+        bg.onload = resolve;
+        bg.onerror = reject;
+      });
+      ctx.drawImage(bg, 0, 0, 1200, 900);
+
+      // Step 2: draw child's name
+      var name = localStorage.getItem('chefName') || '';
+      if (name) {
+        ctx.font = 'bold 64px "Fredoka One", sans-serif';
+        ctx.fillStyle = '#8B4513';
+        ctx.textAlign = 'center';
+        ctx.direction = 'rtl';
+        ctx.fillText(name, 600, 420);
+      }
+
+      // Step 3: draw child's photo clipped to circle (if uploaded)
+      var photoSrc = localStorage.getItem('childPhoto');
+      if (photoSrc) {
+        var photo = new Image();
+        photo.src = photoSrc;
+        await new Promise(function (resolve) { photo.onload = resolve; });
+
+        var cx = 600, cy = 570, radius = 110;
+        var size = radius * 2;
+        var imgRatio = photo.width / photo.height;
+        var drawW, drawH, drawX, drawY;
+
+        if (imgRatio > 1) {
+          // Landscape — fit height, overflow width
+          drawH = size;
+          drawW = size * imgRatio;
+          drawX = cx - drawW / 2;
+          drawY = cy - radius;
+        } else {
+          // Portrait — fit width, overflow height
+          drawW = size;
+          drawH = size / imgRatio;
+          drawX = cx - radius;
+          drawY = cy - drawH / 2;
+        }
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(photo, drawX, drawY, drawW, drawH);
+        ctx.restore();
+      }
+
+      // Step 4: share or download
+      var blob = await new Promise(function (resolve) {
+        canvas.toBlob(resolve, 'image/png', 1.0);
+      });
+      var imageFile = new File([blob], 'תעודת-שף.png', { type: 'image/png' });
+
+      if (navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+        await navigator.share({
+          files: [imageFile],
+          title: 'תעודת שף מוסמך! 🎓',
+          text: name ? name + ' קיבל תעודת שף מוסמך! 👨‍🍳🎉' : 'הילד שלי קיבל תעודת שף מוסמך! 👨‍🍳🎉'
+        });
+      } else {
+        // Fallback: download the image
+        var a = document.createElement('a');
+        a.download = 'תעודת-שף.png';
+        a.href = canvas.toDataURL('image/png', 1.0);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Share failed:', err);
+      }
+    } finally {
+      btn.innerHTML = originalHTML;
+      btn.disabled = false;
+    }
+  };
 })();
 </script>
+
 </body>
 </html>

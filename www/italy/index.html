@@ -212,6 +212,16 @@ button,[role=button]{touch-action:manipulation;-webkit-appearance:none}
   animation:pulse 2s ease-in-out infinite;
 }
 
+#parents-btn{
+  width:calc(100% - 32px);margin:10px 16px 0;
+  background:rgba(245,240,220,.08);
+  color:var(--light);border:2px solid rgba(245,240,220,.2);
+  border-radius:20px;padding:13px;
+  font-size:15px;font-weight:800;font-family:'Assistant',sans-serif;
+  cursor:pointer;touch-action:manipulation;
+}
+#parents-btn:active{opacity:.7}
+
 /* Success toast */
 #success-toast{
   display:none;margin:0 16px 12px;
@@ -294,6 +304,7 @@ button,[role=button]{touch-action:manipulation;-webkit-appearance:none}
   <button id="trophy-btn" onclick="window.location.href='completion.html'">
     🏆 סיימתם את הרפתקת איטליה — ראו את ההישג!
   </button>
+  <button id="parents-btn" onclick="window.location.href='parents.html'">👨‍👩‍👧‍👦 להורים</button>
 </div>
 
 

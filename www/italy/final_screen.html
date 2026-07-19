@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>סיימתם את הרפתקת איטליה! 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{min-height:100%;background:#1A3D1F;font-family:'Assistant',sans-serif;direction:rtl;-webkit-text-size-adjust:100%}
+body{display:flex;flex-direction:column;align-items:center;overflow-y:auto;overflow-x:hidden;position:relative;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 40px)}
+
+:root{
+  --green-deep:#1A3D1F;
+  --green-mid:#2E7D32;
+  --gold:#F7C948;
+  --gold-deep:#F5921E;
+  --cream:#F5F0DC;
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(2deg)}}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 6px 28px rgba(245,146,30,.45)}50%{transform:scale(1.04);box-shadow:0 12px 38px rgba(245,146,30,.72)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+@keyframes badgeGlow{0%,100%{filter:drop-shadow(0 0 16px rgba(247,201,72,.55)) drop-shadow(0 8px 20px rgba(0,0,0,.25))}50%{filter:drop-shadow(0 0 30px rgba(247,201,72,.85)) drop-shadow(0 8px 28px rgba(0,0,0,.3))}}
+@keyframes badgeBounce{0%{transform:translateY(-50px) scale(.7);opacity:0}60%{transform:translateY(6px) scale(1.05)}80%{transform:translateY(-3px) scale(.98)}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0)}50%{opacity:1;transform:scale(1) rotate(180deg)}}
+@keyframes cardReveal{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.page{width:100%;max-width:420px;padding:0 20px}
+
+/* ── Sparkle layer ── */
+.sparkles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.sp{position:absolute;width:6px;height:6px;background:var(--gold);
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    animation:sparkle ease-in-out infinite}
+
+/* ── Hero banner ── */
+#hero{
+  width:100%;max-width:420px;
+  background:var(--cream);
+  border-radius:0 0 40px 40px;
+  padding:calc(env(safe-area-inset-top,0px) + 32px) 24px 36px;
+  text-align:center;position:relative;overflow:hidden;
+  box-shadow:0 12px 44px rgba(0,0,0,.38);
+  animation:fadeUp .5s ease both;
+  z-index:1;
+}
+#hero::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:6px;
+  background:linear-gradient(90deg,#2E7D32 33%,#fff 33%,#fff 66%,#C62828 66%);
+}
+
+.confetti{position:absolute;pointer-events:none;font-size:20px;animation:float ease-in-out infinite}
+
+/* Badge (emoji standing in for an image badge, same glow/ring/bounce treatment) */
+.badge-wrap{
+  position:relative;width:140px;height:140px;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 8px;
+  animation:badgeBounce .9s cubic-bezier(.22,.61,.36,1) .1s both;
+}
+.badge-ring{
+  position:absolute;inset:-8px;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(247,201,72,.6),rgba(247,201,72,0),rgba(247,201,72,.6),rgba(247,201,72,0),rgba(247,201,72,.6));
+  animation:shimmer 4s linear infinite;filter:blur(3px);
+}
+#trophy-icon{
+  font-size:80px;line-height:1;position:relative;z-index:1;display:block;
+  animation:pop .6s ease .1s both,badgeGlow 3s ease-in-out infinite;
+}
+
+#hero-title{font-family:'Fredoka One',cursive;font-size:28px;color:#1A3D1F;line-height:1.15;margin-bottom:8px}
+#hero-sub{font-size:16px;font-weight:700;color:rgba(26,61,31,.62);line-height:1.6;margin-bottom:24px}
+
+/* Stars display */
+#stars-box{
+  display:inline-flex;flex-direction:column;align-items:center;gap:6px;
+  background:#1A3D1F;border-radius:24px;padding:14px 32px;
+}
+#stars-row{font-size:30px;letter-spacing:4px;line-height:1}
+#stars-label{font-size:13px;font-weight:700;color:rgba(245,240,220,.6)}
+
+/* ── Twist section ── */
+#twist{
+  width:100%;max-width:420px;padding:20px 0 0;
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;z-index:1;
+  animation:fadeUp .5s .3s both ease;
+}
+.twist-bubble{
+  background:#fff;border-radius:22px;padding:18px 20px;text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.18);width:100%;
+  border:1.5px solid rgba(247,201,72,.3);
+}
+.twist-text{font-size:15px;font-weight:700;color:#5A3E00;line-height:1.8;margin-bottom:12px}
+.twist-highlight{
+  display:inline-block;font-family:'Fredoka One',cursive;font-size:20px;color:#fff;
+  background:linear-gradient(135deg,var(--green-mid),#4CAF50);
+  border-radius:50px;padding:8px 22px;
+  box-shadow:0 4px 16px rgba(46,125,50,.35);
+  animation:float 3s ease-in-out infinite;
+}
+.twist-support{font-size:13px;font-weight:600;color:#8A6A30;text-align:center;line-height:1.8;margin-top:12px;padding:0 4px}
+
+/* ── Recipe list summary (kept: per-recipe stars, better than a flat checkmark) ── */
+#summary{width:100%;max-width:420px;padding:22px 0 0;position:relative;z-index:1}
+#summary h3{font-family:'Fredoka One',cursive;font-size:18px;color:rgba(245,240,220,.72);margin-bottom:14px;text-align:center}
+.recipe-row{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(245,240,220,.07);
+  border-radius:16px;padding:12px 16px;margin-bottom:8px;
+  border:1px solid rgba(245,240,220,.1);
+  opacity:0;animation:cardReveal .45s ease both;
+}
+.recipe-row .icon{font-size:22px;width:36px;text-align:center;flex-shrink:0}
+.recipe-row .rname{font-size:15px;font-weight:700;color:rgba(245,240,220,.88);flex:1}
+.recipe-row .rstars{font-size:14px;letter-spacing:2px;flex-shrink:0}
+
+/* ── CTAs ── */
+#actions{
+  width:100%;max-width:420px;padding:24px 0 0;
+  display:flex;flex-direction:column;gap:12px;
+  position:relative;z-index:1;
+  animation:fadeUp .5s .25s both ease;
+}
+.btn-photo{
+  width:100%;background:linear-gradient(135deg,#F5921E,#F7C948);
+  color:#fff;border:none;border-radius:22px;padding:18px 24px;
+  font-size:19px;font-family:'Fredoka One',cursive;cursor:pointer;
+  box-shadow:0 6px 28px rgba(245,146,30,.5);
+  animation:pulse 2.5s ease-in-out infinite;
+  touch-action:manipulation;position:relative;overflow:hidden;
+}
+.btn-photo::before{
+  content:'';position:absolute;top:-50%;right:-60%;width:80px;height:200%;
+  background:rgba(255,255,255,.15);transform:skewX(-20deg);
+  animation:shimmer 2.5s ease-in-out infinite;
+}
+.btn-photo:active{transform:scale(.97);animation:none}
+.btn-row{display:flex;gap:10px}
+.btn-secondary{
+  flex:1;background:rgba(245,240,220,.09);color:rgba(245,240,220,.85);
+  border:2px solid rgba(245,240,220,.25);border-radius:18px;padding:13px 10px;
+  font-size:14px;font-weight:800;font-family:'Assistant',sans-serif;
+  cursor:pointer;touch-action:manipulation;
+}
+.btn-secondary:active{opacity:.7}
+.btn-tertiary{
+  background:none;color:rgba(245,240,220,.55);
+  border:2px dashed rgba(245,240,220,.25);border-radius:18px;padding:13px 10px;
+  font-size:14px;font-weight:800;font-family:'Assistant',sans-serif;
+  cursor:pointer;width:100%;touch-action:manipulation;
+}
+.btn-tertiary:active{opacity:.7}
+
+/* ── Footer flourish ── */
+#footer-flourish{width:100%;max-width:420px;padding:24px 0 0;text-align:center;position:relative;z-index:1;animation:fadeUp .5s .35s both ease}
+#footer-flourish span{font-size:11px;font-weight:700;color:rgba(245,240,220,.4);letter-spacing:.3px}
+
+/* ── iPad ── */
+@media(min-width:768px){
+  .page,#hero,#twist,#summary,#actions,#footer-flourish{max-width:520px}
+}
+</style>
+</head>
+<body>
+
+<div class="sparkles" id="sparkles"></div>
+
+<div id="hero">
+  <div class="confetti" style="top:18px;right:24px;animation-duration:2.2s;animation-delay:0s">🎉</div>
+  <div class="confetti" style="top:22px;left:28px;animation-duration:2.8s;animation-delay:.3s">🇮🇹</div>
+  <div class="confetti" style="bottom:32px;right:44px;animation-duration:2.4s;animation-delay:.6s">⭐</div>
+  <div class="confetti" style="bottom:28px;left:38px;animation-duration:2s;animation-delay:.1s">🌟</div>
+
+  <div class="badge-wrap">
+    <div class="badge-ring"></div>
+    <span id="trophy-icon">🏆</span>
+  </div>
+  <h1 id="hero-title">כל הכבוד!<br>סיימתם את הרפתקת איטליה!</h1>
+  <p id="hero-sub">גיליתם את 4 המתכונים הסודיים מהמטבח האיטלקי</p>
+
+  <div id="stars-box">
+    <div id="stars-row">⭐⭐⭐</div>
+    <div id="stars-label">כוכבים שנצברו</div>
+  </div>
+</div>
+
+<div class="page">
+  <div id="twist">
+    <div class="twist-bubble">
+      <p class="twist-text">
+        חשבנו שיש מתכון איטלקי אחד מושלם...<br>
+        אבל גילינו משהו אחר 👀
+      </p>
+      <span class="twist-highlight">יש 4 מתכונים איטלקיים מושלמים!</span>
+      <p class="twist-support">השף הירוק מודה לכם שעזרתם לו לגלות את כל טעמי איטליה.<br>עכשיו תורכם — שלחו לנו תמונה של המנה האיטלקית שהכנתם בעצמכם 📸</p>
+    </div>
+  </div>
+
+  <div id="summary">
+    <h3>המתכונים שגיליתם</h3>
+    <div id="recipe-rows"></div>
+  </div>
+
+  <div id="actions">
+    <button class="btn-photo" onclick="sendPhoto()">שלחו לנו תמונה 📸</button>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="goHub()">🏠 חזרה לבית</button>
+      <button class="btn-secondary" onclick="window.location.href='parents.html'">👨‍👩‍👧‍👦 להורים</button>
+    </div>
+    <button class="btn-tertiary" onclick="replay()">🔄 נסו שוב</button>
+  </div>
+
+  <div id="footer-flourish">
+    <span>השף הירוק © הרפתקת איטליה 🇮🇹</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  var RECIPES = [
+    { name: 'פסטה סגולה',                    emoji: '🍝' },
+    { name: 'ברוסקטה חיפושית',              emoji: '🐞' },
+    { name: 'מאפה פסטה וגבינות',            emoji: '🧀' },
+    { name: 'פנקוטה וניל עם סירופ רימונים', emoji: '🍮' },
+  ];
+
+  var detail = JSON.parse(localStorage.getItem('italy_stars_detail') || '[]');
+  var total  = 0;
+  for (var i = 0; i < 4; i++) total += (detail[i] || 0);
+
+  var MAX = RECIPES.length * 3;
+  document.getElementById('stars-row').textContent   = '⭐'.repeat(total) + '☆'.repeat(Math.max(0, MAX - total));
+  document.getElementById('stars-label').textContent = total + ' מתוך ' + MAX + ' כוכבים';
+
+  var container = document.getElementById('recipe-rows');
+  RECIPES.forEach(function (r, i) {
+    var s   = detail[i] || 0;
+    var row = document.createElement('div');
+    row.className = 'recipe-row';
+    row.style.animationDelay = (0.1 + i * 0.13) + 's';
+    row.innerHTML =
+      '<div class="icon">' + (s > 0 ? '✅' : r.emoji) + '</div>' +
+      '<div class="rname">' + r.name + '</div>' +
+      '<div class="rstars">' +
+        '⭐'.repeat(s) + '☆'.repeat(Math.max(0, 3 - s)) +
+      '</div>';
+    container.appendChild(row);
+  });
+
+  var name = localStorage.getItem('chefName');
+  if (name) {
+    document.getElementById('hero-sub').textContent =
+      name + ', גיליתם את 4 המתכונים הסודיים מהמטבח האיטלקי!';
+  }
+
+  // Sparkles
+  var c = document.getElementById('sparkles');
+  var cols = ['#F7C948', '#FFD54F', '#F5921E', '#4CAF50', '#FFCA28'];
+  for (var k = 0; k < 24; k++) {
+    var s2 = document.createElement('div');
+    s2.className = 'sp';
+    var size = (Math.random() * 6 + 4) + 'px';
+    s2.style.cssText = [
+      'width:' + size, 'height:' + size,
+      'top:' + Math.random() * 100 + '%',
+      'left:' + Math.random() * 100 + '%',
+      'background:' + cols[Math.floor(Math.random() * cols.length)],
+      'animation-duration:' + (3 + Math.random() * 4) + 's',
+      'animation-delay:' + (Math.random() * 5) + 's'
+    ].join(';');
+    c.appendChild(s2);
+  }
+})();
+
+function sendPhoto() {
+  var msg = encodeURIComponent('הנה המנה האיטלקית שהכנו עם השף הירוק! 🇮🇹✨');
+  window.open('https://wa.me/972547836788?text=' + msg, '_blank');
+}
+function goHub() {
+  window.location.href = 'index.html';
+}
+function replay() {
+  if (confirm('לאפס את ההרפתקה ולהתחיל מחדש?')) {
+    localStorage.removeItem('italy_stars_detail');
+    localStorage.removeItem('italy_stars');
+    window.location.href = 'index.html';
+  }
+}
+</script>
+</body>
+</html>
