@@ -38,7 +38,36 @@ body{
 .cert-bg{
   width:100%;
   display:block;
-  /* image is 2400×1792 → ratio 1.3393 */
+  /* certificate-bg-italy.png: 4:3, border art only - no title/ring baked in */
+}
+
+.cert-title{
+  position:absolute;
+  top:12%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(15px,4.5vw,34px);
+  color:#93560F;
+  white-space:nowrap;
+  text-align:center;
+  text-shadow:0 1px 4px rgba(255,255,255,.85);
+  pointer-events:none;
+}
+
+.cert-subline{
+  position:absolute;
+  top:26%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Rubik',sans-serif;
+  font-size:clamp(9px,2.2vw,17px);
+  font-weight:600;
+  color:#5a3e1b;
+  white-space:nowrap;
+  text-align:center;
+  pointer-events:none;
+  text-shadow:0 1px 3px rgba(255,255,255,.8);
 }
 
 .cert-name{
@@ -78,6 +107,15 @@ body{
   transition:opacity .15s;
 }
 .cert-photo-wrap:active{opacity:.8}
+
+/* This artwork has no baked-in rope circle, unlike the shared dinner
+   background - draw a gold ring in CSS. border-width can't be a true
+   percentage, so it uses the same vw-clamp approximation already used
+   for every font-size on this page (~1% of a 640px-max certificate). */
+.cert-photo-wrap.ring{
+  border:clamp(3px,1vw,7px) solid #CF9C33;
+  box-shadow:0 0 0 1px rgba(0,0,0,.06);
+}
 
 .cert-photo-img{
   position:absolute;
@@ -218,6 +256,8 @@ body{
 /* ── iPad ── */
 @media(min-width:768px){
   .cert-wrap{max-width:640px;margin:0 auto}
+  .cert-title{font-size:clamp(18px,2.8vw,38px)}
+  .cert-subline{font-size:clamp(11px,1.4vw,19px)}
   .cert-name{font-size:clamp(20px,3.2vw,42px)}
   .cert-achievement{font-size:clamp(10px,1.4vw,17px)}
   .cam-icon{font-size:clamp(24px,3.5vw,52px)}
@@ -233,16 +273,20 @@ body{
 <div class="cert-section">
   <div class="cert-wrap" id="certificate-card">
 
-    <!-- Background image (shared generic certificate art, also used by the dinner package) -->
-    <img src="../assets/images/certificate-bg.png"
+    <!-- Background image: Italy-specific art, border only - title and ring are drawn in code -->
+    <img src="assets/certificate-bg-italy.png"
          class="cert-bg"
-         alt="תעודת שף מתחיל">
+         alt="תעודת מומחה לבישול איטלקי">
+
+    <!-- Title + sub-line (not baked into this artwork, unlike the shared dinner background) -->
+    <div class="cert-title">תעודת מומחה לבישול איטלקי</div>
+    <div class="cert-subline">מוענקת בגאווה ל:</div>
 
     <!-- Child's name (read from localStorage) -->
     <div class="cert-name" id="cert-name"></div>
 
-    <!-- Photo upload circle (over rope-bordered avatar area) -->
-    <div class="cert-photo-wrap" id="cert-photo-wrap">
+    <!-- Photo upload circle with a drawn gold ring (artwork has no rope circle) -->
+    <div class="cert-photo-wrap ring" id="cert-photo-wrap">
       <img id="cert-photo-img" class="cert-photo-img" alt="">
       <div class="cert-camera-hint" id="cert-camera-hint">
         <span class="cam-icon">📷</span>
@@ -309,6 +353,16 @@ body{
   });
 
 })();
+</script>
+<script>
+  // This artwork has no baked-in title or rope circle - draw both, matching
+  // the live CSS .cert-title/.cert-subline/.cert-photo-wrap.ring above.
+  window.CERT_CONFIG = {
+    bg: 'assets/certificate-bg-italy.png',
+    title: 'תעודת מומחה לבישול איטלקי', titleColor: '#93560F',
+    subline: 'מוענקת בגאווה ל:',          sublineColor: '#5a3e1b',
+    ring: true, ringColor: '#CF9C33'
+  };
 </script>
 <script src="../assets/certificate-share.js"></script>
 
