@@ -10,6 +10,11 @@
       "status": 302
     },
     {
+      "src": "^/(italy|dinner)$",
+      "headers": { "Location": "/$1/" },
+      "status": 301
+    },
+    {
       "src": "/(.*)",
       "dest": "/www/$1"
     }
