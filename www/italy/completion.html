@@ -225,6 +225,26 @@ body{
 }
 .btn-next:active{transform:scale(.97)}
 
+.btn-booklet{
+  display:block;
+  width:100%;
+  background:#fff;
+  color:#F5921E;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:16px;
+  font-weight:700;
+  padding:14px 24px;
+  border-radius:50px;
+  border:2px solid #F5921E;
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-booklet:active{transform:scale(.97)}
+.btn-booklet-size{font-weight:500;opacity:.75;font-size:.85em}
+
 .btn-parents{
   display:block;
   width:100%;
@@ -263,7 +283,7 @@ body{
   .cam-icon{font-size:clamp(24px,3.5vw,52px)}
   .cam-label{font-size:clamp(9px,1.2vw,15px)}
   .buttons-section{max-width:520px;padding:24px 24px 56px}
-  .btn-wa,.btn-print,.btn-next{font-size:20px;padding:18px 28px}
+  .btn-wa,.btn-print,.btn-next,.btn-booklet{font-size:20px;padding:18px 28px}
 }
 </style>
 </head>
@@ -307,6 +327,14 @@ body{
     שיתוף לוואטסאפ 📲
   </button>
   <button class="btn-print" onclick="window.print()">הדפסה 🖨️</button>
+  <a href="assets/recipe_book_italy.pdf"
+     id="booklet-dl-btn"
+     class="btn-booklet"
+     target="_blank"
+     download="חוברת מתכונים - הרפתקת איטליה.pdf"
+     onclick="return downloadBooklet(event, this)">
+    📖 הורדת חוברת המתכונים <span class="btn-booklet-size">(כ-4.4MB)</span>
+  </a>
   <a href="../app/packages.html" class="btn-next">לבחירת הרפתקה הבאה ←</a>
   <a href="parents.html" class="btn-parents">👨‍👩‍👧‍👦 להורים</a>
 </div>
@@ -353,6 +381,41 @@ body{
   });
 
 })();
+</script>
+<script>
+// On iOS, tapping a PDF link opens WebKit's built-in viewer rather than
+// saving to Files directly - the fetch+blob dance below at least gives
+// accurate "downloading..." feedback for the ~4.4MB booklet over a slow
+// connection. Once handed off, iOS still shows its viewer; the parent
+// can save/share from there via the native share-sheet icon.
+function downloadBooklet(e, el) {
+  e.preventDefault();
+  var original = el.innerHTML;
+  el.innerHTML = '⏳ מוריד...';
+  el.style.pointerEvents = 'none';
+
+  fetch(el.getAttribute('href'))
+    .then(function (res) { return res.blob(); })
+    .then(function (blob) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = el.getAttribute('download');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+    })
+    .catch(function () {
+      window.location.href = el.getAttribute('href');
+    })
+    .finally(function () {
+      el.innerHTML = original;
+      el.style.pointerEvents = '';
+    });
+
+  return false;
+}
 </script>
 <script>
   // This artwork has no baked-in title or rope circle - draw both, matching
