@@ -252,8 +252,8 @@ function showDone(stars){
   document.getElementById('dmsg').textContent=msgs[stars-1];
   document.getElementById('done-panel').style.display='flex';
   const d=JSON.parse(localStorage.getItem('italy_stars_detail')||'[]');
-  while(d.length<2)d.push(0);
-  d[1]=stars;
+  while(d.length<1)d.push(0);
+  d[0]=stars;
   localStorage.setItem('italy_stars_detail',JSON.stringify(d));
   localStorage.setItem('italy_stars',d.reduce((a,b)=>a+b,0));
 }
