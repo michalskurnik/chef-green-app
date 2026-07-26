@@ -420,10 +420,7 @@
     <button id="restore-btn" style="background:none;border:none;color:rgba(255,255,255,0.35);font-family:'Varela Round',sans-serif;font-size:13px;cursor:pointer;text-decoration:underline;">שחזור רכישות</button>
   </div>
 
-  <div id="debug-bar" style="display:none;text-align:center;padding:8px 0 16px">
-    <button onclick="localStorage.setItem('italy_unlocked','true');window.location.href='/italy/index.html';" style="background:#c0392b;color:#fff;border:none;border-radius:16px;padding:10px 22px;font-family:'Varela Round',sans-serif;font-size:14px;cursor:pointer;">🔓 פתח איטליה (debug)</button>
-  </div>
-
+  <script src="../assets/rc-config.js"></script>
   <script>
     // ── Greeting ─────────────────────────────────────────────
     const name = localStorage.getItem('chefName');
@@ -460,7 +457,11 @@
     });
 
     // ── RevenueCat ────────────────────────────────────────────
-    const RC_API_KEY        = 'test_TYEmRvRfueLRNELSYDaSNCynNtH';
+    // TODO(release): RC_API_KEY comes from www/assets/rc-config.js, which
+    // is gitignored and never committed. Copy rc-config.example.js to
+    // rc-config.js and fill in the real production key before building
+    // for the App Store.
+    const RC_API_KEY        = window.RC_API_KEY;
     const ITALY_ENTITLEMENT = 'italy';
     const ITALY_PRODUCT_ID  = 'com.michalskurnik.chefapp.italy';
 
@@ -470,6 +471,10 @@
       if (!(window.Capacitor && window.Capacitor.isNativePlatform())) {
         // Browser / web preview — skip RC, rely on localStorage only
         if (localStorage.getItem('italy_unlocked') === 'true') updateItalyButton(true);
+        return;
+      }
+      if (!RC_API_KEY || RC_API_KEY === 'REPLACE_ME') {
+        console.error('RC_API_KEY missing or placeholder — copy www/assets/rc-config.example.js to rc-config.js and fill in the real key.');
         return;
       }
       try {
@@ -545,10 +550,6 @@
     document.getElementById('restore-btn').addEventListener('click', restorePurchases);
 
     initRC();
-
-    if (window.location.search.includes('debug=true')) {
-      document.getElementById('debug-bar').style.display = 'block';
-    }
   </script>
 </body>
 </html>

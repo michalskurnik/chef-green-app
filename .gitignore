@@ -5,3 +5,6 @@
 *.keystore
 keystore.properties
 key.properties
+
+# RevenueCat production API key - never commit (see rc-config.example.js)
+www/assets/rc-config.js
