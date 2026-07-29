@@ -49,5 +49,9 @@
 	<true/>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>אנו משתמשים במידע אנונימי לשיפור האפליקציה ולהצגת תוכן מותאם אישית לילדכם</string>
+	<key>NSCameraUsageDescription</key>
+	<string>אנו מבקשים גישה למצלמה כדי לצלם תמונה של ילדכם ולהוסיף אותה לתעודת השף האישית שלו</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>אנו מבקשים גישה לספריית התמונות כדי לבחור תמונה של ילדכם ולהוסיף אותה לתעודת השף האישית שלו</string>
 </dict>
 </plist>
