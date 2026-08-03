@@ -47,6 +47,8 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>אנו מבקשים גישה למצלמה כדי לצלם תמונה של ילדכם ולהוסיף אותה לתעודת השף האישית שלו</string>
 	<key>NSPhotoLibraryUsageDescription</key>
