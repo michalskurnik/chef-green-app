@@ -2,6 +2,20 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>
+  /* Native-app entry redirect. Capacitor has no `server.initialPath` option -
+     its Router always resolves the launch path to /index.html - so without
+     this the iOS/Android app opens this marketing page instead of the app.
+     Runs before any rendering to avoid a visible flash. On the web
+     (Vercel) location.protocol is http/https and window.Capacitor is
+     undefined, so this is a no-op and the marketing page loads normally. */
+  (function () {
+    var isNative = location.protocol === 'capacitor:' ||
+      location.protocol === 'ionic:' ||
+      (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+    if (isNative) location.replace('/app/start.html');
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>השף הירוק – הרפתקאות בישול לילדים</title>
 <meta name="description" content="אפליקציית בישול לילדים 6-10 עם עלילות מרתקות, מתכונים כיפיים וסיפורים שמביאים את הילדים למטבח בחיוך.">
