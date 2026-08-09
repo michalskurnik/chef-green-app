@@ -127,6 +127,13 @@ body {
 .btn-next { background:var(--yellow); color:#1a1a1a; font-family:inherit; font-size:18px; font-weight:900; padding:13px 34px; border:none; border-radius:50px; cursor:pointer; box-shadow:0 5px 18px rgba(247,201,72,0.5); transition:all 0.2s; }
 .btn-next:hover { transform:scale(1.05); }
 
+/* LOSE */
+#loseOverlay { display:none; position:absolute; inset:0; background:linear-gradient(160deg,rgba(120,30,30,0.96),rgba(180,60,50,0.96)); z-index:100; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:28px; }
+#loseOverlay.show { display:flex; }
+.lose-emoji { font-size:64px; margin-bottom:8px; }
+.btn-retry { background:#fff; color:#a52a2a; font-family:inherit; font-size:18px; font-weight:900; padding:13px 34px; border:none; border-radius:50px; cursor:pointer; box-shadow:0 5px 18px rgba(0,0,0,0.25); transition:all 0.2s; }
+.btn-retry:hover { transform:scale(1.05); }
+
 @media(max-width:600px) { .falling-emoji { font-size:28px; } }
 </style>
 </head>
@@ -189,6 +196,12 @@ body {
     <div class="win-title">אלופים! 🎉</div>
     <div class="win-text">אספתם את כל מרכיבי<br><strong style="color:var(--yellow);font-size:17px;">הברוסקטה החיפושית! 🐞</strong><br><br>בואו נמשיך למשחק הבא!</div>
     <button class="btn-next" onclick="nextMission()">המשחק הבא ▶</button>
+  </div>
+  <div id="loseOverlay">
+    <div class="lose-emoji">😢</div>
+    <div class="win-title">אוי לא! 💔</div>
+    <div class="win-text">תפסתם יותר מדי ג'אנק פוד!<br><strong style="color:#fff;font-size:17px;">אל דאגה — כל שף לומד מניסיון 🌿</strong><br><br>בואו ננסה שוב!</div>
+    <button class="btn-retry" onclick="retryGame()">🔄 נסו שוב</button>
   </div>
 </div>
 
@@ -286,7 +299,7 @@ function catchItem(item) {
     lives--; updateLives();
     showFlash(item.x,'❌ '+item.data.name,'#e53935');
     showBito(BAD_R[Math.floor(Math.random()*BAD_R.length)]);
-    if(lives<=0) setTimeout(()=>{ score=0;lives=3;items=[];document.getElementById('scoreDisplay').textContent='0 / 10';document.getElementById('collectedBar').innerHTML='';updateLives();location.reload(); },600);
+    if(lives<=0) setTimeout(showLose,600);
   }
 }
 
@@ -319,6 +332,30 @@ function showWin() {
   while(d.length<2)d.push(0);d[1]=3;
   localStorage.setItem('italy_stars_detail',JSON.stringify(d));
   localStorage.setItem('italy_stars',d.reduce((a,b)=>a+b,0));
+}
+
+function showLose() {
+  gameRunning=false; cancelAnimationFrame(animFrame);
+  document.getElementById('loseOverlay').classList.add('show');
+}
+
+function resetGame() {
+  cancelAnimationFrame(animFrame);
+  gameRunning=false;
+  score=0; lives=3; spawnTimer=0; moveDir=0;
+  items.forEach(i=>i.el.remove());
+  items=[];
+  const area=document.getElementById('gameArea');
+  area.querySelectorAll('.falling-item,.cloud,.catch-flash').forEach(el=>el.remove());
+  document.getElementById('scoreDisplay').textContent='0 / 10';
+  document.getElementById('collectedBar').innerHTML='';
+  updateLives();
+}
+
+function retryGame() {
+  document.getElementById('loseOverlay').classList.remove('show');
+  resetGame();
+  startGame();
 }
 
 function nextMission() { window.location.href='game4.html'; }
