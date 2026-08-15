@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>מודדים להמבורגר עדשים</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overscroll-behavior:none}
+  body{font-family:-apple-system,"Segoe UI",Arial,sans-serif;color:#4A3620;
+       background:#E8D6AE;overflow:hidden;user-select:none;touch-action:manipulation}
+
+  .screen{position:relative;width:100%;height:100%;max-width:460px;margin:0 auto;
+          background:url('assets/kitchen-bg.jpg') center/cover no-repeat;
+          display:flex;flex-direction:column;align-items:center;
+          padding-top:env(safe-area-inset-top);
+          padding-bottom:env(safe-area-inset-bottom)}
+
+  .top{width:100%;padding:14px 16px 0;display:flex;flex-direction:column;
+       align-items:center;gap:8px;z-index:5;position:relative}
+  .dots{display:flex;gap:10px}
+  .dots i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.65);
+          border:2px solid #B79B62;transition:.25s}
+  .dots i.on{background:#7CB342;border-color:#5A8A2E;transform:scale(1.2)}
+  h1{font-size:21px;font-weight:800;text-shadow:0 1px 0 rgba(255,255,255,.8)}
+  .goal{font-size:15px;font-weight:700;color:#8B5A2B;
+        background:rgba(255,255,255,.75);padding:3px 12px;border-radius:12px}
+
+  .pause{position:absolute;top:12px;right:14px;width:42px;height:42px;border-radius:50%;
+         border:3px solid #B79B62;background:rgba(255,255,255,.85);font-size:17px;
+         cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+  .stage{flex:1;width:100%;position:relative}
+
+  .cupwrap{position:absolute;left:6%;bottom:16%;width:56%}
+  .cupwrap img{width:100%;height:auto;display:block;position:relative;z-index:2}
+  .fillclip{position:absolute;inset:0;z-index:1;overflow:hidden}
+  .fill{position:absolute;background-repeat:repeat;background-size:34px 34px}
+  .fill::after{content:'';position:absolute;left:0;right:0;bottom:0;height:26%;
+               background:linear-gradient(rgba(80,50,15,0),rgba(80,50,15,.25))}
+  .goalline{position:absolute;z-index:3;pointer-events:none;
+            border-top:3px dashed #C0392B;opacity:.95}
+
+  .bito{position:absolute;right:1%;bottom:15%;width:34%;z-index:4;
+        transition:transform .25s}
+  .bito img{width:100%;height:auto;display:block;
+            filter:drop-shadow(0 6px 8px rgba(0,0,0,.22))}
+  .bito.pop{transform:translateY(-8px) scale(1.05)}
+
+  .bubble{position:absolute;right:2%;bottom:52%;z-index:6;max-width:44%;
+          background:#fff;border:3px solid #B79B62;border-radius:16px;
+          padding:9px 13px;font-size:15px;font-weight:700;text-align:center;
+          box-shadow:0 4px 10px rgba(0,0,0,.15);opacity:0;transition:opacity .25s}
+  .bubble.show{opacity:1}
+  .bubble::after{content:'';position:absolute;bottom:-12px;right:26px;
+                 border:10px solid transparent;border-top-color:#B79B62}
+
+  .bottom{width:100%;padding:0 16px 22px;display:flex;flex-direction:column;
+          align-items:center;gap:10px;z-index:5}
+  .btn{width:78px;height:78px;border-radius:50%;border:5px solid #fff;
+       background:radial-gradient(circle at 35% 30%,#96C95A,#6BA436);
+       box-shadow:0 6px 0 #4E7A26, 0 8px 14px rgba(0,0,0,.25);cursor:pointer;
+       display:flex;align-items:center;justify-content:center;font-size:32px}
+  .btn:active{transform:translateY(5px);box-shadow:0 1px 0 #4E7A26}
+  .btn:disabled{opacity:.5;transform:none}
+  .hint{font-size:13px;opacity:.8;background:rgba(255,255,255,.7);
+        padding:3px 12px;border-radius:12px;min-height:22px}
+
+  .overlay{position:absolute;inset:0;z-index:10;background:rgba(247,239,216,.96);
+           display:none;flex-direction:column;align-items:center;justify-content:center;
+           gap:14px;padding:24px}
+  .overlay.show{display:flex}
+  .overlay h2{font-size:27px;color:#5A8A2E;text-align:center}
+  .overlay p{font-size:16px;opacity:.75;text-align:center}
+  .overlay img{width:150px}
+  .go{padding:15px 34px;border:none;border-radius:16px;background:#7CB342;color:#fff;
+      font-size:18px;font-weight:800;box-shadow:0 5px 0 #5A8A2E;cursor:pointer}
+  .ghost{background:none;border:none;color:#4A3620;opacity:.6;font-size:15px;
+         text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="top">
+    <button class="pause" id="pauseBtn" aria-label="השהיה">❚❚</button>
+    <div class="dots" id="dots"><i></i><i></i><i></i></div>
+    <h1 id="title">מוזגים עדשים</h1>
+    <div class="goal" id="goal">עד הקו של ½</div>
+  </div>
+
+  <div class="stage">
+    <div class="cupwrap">
+      <div class="fillclip"><div class="fill" id="fill"></div></div>
+      <img src="assets/cup-marked.png" alt="כוס מדידה">
+      <div class="goalline" id="goalline"></div>
+    </div>
+    <div class="bubble" id="bubble"></div>
+    <div class="bito" id="bito"><img id="bitoImg" src="assets/bito-neutral.png" alt="ביטו"></div>
+  </div>
+
+  <div class="bottom">
+    <div class="hint" id="hint">&nbsp;</div>
+    <button class="btn" id="pour" aria-label="מוזגים">👆</button>
+  </div>
+
+  <div class="overlay" id="pausePanel">
+    <h2>הפסקה</h2>
+    <button class="go" id="resume">ממשיכים</button>
+    <button class="ghost" id="quit">חזרה לתפריט</button>
+  </div>
+
+  <div class="overlay" id="donePanel">
+    <img src="assets/bito-cheer.png" alt="">
+    <h2>כל המצרכים מוכנים!</h2>
+    <p>עכשיו אפשר להתחיל לבשל</p>
+    <button class="go" id="next">לשלב הבא</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ------------------------------------------------------------------
+     Measuring game — package 3 (protein)
+
+     Storage contract for this package:
+       one writer  : this file, into protein_stars_detail[starsIndex]
+       one reader  : protein/unlock-logic.js
+       no completion flags, no flat-sum key, no shared router.
+     ------------------------------------------------------------------ */
+  var CONFIG = {
+    starsIndex: 0,
+    storageKeyPrefix: 'protein',
+    next: 'game2.html',
+    hub: 'index.html',
+    /* calibrated against the printed marks on assets/cup-marked.png:
+       emptyPct  = height of the inner base
+       perCupPct = height of one cup on the printed scale       */
+    cup: { emptyPct: 90.02, perCupPct: 61.68, leftPct: 13.04, rightPct: 75.39,
+           maxCups: 1.35 },
+    rounds: [
+      { name:'מוזגים עדשים',       cups:0.5,  label:'\u00bd', tol:0.055,
+        tex:'assets/tex-lentil.png' },
+      { name:'מוזגים אורז',        cups:0.75, label:'\u00be', tol:0.045,
+        tex:'assets/tex-rice.png' },
+      { name:'מוזגים שיבולת שועל', cups:0.25, label:'\u00bc', tol:0.035,
+        tex:'assets/tex-oats.png' }
+    ]
+  };
+  var RATE = 0.010, TICK = 28;
+
+  var C = CONFIG.cup;
+  var POSE = { neutral:'assets/bito-neutral.png',
+               cheer:  'assets/bito-cheer.png',
+               vacuum: 'assets/bito-vacuum.png' };
+
+  var fill=document.getElementById('fill'), gline=document.getElementById('goalline'),
+      title=document.getElementById('title'), goal=document.getElementById('goal'),
+      hint=document.getElementById('hint'), pour=document.getElementById('pour'),
+      bito=document.getElementById('bito'), bitoImg=document.getElementById('bitoImg'),
+      bubble=document.getElementById('bubble'), dots=document.getElementById('dots').children,
+      pausePanel=document.getElementById('pausePanel'),
+      donePanel=document.getElementById('donePanel');
+
+  var idx=0, cups=0, timer=null, drain=null, locked=false, paused=false;
+
+  /* a short tone, same approach the other packages use */
+  var actx=null;
+  function beep(ok){
+    try{
+      actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+      var o=actx.createOscillator(), g=actx.createGain();
+      o.connect(g); g.connect(actx.destination);
+      o.frequency.value = ok ? 880 : 220;
+      o.type = 'sine';
+      g.gain.setValueAtTime(0.001, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.12, actx.currentTime+0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, actx.currentTime+0.22);
+      o.start(); o.stop(actx.currentTime+0.24);
+    }catch(e){}
+  }
+
+  function topFor(c){ return C.emptyPct - C.perCupPct*c; }
+  function setBito(pose, popped){
+    bitoImg.src = POSE[pose];
+    bito.classList.toggle('pop', !!popped);
+  }
+  function say(t){
+    if (t){ bubble.textContent = t; bubble.classList.add('show'); }
+    else bubble.classList.remove('show');
+  }
+  function render(){
+    var top = topFor(cups);
+    fill.style.left   = C.leftPct + '%';
+    fill.style.width  = (C.rightPct - C.leftPct) + '%';
+    fill.style.top    = top + '%';
+    fill.style.height = (C.emptyPct - top) + '%';
+  }
+
+  function loadRound(){
+    var r = CONFIG.rounds[idx];
+    title.textContent = r.name;
+    goal.textContent  = 'עד הקו של ' + r.label;
+    fill.style.backgroundImage = 'url(' + r.tex + ')';
+    gline.style.top   = topFor(r.cups) + '%';
+    gline.style.left  = (C.leftPct - 3) + '%';
+    gline.style.width = (C.rightPct - C.leftPct + 6) + '%';
+    cups = 0; locked = false; render();
+    hint.innerHTML = '&nbsp;';
+    pour.disabled = false;
+    setBito('neutral', false);
+    say('עד הקו של ' + r.label);
+    setTimeout(function(){ say(''); }, 1800);
+    for (var i=0;i<dots.length;i++) dots[i].className = i < idx ? 'on' : '';
+  }
+
+  function start(e){
+    e.preventDefault();
+    if (locked || paused || timer) return;
+    say('');
+    timer = setInterval(function(){
+      cups += RATE;
+      var r = CONFIG.rounds[idx];
+      var near = cups > r.cups - r.tol && cups < r.cups + r.tol;
+      setBito(near ? 'cheer' : 'neutral', near);
+      if (cups >= C.maxCups){ cups = C.maxCups; stop(); }
+      render();
+    }, TICK);
+  }
+
+  function stop(){
+    if (!timer) return;
+    clearInterval(timer); timer = null;
+    check();
+  }
+
+  function check(){
+    var r = CONFIG.rounds[idx];
+    if (Math.abs(cups - r.cups) <= r.tol){
+      locked = true; pour.disabled = true;
+      setBito('cheer', true); beep(true);
+      hint.textContent = 'בדיוק על הקו!';
+      dots[idx].className = 'on';
+      setTimeout(nextRound, 1000);
+    } else if (cups > r.cups + r.tol){
+      locked = true;
+      setBito('vacuum', false); beep(false);
+      say('רגע, אני מסדר');
+      drain = setInterval(function(){
+        cups -= 0.03;
+        if (cups <= 0){
+          cups = 0; clearInterval(drain); drain = null;
+          setBito('neutral', false); say(''); locked = false;
+          hint.innerHTML = '&nbsp;';
+        }
+        render();
+      }, 30);
+    } else {
+      hint.textContent = 'עוד קצת';
+      setBito('neutral', false);
+    }
+  }
+
+  function nextRound(){
+    idx++;
+    if (idx < CONFIG.rounds.length){ loadRound(); return; }
+    save();
+    donePanel.classList.add('show');
+  }
+
+  function save(){
+    try{
+      var key = CONFIG.storageKeyPrefix + '_stars_detail';
+      var d = JSON.parse(localStorage.getItem(key) || '[]');
+      while (d.length <= CONFIG.starsIndex) d.push(0);
+      d[CONFIG.starsIndex] = 1;
+      localStorage.setItem(key, JSON.stringify(d));
+    }catch(err){}
+  }
+
+  pour.addEventListener('mousedown', start);
+  pour.addEventListener('touchstart', start, {passive:false});
+  ['mouseup','mouseleave','touchend','touchcancel'].forEach(function(ev){
+    pour.addEventListener(ev, stop);
+  });
+
+  document.getElementById('pauseBtn').addEventListener('click', function(){
+    stop(); paused = true; pausePanel.classList.add('show');
+  });
+  document.getElementById('resume').addEventListener('click', function(){
+    paused = false; pausePanel.classList.remove('show');
+  });
+  document.getElementById('quit').addEventListener('click', function(){
+    location.href = CONFIG.hub;
+  });
+  document.getElementById('next').addEventListener('click', function(){
+    location.href = CONFIG.next;
+  });
+
+  loadRound();
+})();
+</script>
+</body>
+</html>
