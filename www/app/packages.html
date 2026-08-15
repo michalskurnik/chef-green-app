@@ -174,6 +174,28 @@
     }
     .coin { font-size: 16px; line-height: 1; }
 
+    /* ── Coming Soon badge (not-yet-live IAP) ──────────────── */
+    .btn-coming-soon {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      align-self: flex-end;
+      background: rgba(0,0,0,0.10);
+      color: rgba(27,58,15,0.55);
+      font-family: 'Fredoka One', cursive;
+      font-size: 14px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: none;
+      white-space: nowrap;
+    }
+    .card.disabled,
+    .bundle.disabled {
+      cursor: default;
+      pointer-events: none;
+    }
+
     /* ── Bundle banner ────────────────────────────────────── */
     .bundle {
       display: flex;
@@ -328,7 +350,7 @@
       </div>
 
       <!-- Card 2 — Italy -->
-      <div class="card" id="card-italy" role="button" tabindex="0">
+      <div class="card" id="card-italy" role="button" tabindex="0" data-product-id="com.michalskurnik.chefapp.italy">
         <div class="card-img">
           <img
             src="/assets/images/pkg-italy.jpg"
@@ -349,7 +371,10 @@
       </div>
 
       <!-- Card 3 — Plant protein -->
-      <div class="card" id="card-plant" role="button" tabindex="0">
+      <!-- data-product-id matches assets/protein-config.js's PRODUCT_ID, but
+           this product is not yet Ready to Submit/Approved in App Store
+           Connect - once it is, add it to LIVE_PRODUCT_IDS. -->
+      <div class="card" id="card-plant" role="button" tabindex="0" data-product-id="com.michalskurnik.hashefhayarok.protein">
         <div class="card-img">
           <img
             src="/assets/images/pkg-protein.jpg"
@@ -370,7 +395,10 @@
       </div>
 
       <!-- Card 4 — Kitchen science -->
-      <div class="card" id="card-science" role="button" tabindex="0">
+      <!-- data-product-id is a placeholder: no IAP has been created in App
+           Store Connect for this package yet. Replace with the real product
+           ID once one exists, then add it to LIVE_PRODUCT_IDS. -->
+      <div class="card" id="card-science" role="button" tabindex="0" data-product-id="com.michalskurnik.hashefhayarok.science">
         <div class="card-img">
           <img
             src="/assets/images/pkg-science.jpg"
@@ -393,7 +421,10 @@
     </div><!-- /cards -->
 
     <!-- Bundle banner -->
-    <div class="bundle" id="card-bundle" role="button" tabindex="0">
+    <!-- data-product-id is a placeholder: no IAP has been created in App
+         Store Connect for this package yet. Replace with the real product
+         ID once one exists, then add it to LIVE_PRODUCT_IDS. -->
+    <div class="bundle" id="card-bundle" role="button" tabindex="0" data-product-id="com.michalskurnik.hashefhayarok.bundle">
       <div class="confetti" id="confetti"></div>
       <div class="bundle-img">
         <img
@@ -421,6 +452,7 @@
   </div>
 
   <script src="../assets/rc-config.js"></script>
+  <script src="../assets/live-products.js"></script>
   <script>
     // ── Greeting ─────────────────────────────────────────────
     const name = localStorage.getItem('chefName');
@@ -443,6 +475,32 @@
       ].join(';');
       confettiEl.appendChild(s);
     }
+
+    // ── Coming Soon gating (Guideline 2.1(b) fix) ──────────────
+    // Any card whose data-product-id isn't in LIVE_PRODUCT_IDS (defined in
+    // assets/live-products.js) gets its price button swapped for a disabled
+    // "soon" badge, and is skipped entirely when wiring click handlers below
+    // - no StoreKit/RevenueCat call, and no navigation, is ever reachable
+    // for a product that doesn't exist in App Store Connect. Runs before
+    // any handler wiring so a not-live card is never briefly clickable.
+    function isProductLive(productId) {
+      return (window.LIVE_PRODUCT_IDS || []).indexOf(productId) !== -1;
+    }
+
+    document.querySelectorAll('[data-product-id]').forEach(function (el) {
+      if (isProductLive(el.dataset.productId)) return;
+
+      el.classList.add('disabled');
+      el.removeAttribute('role');
+      el.setAttribute('aria-disabled', 'true');
+      el.setAttribute('tabindex', '-1');
+
+      const btn = el.querySelector('.btn-price, .btn-bundle');
+      if (btn) {
+        btn.className = 'btn-coming-soon';
+        btn.innerHTML = '<span>🔜</span> soon';
+      }
+    });
 
     // ── Navigation ────────────────────────────────────────────
     function navigate(el, handler) {
@@ -543,9 +601,11 @@
         purchaseItaly();
       }
     });
-    navigate(document.getElementById('card-plant'),   function() { alert('בקרוב!'); });
-    navigate(document.getElementById('card-science'), function() { alert('בקרוב!'); });
-    navigate(document.getElementById('card-bundle'),  function() { alert('בקרוב!'); });
+    // card-plant / card-science / card-bundle: intentionally NOT wired to
+    // navigate() here. The gating block above already marks them .disabled
+    // when their product isn't in LIVE_PRODUCT_IDS, and none of them are
+    // today - so there is no click handler, alert, or navigation attached
+    // to these cards at all until a real product goes live.
 
     document.getElementById('restore-btn').addEventListener('click', restorePurchases);
 
