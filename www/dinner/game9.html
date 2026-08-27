@@ -110,7 +110,7 @@ button,.btn,[role=button]{touch-action:manipulation}
     </div>
     <p id="dmsg">🎉 סדרתם את המתכון בצורה מושלמת!</p>
     <button id="recipe-btn" onclick="openRecipe()">📋 צפו במתכון המלא</button>
-    <button id="nbtn" style="margin-top:10px" onclick="window.location.href='index.html'">🏠 חזרה לתפריט</button>
+    <button id="nbtn" style="margin-top:10px" onclick="localStorage.setItem('station4_completed','1');localStorage.setItem('recipe4_completed','1');window.location.href='index.html'">🏠 חזרה לתפריט</button>
   </div>
 </div>
 
@@ -265,6 +265,5 @@ function aud(ok){
 
 buildList();
 </script>
-<script src="station-flow.js"></script>
 </body>
 </html>
