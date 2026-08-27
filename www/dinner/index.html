@@ -86,6 +86,24 @@
     /* ════════════════════════════════════════
        HERO BANNER  (cream card, top of page)
     ════════════════════════════════════════ */
+    #back-home-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 5;
+      background: rgba(0,0,0,.28);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
     #hero-banner {
       width: 100%;
       max-width: 480px;
@@ -622,7 +640,8 @@ button,.btn,[role=button]{touch-action:manipulation}
 
   <!-- HERO BANNER -->
   <header id="hero-banner">
-    <div class="hero-deco" style="top:18px;right:20px;font-size:22px;animation-duration:2.2s;animation-delay:.0s">✨</div>
+    <button id="back-home-btn" onclick="window.location.href='../app/packages.html'">חזרה לחבילות ←</button>
+    <div class="hero-deco" style="top:18px;right:80px;font-size:22px;animation-duration:2.2s;animation-delay:.0s">✨</div>
     <div class="hero-deco" style="top:22px;left:24px; font-size:18px;animation-duration:3s;  animation-delay:.4s">⭐</div>
     <div class="hero-deco" style="bottom:26px;right:38px;font-size:16px;animation-duration:2.6s;animation-delay:.8s">🌟</div>
     <div class="hero-deco" style="bottom:22px;left:34px; font-size:20px;animation-duration:2s;  animation-delay:.2s">✨</div>

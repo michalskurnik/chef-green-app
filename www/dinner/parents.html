@@ -32,7 +32,7 @@ body{
 .page{
   max-width:600px;
   margin:0 auto;
-  padding:20px 24px 0;
+  padding:calc(env(safe-area-inset-top, 0px) + 20px) 24px 0;
 }
 
 /* ── Back button ── */
@@ -196,7 +196,7 @@ body{
 
 /* ── iPad ── */
 @media(min-width:768px){
-  .page{padding:32px 40px 0}
+  .page{padding:calc(env(safe-area-inset-top, 0px) + 32px) 40px 0}
   .chef-logo{width:96px;height:96px}
   .header-title{font-size:32px}
   .section-title{font-size:19px}
