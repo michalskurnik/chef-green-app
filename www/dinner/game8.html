@@ -81,9 +81,11 @@ button,.btn,[role=button]{touch-action:manipulation}
   .tv-frame,#video-container,.video-wrap{max-width:600px;margin-left:auto;margin-right:auto}
   img{max-width:100%;object-fit:contain}
 }
+#home-mini-btn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);left:8px;z-index:99999;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;border:none;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 </style>
 </head>
 <body>
+<button id="home-mini-btn" onclick="window.location.href='index.html'" aria-label="חזרה לתפריט">🏠</button>
 <div id="app">
   <div id="hdr">
     <div id="badge">🍕 משחק 1 מתוך 2</div>
