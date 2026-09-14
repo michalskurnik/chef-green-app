@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--
+  TEST-ONLY helper — safe to keep in the repo.
+  Only unlocks the Italy package when running on a *.vercel.app preview
+  domain. On the real production domain (chef.foodgames.co.il) or inside
+  the native app (Capacitor), this does nothing and shows a message
+  instead — it never bypasses the real purchase check there.
+-->
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dev unlock (preview only)</title>
+<style>
+  body{font-family:sans-serif;background:#1A3D1F;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:24px}
+</style>
+</head>
+<body>
+<div id="msg">בודק...</div>
+<script>
+  var msg = document.getElementById('msg');
+  if (location.hostname.endsWith('.vercel.app')) {
+    localStorage.setItem('italy_unlocked', 'true');
+    msg.textContent = 'החבילה נפתחה לבדיקה ✅ — מעביר אותך למשחק...';
+    setTimeout(function () {
+      window.location.href = 'index.html';
+    }, 600);
+  } else {
+    msg.textContent = 'הדף הזה פעיל רק בסביבת בדיקה (Preview), ולא זמין כאן.';
+  }
+</script>
+</body>
+</html>

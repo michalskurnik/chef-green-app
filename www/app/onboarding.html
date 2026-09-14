@@ -97,8 +97,9 @@
     /* ══════════════════════════════════════════════════
        SCREEN 1 — WELCOME
     ══════════════════════════════════════════════════ */
-    /* Screen 1 — full-bleed image layout */
-    #screen1 { padding: 0; }
+    /* Screen 1 — respects safe-area like the other screens (was full-bleed
+       with padding:0, which let the background image's top artwork render
+       under the iOS status bar/notch) */
 
     .s1-bg-img {
       position: absolute;
