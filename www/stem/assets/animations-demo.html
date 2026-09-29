@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הדגמת אנימציות STEM - עלילות השף הירוק</title>
+<style>
+  :root {
+    --panel-bg: #fffaf2;
+    --panel-border: #e3c9a0;
+  }
+  body {
+    margin: 0;
+    padding: 24px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4ede1;
+    color: #4a3826;
+  }
+  h1 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+  p.sub {
+    text-align: center;
+    color: #8a7358;
+    margin-top: 0;
+    margin-bottom: 28px;
+    font-size: 14px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .panel {
+    background: var(--panel-bg);
+    border: 2px solid var(--panel-border);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .panel h2 {
+    font-size: 16px;
+    margin: 0 0 10px;
+    text-align: center;
+  }
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 260px;
+    margin: 0 auto;
+    overflow: visible;
+  }
+  .stage img.base {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  button, .toggle {
+    font-family: inherit;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid #c9a876;
+    background: #fff;
+    cursor: pointer;
+    color: #4a3826;
+  }
+  button:hover { background: #fff2df; }
+  input[type=range] { width: 100%; margin-top: 10px; }
+  .note {
+    font-size: 12px;
+    color: #9a7f5f;
+    text-align: center;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+  code {
+    background: #f0e4cf;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 11px;
+  }
+
+  /* ===== 1) בועות עולות בכוס (תחנת הכרוב) ===== */
+  #cabbage-liquid {
+    position: absolute;
+    left: 34%;
+    right: 34%;
+    bottom: 14%;
+    top: 30%;
+    border-radius: 0 0 40% 40% / 0 0 12% 12%;
+    background: rgb(122, 58, 138);
+    transition: background-color 0.6s linear;
+    overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    bottom: -20%;
+    opacity: 0;
+    animation: bubble-rise linear infinite;
+  }
+  @keyframes bubble-rise {
+    0%   { transform: translateY(0) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.9; }
+    90%  { opacity: 0.7; }
+    100% { transform: translateY(-260%) scale(1.05); opacity: 0; }
+  }
+
+  /* ===== 2+4) קצף גדל + התפרצות (תחנת הר הגעש) ===== */
+  #volcano-foam {
+    position: absolute;
+    left: 27%;
+    right: 27%;
+    top: 8%;
+    height: 22%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    transform-origin: bottom center;
+    animation: foam-grow 3.5s ease-in-out infinite;
+  }
+  @keyframes foam-grow {
+    0%   { transform: scale(0.15); opacity: 0; }
+    35%  { transform: scale(1); opacity: 1; }
+    55%  { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1.05); opacity: 1; }
+  }
+  #volcano-eruption {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    top: 14%;
+    height: 62%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top center;
+    opacity: 0;
+    transform: scaleY(0.3) translateY(-10%);
+    transform-origin: top center;
+    animation: erupt 3.5s ease-in-out infinite;
+  }
+  @keyframes erupt {
+    0%, 55%   { opacity: 0; transform: scaleY(0.3) translateY(-10%); }
+    75%       { opacity: 1; transform: scaleY(0.9) translateY(0%); }
+    100%      { opacity: 1; transform: scaleY(1) translateY(4%); }
+  }
+
+  /* ===== 3) גלידה בשקית - שלושה מצבים ===== */
+  .icecream-frame {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+  }
+  .icecream-frame.active { opacity: 1; }
+  .icecream-frame img { width: 100%; height: 100%; object-fit: contain; }
+</style>
+</head>
+<body>
+
+<h1>הדגמת אנימציות/ספרייטים - חבילת ניסויים במטבח</h1>
+<p class="sub">כל האנימציות משתמשות בנכסים גרפיים שכבר קיימים ב-www/stem/assets/props/ - אין צורך בתמונות נוספות (חוץ מ-3 קבצי הבועות החדשים).</p>
+
+<div class="grid">
+
+  <!-- תחנה 3: כרוב - בועות + שינוי צבע -->
+  <div class="panel">
+    <h2>🥬 תחנת הכרוב - בועות עולות + שינוי צבע</h2>
+    <div class="stage">
+      <img class="base" src="props/stem_prop_cup_tall.png" alt="כוס">
+      <div id="cabbage-liquid">
+        <img class="bubble" id="b1" src="props/stem_prop_bubble_small.png" style="width:22%; left:20%;">
+        <img class="bubble" id="b2" src="props/stem_prop_bubble_medium.png" style="width:30%; left:50%;">
+        <img class="bubble" id="b3" src="props/stem_prop_bubble_small.png" style="width:18%; left:70%;">
+      </div>
+    </div>
+    <input type="range" id="ph-slider" min="0" max="100" value="50">
+    <div class="controls">
+      <button id="ph-auto">▶ הפעל אנימציה אוטומטית</button>
+    </div>
+    <div class="note">
+      גוון הנוזל מחושב ב-JS בין 3 נקודות צבע: חומצי (ורוד) ↔ ניטרלי (סגול) ↔ בסיסי (טורקיז).<br>
+      הבועות (<code>stem_prop_bubble_*.png</code>) עולות ב-CSS <code>@keyframes</code> עם עיכובים שונים לכל בועה.
+    </div>
+  </div>
+
+  <!-- תחנה 5: הר געש - קצף גדל + התפרצות -->
+  <div class="panel">
+    <h2>🌋 תחנת הר הגעש - קצף גדל והתפרצות</h2>
+    <div class="stage">
+      <img class="base" src="props/stem_prop_volcano_cup.png" alt="הר געש">
+      <div id="volcano-foam" style="background-image:url('props/stem_prop_foam_pink.png');"></div>
+      <div id="volcano-eruption" style="background-image:url('props/stem_prop_foam_pink.png');"></div>
+    </div>
+    <div class="note">
+      אותה תמונת קצף (<code>stem_prop_foam_pink.png</code>) משמשת בשני שלבים: קודם גדילה בתוך הכוס (<code>#volcano-foam</code>), ואז התפרצות/גלישה על המדרונות (<code>#volcano-eruption</code>) - שני שלבי CSS על אותו נכס גרפי, לולאה אחת של 3.5 שניות.
+    </div>
+  </div>
+
+  <!-- תחנה 4: גלידה - שלושה מצבים -->
+  <div class="panel">
+    <h2>🍦 תחנת הגלידה - מוצקת/נוזלית/קפואה</h2>
+    <div class="stage">
+      <div class="icecream-frame active" data-frame="0"><img src="props/stem_prop_icecream_liquid.png" alt="נוזלי"></div>
+      <div class="icecream-frame" data-frame="1"><img src="props/stem_prop_icecream_slushy.png" alt="קרמי"></div>
+      <div class="icecream-frame" data-frame="2"><img src="props/stem_prop_icecream_solid.png" alt="קפוא"></div>
+    </div>
+    <div class="controls">
+      <button id="ice-play">▶ הפעל מעבר בין מצבים</button>
+    </div>
+    <div class="note">
+      3 תמונות סטטיות קיימות (<code>stem_prop_icecream_liquid/slushy/solid.png</code>) מוחלפות ב-JS לפי טיימר, עם <code>opacity transition</code> חלק בין המצבים - בלי וידאו.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ===== 1) כרוב: אנימציית בועות + שינוי צבע לפי pH =====
+  const PH_COLORS = [
+    { t: 0,   rgb: [214, 45, 120] },  // חומצי (חומץ) - ורוד/אדום
+    { t: 0.5, rgb: [122, 58, 138] },  // ניטרלי - סגול (מיץ כרוב טבעי)
+    { t: 1,   rgb: [58, 176, 160] },  // בסיסי (סודה לשתייה) - טורקיז
+  ];
+
+  function lerp(a, b, f) { return a + (b - a) * f; }
+
+  function colorForT(t) {
+    t = Math.max(0, Math.min(1, t));
+    const stops = PH_COLORS;
+    let lo = stops[0], hi = stops[stops.length - 1];
+    for (let i = 0; i < stops.length - 1; i++) {
+      if (t >= stops[i].t && t <= stops[i + 1].t) {
+        lo = stops[i]; hi = stops[i + 1];
+        break;
+      }
+    }
+    const span = hi.t - lo.t || 1;
+    const f = (t - lo.t) / span;
+    const rgb = [0, 1, 2].map(i => Math.round(lerp(lo.rgb[i], hi.rgb[i], f)));
+    return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+  }
+
+  const liquidEl = document.getElementById('cabbage-liquid');
+  const slider = document.getElementById('ph-slider');
+  slider.addEventListener('input', () => {
+    liquidEl.style.background = colorForT(slider.value / 100);
+  });
+  liquidEl.style.background = colorForT(0.5);
+
+  let phAutoTimer = null;
+  document.getElementById('ph-auto').addEventListener('click', (e) => {
+    if (phAutoTimer) {
+      clearInterval(phAutoTimer);
+      phAutoTimer = null;
+      e.target.textContent = '▶ הפעל אנימציה אוטומטית';
+      return;
+    }
+    e.target.textContent = '⏸ עצור';
+    let t = 0, dir = 1;
+    phAutoTimer = setInterval(() => {
+      t += dir * 0.02;
+      if (t >= 1) { t = 1; dir = -1; }
+      if (t <= 0) { t = 0; dir = 1; }
+      slider.value = Math.round(t * 100);
+      liquidEl.style.background = colorForT(t);
+    }, 40);
+  });
+
+  // עיכובים שונים לכל בועה כדי שלא יעלו יחד
+  document.getElementById('b1').style.animationDuration = '2.6s';
+  document.getElementById('b1').style.animationDelay = '0s';
+  document.getElementById('b2').style.animationDuration = '3.2s';
+  document.getElementById('b2').style.animationDelay = '0.8s';
+  document.getElementById('b3').style.animationDuration = '2.9s';
+  document.getElementById('b3').style.animationDelay = '1.6s';
+
+  // ===== 3) גלידה: מעבר בין 3 מצבים =====
+  const iceFrames = Array.from(document.querySelectorAll('.icecream-frame'));
+  let iceIndex = 0, iceTimer = null;
+  document.getElementById('ice-play').addEventListener('click', (e) => {
+    if (iceTimer) {
+      clearInterval(iceTimer);
+      iceTimer = null;
+      e.target.textContent = '▶ הפעל מעבר בין מצבים';
+      return;
+    }
+    e.target.textContent = '⏸ עצור';
+    iceTimer = setInterval(() => {
+      iceFrames[iceIndex].classList.remove('active');
+      iceIndex = (iceIndex + 1) % iceFrames.length;
+      iceFrames[iceIndex].classList.add('active');
+    }, 1800);
+  });
+</script>
+
+</body>
+</html>

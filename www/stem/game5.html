@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<script src="../assets/rc-config.js"></script>
+<script src="../assets/stem-config.js"></script>
+<script src="access-guard.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@700;800&display=swap" rel="stylesheet">
+<title>מעבדת הצבעים – כרוב סגול</title>
+<style>
+:root{ --c1:#7B2D8B; --c2:#A559B5; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{background:#F5F0DC;display:flex;justify-content:center;padding:16px 10px 36px;font-family:'Assistant',sans-serif;direction:rtl;min-height:100vh;overflow-x:hidden}
+button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
+
+#app{width:100%;max-width:400px;background:#fff;border-radius:26px;box-shadow:0 12px 40px rgba(0,0,0,.13);overflow:hidden;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+#hdr{padding:14px 18px 16px;color:#fff;text-align:center;background:linear-gradient(135deg,var(--c1),var(--c2));position:relative}
+#level-badge{position:absolute;top:12px;left:14px;background:rgba(255,255,255,.25);border-radius:12px;padding:3px 10px;font-size:11px;font-weight:800;color:#fff}
+#badge{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:3px 14px;font-size:12px;font-weight:700;margin-bottom:6px}
+#htitle{font-family:'Fredoka One',cursive;font-size:20px}
+
+#root{padding:16px 18px 22px}
+.intro{font-size:14px;font-weight:700;color:#444;text-align:center;margin-bottom:14px;line-height:1.6}
+
+.opt-row{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.opt-card{display:flex;align-items:center;gap:10px;background:#f7f7f7;border:2px solid #eee;border-radius:16px;padding:12px 16px;cursor:pointer;transition:all .2s}
+.opt-card:active{transform:scale(.98)}
+.opt-card.picked{border-color:var(--c1);background:rgba(0,0,0,.02)}
+.opt-card.correct-pick{border-color:#F7C948;background:rgba(247,201,72,.15)}
+.opt-icon{font-size:22px}
+.opt-label{font-size:14px;font-weight:700;color:#333}
+
+.lab-btn{display:block;width:100%;border:none;border-radius:18px;padding:14px;font-size:16px;font-family:'Fredoka One',cursive;cursor:pointer;margin-top:14px;transition:opacity .2s,transform .1s}
+.lab-btn:active{transform:scale(.97)}
+.lab-btn.primary{background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;box-shadow:0 5px 18px rgba(0,0,0,.18)}
+.lab-btn.primary:disabled{opacity:.4;pointer-events:none}
+.lab-btn.ghost{background:none;color:#999;box-shadow:none;font-family:'Assistant',sans-serif;font-weight:800;font-size:13px;text-decoration:underline}
+
+/* Cups for round 1 */
+.cup-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.jcup{width:64px;display:flex;flex-direction:column;align-items:center;gap:5px;border-radius:12px;padding:6px;transition:transform .2s,opacity .3s}
+.jcup.selectable{cursor:pointer}
+.jcup.selectable.pickable{box-shadow:0 0 0 3px rgba(123,45,139,.5)}
+.jcup-visual{width:44px;height:56px;border:3px solid #999;border-bottom:none;border-radius:2px 2px 8px 8px;background:#eef;position:relative;overflow:hidden}
+.jcup-liquid{position:absolute;bottom:0;left:0;right:0;height:70%;background:#ddd;transition:background 1s ease}
+.jcup-label{font-size:10px;font-weight:800;color:#666;text-align:center}
+.jcup.sorted{opacity:.35;transform:scale(.85)}
+.jcup.wrong-shake{animation:shakeX .3s ease}
+
+.basket-row{display:flex;gap:8px;justify-content:center;margin-top:6px}
+.basket{flex:1;max-width:110px;border-radius:16px;padding:12px 8px;text-align:center;cursor:pointer;border:3px dashed transparent;transition:transform .15s}
+.basket:active{transform:scale(.96)}
+.basket-emoji{font-size:26px;display:block;margin-bottom:4px}
+.basket-label{font-size:11px;font-weight:800;color:#fff}
+
+#addjuice-btn{margin-bottom:6px}
+
+/* Round 2 mystery jars */
+.jar-row{display:flex;gap:12px;justify-content:center;margin-bottom:10px;flex-wrap:wrap}
+.jar{width:88px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+.jar-visual{width:64px;height:74px;border:3px solid #999;border-radius:8px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;overflow:hidden}
+.jar-fill{position:absolute;bottom:0;left:0;right:0;height:0%;transition:height .8s ease,background 1s ease}
+.jar-name{font-size:11px;font-weight:800;color:#555;text-align:center;min-height:14px}
+
+.lab-done{display:flex;flex-direction:column;align-items:center;padding:16px 4px}
+.lab-done-emoji{font-size:44px;margin-bottom:8px}
+.lab-done-title{font-family:'Fredoka One',cursive;font-size:17px;color:#333;text-align:center;margin-bottom:6px}
+
+@media(min-width:420px){ #app{max-width:440px} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="hdr">
+    <span id="level-badge"></span>
+    <div id="badge">🥬 כרוב סגול</div>
+    <h2 id="htitle">🌈 מעבדת הצבעים</h2>
+  </header>
+  <div id="root"></div>
+</div>
+
+<script src="unlock-logic.js"></script>
+<script src="../assets/stem-notebook-config.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var STATION_NUM = 3; // כרוב סגול = index 2
+  var NB = StemNotebookConfig.NOTEBOOK_STATIONS[STATION_NUM - 1];
+  var GAME_NUM = 5;
+  var root = document.getElementById('root');
+  var levelBadge = document.getElementById('level-badge');
+
+  var COLOR_META = {
+    pink:   { swatch: '#F48FB1', basketLabel: 'ורוד',        basketEmoji: '🌸' },
+    purple: { swatch: '#8E5FA8', basketLabel: 'נשאר סגול',   basketEmoji: '💜' },
+    blue:   { swatch: '#4FC3C7', basketLabel: 'כחול-ירקרק', basketEmoji: '🔵' }
+  };
+
+  // Round 1 liquids - acidic ones (lemon, vinegar) turn pink, neutral water
+  // stays purple, basic soda turns blue-green. Matches the recipe page's
+  // own 4-cup setup exactly.
+  var CUPS = [
+    { id: 'lemon',   label: 'מיץ לימון', color: 'pink' },
+    { id: 'water',   label: 'מים',       color: 'purple' },
+    { id: 'vinegar', label: 'חומץ',      color: 'pink' },
+    { id: 'soda',    label: 'סודה לשתייה', color: 'blue' }
+  ];
+
+  var MYSTERY_JARS = [
+    { id: 'oj',    name: 'מיץ תפוזים',    color: 'pink' },
+    { id: 'soap',  name: 'מים עם סבון',   color: 'blue' },
+    { id: 'water2',name: 'מים רגילים',    color: 'purple' }
+  ];
+
+  var state = { prediction: null, sortedCount: 0, selectedCup: null };
+
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  }
+  function setLevel(label) { levelBadge.textContent = label; }
+
+  // ── Screen 1: prediction (about vinegar specifically) ──────────────
+  function renderPrediction() {
+    setLevel('שלב 1 מתוך 4');
+    root.innerHTML = '';
+    root.appendChild(el('p', 'intro', NB.predictionQ));
+    var row = el('div', 'opt-row');
+    Object.keys(NB.cards).forEach(function (id) {
+      var c = NB.cards[id];
+      var card = el('div', 'opt-card', '<span class="opt-icon">' + c.icon + '</span><span class="opt-label">' + c.label + '</span>');
+      card.onclick = function () {
+        state.prediction = id;
+        localStorage.setItem('stem_station' + STATION_NUM + '_prediction', id);
+        document.querySelectorAll('.opt-card').forEach(function (cc) { cc.classList.remove('picked'); });
+        card.classList.add('picked');
+        setTimeout(renderRound1, 400);
+      };
+      row.appendChild(card);
+    });
+    root.appendChild(row);
+  }
+
+  // ── Screen 2: round 1 - reveal + sort into baskets ──────────────────
+  function renderRound1() {
+    setLevel('שלב 2 מתוך 4');
+    root.innerHTML = '';
+    root.appendChild(el('p', 'intro', 'ארבע כוסות מחכות. הקישו "הוסיפו מיץ כרוב" כדי לראות מה קורה, ואז מיינו כל כוס לסל הצבע הנכון.'));
+
+    var row = el('div', 'cup-row');
+    row.id = 'cup-row';
+    CUPS.forEach(function (cup) {
+      var card = el('div', 'jcup');
+      card.dataset.id = cup.id;
+      var vis = el('div', 'jcup-visual');
+      var liquid = el('div', 'jcup-liquid');
+      vis.appendChild(liquid);
+      card.appendChild(vis);
+      card.appendChild(el('div', 'jcup-label', cup.label));
+      row.appendChild(card);
+    });
+    root.appendChild(row);
+
+    var addBtn = el('button', 'lab-btn primary', '🧪 הוסיפו מיץ כרוב לכולן!');
+    addBtn.id = 'addjuice-btn';
+    addBtn.onclick = revealColors;
+    root.appendChild(addBtn);
+
+    var basketsWrap = el('div', '');
+    basketsWrap.id = 'baskets-wrap';
+    basketsWrap.style.display = 'none';
+    var hint = el('p', 'intro', 'עכשיו הקישו על כוס, ואז על הסל בצבע הנכון');
+    basketsWrap.appendChild(hint);
+    var baskets = el('div', 'basket-row');
+    ['pink', 'purple', 'blue'].forEach(function (colorId) {
+      var meta = COLOR_META[colorId];
+      var b = el('div', 'basket', '<span class="basket-emoji">' + meta.basketEmoji + '</span><span class="basket-label">' + meta.basketLabel + '</span>');
+      b.style.background = meta.swatch;
+      b.dataset.color = colorId;
+      b.onclick = function () { trySort(colorId); };
+      baskets.appendChild(b);
+    });
+    basketsWrap.appendChild(baskets);
+    root.appendChild(basketsWrap);
+  }
+
+  function revealColors() {
+    document.getElementById('addjuice-btn').disabled = true;
+    document.querySelectorAll('#cup-row .jcup').forEach(function (cardEl) {
+      var cup = CUPS.filter(function (c) { return c.id === cardEl.dataset.id; })[0];
+      cardEl.querySelector('.jcup-liquid').style.background = COLOR_META[cup.color].swatch;
+      cardEl.classList.add('selectable');
+      cardEl.onclick = function () {
+        document.querySelectorAll('.jcup').forEach(function (c) { c.classList.remove('pickable'); });
+        cardEl.classList.add('pickable');
+        state.selectedCup = cup.id;
+      };
+    });
+    setTimeout(function () {
+      document.getElementById('baskets-wrap').style.display = 'block';
+    }, 900);
+  }
+
+  function trySort(colorId) {
+    if (!state.selectedCup) return;
+    var cardEl = document.querySelector('.jcup[data-id="' + state.selectedCup + '"]');
+    var cup = CUPS.filter(function (c) { return c.id === state.selectedCup; })[0];
+    if (cup.color === colorId) {
+      cardEl.classList.add('sorted');
+      cardEl.classList.remove('pickable');
+      cardEl.onclick = null;
+      state.selectedCup = null;
+      state.sortedCount++;
+      if (state.sortedCount === CUPS.length) {
+        var vinegarCup = CUPS.filter(function (c) { return c.id === 'vinegar'; })[0];
+        localStorage.setItem('stem_station' + STATION_NUM + '_result', vinegarCup.color);
+        setTimeout(function () { showRound1Match(vinegarCup.color); }, 500);
+      }
+    } else {
+      cardEl.classList.add('wrong-shake');
+      setTimeout(function () { cardEl.classList.remove('wrong-shake'); }, 300);
+    }
+  }
+
+  function showRound1Match(resultColor) {
+    var matchLine = el('p', 'intro',
+      (state.prediction === resultColor)
+        ? '🎉 ניחשתם בדיוק! החומץ הפך ורוד.'
+        : '🤔 יצא אחרת מהניחוש — החומץ הפך ורוד!');
+    root.appendChild(matchLine);
+    var nextBtn = el('button', 'lab-btn primary', 'עוד נוזלים מסתוריים →');
+    nextBtn.onclick = renderRound2;
+    root.appendChild(nextBtn);
+  }
+
+  // ── Screen 3: round 2 - mystery jars ────────────────────────────────
+  function renderRound2() {
+    setLevel('שלב 3 מתוך 4');
+    root.innerHTML = '';
+    root.appendChild(el('p', 'intro', 'שלוש צנצנות מסתוריות! הקישו על כל אחת כדי לגלות מה קורה.'));
+
+    var row = el('div', 'jar-row');
+    var revealed = 0;
+    MYSTERY_JARS.forEach(function (jar) {
+      var card = el('div', 'jar');
+      var vis = el('div', 'jar-visual', '<span style="position:relative;z-index:1">❓</span>');
+      var fill = el('div', 'jar-fill');
+      vis.insertBefore(fill, vis.firstChild);
+      card.appendChild(vis);
+      var nameEl = el('div', 'jar-name', '');
+      card.appendChild(nameEl);
+      card.onclick = function () {
+        if (card.dataset.done) return;
+        card.dataset.done = '1';
+        fill.style.height = '65%';
+        fill.style.background = COLOR_META[jar.color].swatch;
+        vis.querySelector('span').textContent = COLOR_META[jar.color].basketEmoji;
+        nameEl.textContent = 'זה היה: ' + jar.name + '!';
+        revealed++;
+        if (revealed === MYSTERY_JARS.length) {
+          setTimeout(function () {
+            var tip = el('p', 'intro', '💡 שמתם לב? נוזלים חומציים (כמו מיץ תפוזים) הופכים ורודים, ממש כמו החומץ!');
+            root.appendChild(tip);
+            var nextBtn = el('button', 'lab-btn primary', 'בואו נבין למה →');
+            nextBtn.onclick = renderConclusion;
+            root.appendChild(nextBtn);
+          }, 500);
+        }
+      };
+      row.appendChild(card);
+    });
+    root.appendChild(row);
+  }
+
+  // ── Screen 4: conclusion (shared with notebook) ────────────────────
+  function renderConclusion() {
+    setLevel('שלב 4 מתוך 4');
+    root.innerHTML = '';
+    root.appendChild(el('p', 'intro', NB.conclusionQ));
+    var row = el('div', 'opt-row');
+    Object.keys(NB.conclusionCards).forEach(function (id) {
+      var c = NB.conclusionCards[id];
+      var card = el('div', 'opt-card', '<span class="opt-icon">' + c.icon + '</span><span class="opt-label">' + c.label + '</span>');
+      card.onclick = function () {
+        localStorage.setItem('stem_station' + STATION_NUM + '_conclusion', id);
+        document.querySelectorAll('.opt-card').forEach(function (cc) { cc.classList.remove('picked', 'correct-pick'); });
+        card.classList.add('picked');
+        if (c.correct) card.classList.add('correct-pick');
+        setTimeout(finishGame, 700);
+      };
+      row.appendChild(card);
+    });
+    root.appendChild(row);
+  }
+
+  function finishGame() {
+    localStorage.setItem('stem_game' + GAME_NUM + '_completed', '1');
+    root.innerHTML = '';
+    var done = el('div', 'lab-done');
+    done.innerHTML =
+      '<div class="lab-done-emoji">🎉</div>' +
+      '<p class="lab-done-title">מעולה! גיליתם את סוד הכרוב הסגול</p>' +
+      '<button class="lab-btn primary" id="to-sorting-btn">🧩 בואו נרכיב את הניסוי</button>' +
+      '<button class="lab-btn ghost" id="to-hub-btn">🏠 חזרה להאב</button>';
+    root.appendChild(done);
+    document.getElementById('to-sorting-btn').onclick = function () { window.location.href = 'game6.html'; };
+    document.getElementById('to-hub-btn').onclick = function () { window.location.href = 'index.html'; };
+  }
+
+  document.addEventListener('DOMContentLoaded', renderPrediction);
+})();
+</script>
+</body>
+</html>

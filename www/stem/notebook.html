@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<script src="../assets/rc-config.js"></script>
+<script src="../assets/stem-config.js"></script>
+<script src="access-guard.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>מחברת המדען 📓</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:    #12332B;
+  --card:  #F5F0DC;
+  --orange:#F5921E;
+  --gold:  #F7C948;
+  --green: #2E7D32;
+  --lava:  #D9531E;
+  --dark:  #12332B;
+  --light: #F5F0DC;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{min-height:100%;background:var(--bg);font-family:'Assistant',sans-serif;direction:rtl;-webkit-text-size-adjust:100%}
+body{display:flex;flex-direction:column;align-items:center;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 32px)}
+button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.page{width:100%;max-width:440px;padding:0 16px}
+
+/* ── Header ── */
+#top-bar{
+  width:100%;
+  background:var(--card);
+  border-radius:0 0 28px 28px;
+  padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 20px;
+  text-align:center;
+  position:relative;
+  box-shadow:0 8px 28px rgba(0,0,0,.28);
+  margin-bottom:18px;
+}
+#top-bar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--green) 33%,var(--gold) 33%,var(--gold) 66%,var(--lava) 66%);
+  border-radius:28px 28px 0 0;
+}
+#back-btn{
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;
+  background:rgba(18,51,43,.1);border:none;border-radius:12px;
+  padding:7px 14px;font-size:14px;font-weight:800;color:var(--dark);cursor:pointer;
+}
+#top-bar h1{font-family:'Fredoka One',cursive;font-size:24px;color:var(--dark);margin-top:8px}
+#top-bar p{font-size:14px;font-weight:700;color:rgba(18,51,43,.6);margin-top:4px}
+
+/* ── Summary bar chart ── */
+#summary-card{
+  width:100%;background:rgba(245,240,220,.07);border:2px solid rgba(245,240,220,.11);
+  border-radius:20px;padding:16px 18px;margin-bottom:18px;
+}
+#summary-headline{font-family:'Fredoka One',cursive;font-size:16px;color:var(--gold);text-align:center;margin-bottom:14px}
+#bars{display:flex;justify-content:space-between;align-items:flex-end;height:74px;gap:8px;padding:0 4px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.bar-fill{width:100%;max-width:34px;border-radius:8px 8px 3px 3px;transition:height .5s ease;background:rgba(245,240,220,.14)}
+.bar-emoji{font-size:15px;margin-bottom:4px}
+
+/* ── Station page cards ── */
+#pages-list{width:100%;display:flex;flex-direction:column;gap:12px}
+
+.page-card{
+  width:100%;border-radius:20px;padding:16px 18px;
+  background:var(--card);animation:fadeUp .4s ease both;
+  position:relative;overflow:hidden;
+}
+.page-card::before{content:'';position:absolute;top:0;right:0;bottom:0;width:6px}
+.pc-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pc-emoji{font-size:26px}
+.pc-title{font-family:'Fredoka One',cursive;font-size:17px;color:var(--dark);flex:1}
+.pc-sticker{font-size:22px;filter:grayscale(1) opacity(.3)}
+.pc-sticker.earned{filter:none;opacity:1}
+
+.pc-locked{color:rgba(18,51,43,.4);font-size:14px;font-weight:700;text-align:center;padding:10px 0}
+.pc-empty{color:rgba(18,51,43,.45);font-size:14px;font-weight:700;text-align:center;padding:10px 0}
+
+.pc-row{margin-bottom:10px}
+.pc-row-label{font-size:12px;font-weight:800;color:rgba(18,51,43,.5);margin-bottom:5px}
+.pc-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(18,51,43,.06);border-radius:14px;padding:6px 12px;
+  font-size:14px;font-weight:700;color:var(--dark);
+}
+.pc-match{
+  margin-top:2px;font-size:12px;font-weight:700;color:var(--green);
+}
+.pc-conclusion{
+  background:rgba(247,201,72,.18);border-radius:14px;padding:8px 12px;
+  font-size:14px;font-weight:700;color:var(--dark);display:inline-flex;align-items:center;gap:6px;
+}
+.pc-conclusion .star{color:var(--gold)}
+
+@media(min-width:420px){
+  #top-bar h1{font-size:27px}
+}
+</style>
+</head>
+<body>
+
+<div class="page" style="padding:0">
+  <header id="top-bar">
+    <button id="back-btn" onclick="window.location.href='index.html'">← האב</button>
+    <h1>📓 מחברת המדען</h1>
+    <p>הניחושים, התוצאות וההבנות שלכם מכל ניסוי</p>
+  </header>
+</div>
+
+<div class="page">
+  <div id="summary-card">
+    <div id="summary-headline"></div>
+    <div id="bars"></div>
+  </div>
+
+  <div id="pages-list"></div>
+</div>
+
+<script src="unlock-logic.js"></script>
+<script src="../assets/stem-notebook-config.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var STATIONS = StemUnlockLogic.STATIONS;
+  var CFG      = StemNotebookConfig.NOTEBOOK_STATIONS;
+
+  function stationKey(i, field) { return 'stem_station' + (i + 1) + '_' + field; }
+  function readKey(i, field) { return localStorage.getItem(stationKey(i, field)); }
+
+  function filledCount(i) {
+    var n = 0;
+    if (readKey(i, 'prediction')) n++;
+    if (readKey(i, 'result'))     n++;
+    if (readKey(i, 'conclusion')) n++;
+    return n;
+  }
+
+  function buildSummary() {
+    var totalFilled = 0, totalPossible = STATIONS.length * 3;
+    var barsEl = document.getElementById('bars');
+    barsEl.innerHTML = '';
+
+    STATIONS.forEach(function (st, i) {
+      var n = filledCount(i);
+      totalFilled += n;
+
+      var col = document.createElement('div');
+      col.className = 'bar-col';
+
+      var emoji = document.createElement('div');
+      emoji.className = 'bar-emoji';
+      emoji.textContent = st.emoji;
+
+      var fill = document.createElement('div');
+      fill.className = 'bar-fill';
+      var pct = Math.round((n / 3) * 100);
+      fill.style.height = Math.max(pct, 6) + '%';
+      if (n > 0) fill.style.background = 'linear-gradient(180deg,' + st.color + ',' + st.color + 'CC)';
+
+      col.appendChild(emoji);
+      col.appendChild(fill);
+      barsEl.appendChild(col);
+    });
+
+    var headline = document.getElementById('summary-headline');
+    if (totalFilled === 0) {
+      headline.textContent = 'המחברת עדיין ריקה — התחילו ניסוי כדי למלא אותה!';
+    } else {
+      headline.textContent = 'מולאו ' + totalFilled + ' מתוך ' + totalPossible + ' דפים במחברת';
+    }
+  }
+
+  function cardChip(cardDef, extraClass) {
+    var span = document.createElement('span');
+    span.className = 'pc-chip' + (extraClass ? ' ' + extraClass : '');
+    span.innerHTML = '<span>' + cardDef.icon + '</span><span>' + cardDef.label + '</span>';
+    return span;
+  }
+
+  function buildPages() {
+    var list = document.getElementById('pages-list');
+    list.innerHTML = '';
+
+    STATIONS.forEach(function (st, i) {
+      var unlocked = StemUnlockLogic.isStationUnlocked(i);
+      var cfg = CFG[i];
+
+      var card = document.createElement('div');
+      card.className = 'page-card';
+      card.style.animationDelay = (i * 0.06) + 's';
+      card.style.setProperty('--stcolor', st.color);
+      var stripe = document.createElement('style');
+      card.style.boxShadow = '0 4px 18px rgba(0,0,0,.12)';
+
+      var head = document.createElement('div');
+      head.className = 'pc-head';
+      var em = document.createElement('div');
+      em.className = 'pc-emoji';
+      em.textContent = st.emoji;
+      var title = document.createElement('div');
+      title.className = 'pc-title';
+      title.textContent = st.name;
+      var stickerEarned = readKey(i, 'sticker') === '1';
+      var sticker = document.createElement('div');
+      sticker.className = 'pc-sticker' + (stickerEarned ? ' earned' : '');
+      sticker.textContent = '🏅';
+      head.appendChild(em);
+      head.appendChild(title);
+      head.appendChild(sticker);
+      card.appendChild(head);
+
+      if (!unlocked) {
+        var locked = document.createElement('div');
+        locked.className = 'pc-locked';
+        locked.textContent = '🔒 התחנה עדיין נעולה';
+        card.appendChild(locked);
+        list.appendChild(card);
+        return;
+      }
+
+      var prediction = readKey(i, 'prediction');
+      var result     = readKey(i, 'result');
+      var conclusion = readKey(i, 'conclusion');
+
+      if (!prediction && !result && !conclusion) {
+        var empty = document.createElement('div');
+        empty.className = 'pc-empty';
+        empty.textContent = 'עדיין לא התחלתם את הניסוי הזה';
+        card.appendChild(empty);
+        list.appendChild(card);
+        return;
+      }
+
+      if (prediction && cfg.cards[prediction]) {
+        var row1 = document.createElement('div');
+        row1.className = 'pc-row';
+        var lbl1 = document.createElement('div');
+        lbl1.className = 'pc-row-label';
+        lbl1.textContent = 'הניחוש שלי — ' + cfg.predictionQ;
+        row1.appendChild(lbl1);
+        row1.appendChild(cardChip(cfg.cards[prediction]));
+        card.appendChild(row1);
+      }
+
+      if (result && cfg.cards[result]) {
+        var row2 = document.createElement('div');
+        row2.className = 'pc-row';
+        var lbl2 = document.createElement('div');
+        lbl2.className = 'pc-row-label';
+        lbl2.textContent = 'מה מדדתי במטבח';
+        row2.appendChild(lbl2);
+        row2.appendChild(cardChip(cfg.cards[result]));
+        if (prediction) {
+          var match = document.createElement('div');
+          match.className = 'pc-match';
+          match.textContent = (prediction === result)
+            ? '🎉 ניחשתם בדיוק!'
+            : '🤔 יצא אחרת מהניחוש — זה חלק מהכיף של ניסוי!';
+          row2.appendChild(match);
+        }
+        card.appendChild(row2);
+      }
+
+      if (conclusion && cfg.conclusionCards[conclusion]) {
+        var row3 = document.createElement('div');
+        row3.className = 'pc-row';
+        var lbl3 = document.createElement('div');
+        lbl3.className = 'pc-row-label';
+        lbl3.textContent = cfg.conclusionQ;
+        var cDef = cfg.conclusionCards[conclusion];
+        var chip = document.createElement('span');
+        chip.className = 'pc-conclusion';
+        chip.innerHTML = '<span>' + cDef.icon + '</span><span>' + cDef.label + '</span>' +
+          (cDef.correct ? '<span class="star">⭐</span>' : '');
+        row3.appendChild(lbl3);
+        row3.appendChild(chip);
+        card.appendChild(row3);
+      }
+
+      list.appendChild(card);
+    });
+  }
+
+  buildSummary();
+  buildPages();
+})();
+</script>
+</body>
+</html>

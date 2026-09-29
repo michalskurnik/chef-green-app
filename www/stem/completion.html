@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<script src="../assets/rc-config.js"></script>
+<script src="../assets/stem-config.js"></script>
+<script src="access-guard.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>תעודת מדען/ית המטבח 🏆</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{
+  background:#f5f0dc;
+  font-family:'Rubik',sans-serif;
+  direction:rtl;
+  overflow-y:auto;
+  overflow-x:hidden;
+  position:relative;
+  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 32px);
+}
+
+/* ── Certificate section ── */
+.cert-section{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  background:#f5f0dc;
+}
+
+.cert-wrap{
+  position:relative;
+  width:100%;
+  max-width:640px;
+  flex-shrink:0;
+  overflow:visible;
+}
+.cert-bg{
+  width:100%;
+  display:block;
+  /* certificate-bg-stem.png: 4:3, border art only - no title/ring baked in.
+     Its blank interior starts a bit lower than italy's background (props
+     - a jar of dough + jam jar - sit centered near the top), so title/
+     subline sit a little lower here than the shared script's defaults. */
+}
+
+.cert-title{
+  position:absolute;
+  top:20.5%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(14px,4.2vw,30px);
+  color:#8B4513;
+  white-space:nowrap;
+  text-align:center;
+  text-shadow:0 1px 4px rgba(255,255,255,.85);
+  pointer-events:none;
+}
+
+.cert-subline{
+  position:absolute;
+  top:29.5%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Rubik',sans-serif;
+  font-size:clamp(9px,2.2vw,17px);
+  font-weight:600;
+  color:#5a3e1b;
+  white-space:nowrap;
+  text-align:center;
+  pointer-events:none;
+  text-shadow:0 1px 3px rgba(255,255,255,.8);
+}
+
+.cert-name{
+  position:absolute;
+  top:44%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(14px,4.8vw,36px);
+  color:#2E7D32;
+  white-space:nowrap;
+  text-align:center;
+  text-shadow:0 1px 4px rgba(255,255,255,.9);
+  pointer-events:none;
+  letter-spacing:.5px;
+  max-width:55%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.cert-photo-wrap{
+  position:absolute;
+  top:63%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:31%;
+  aspect-ratio:1;
+  border-radius:50%;
+  overflow:hidden;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,253,240,.15);
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:opacity .15s;
+}
+.cert-photo-wrap:active{opacity:.8}
+
+.cert-photo-wrap.ring{
+  border:clamp(3px,1vw,7px) solid #7CB342;
+  box-shadow:0 0 0 1px rgba(0,0,0,.06);
+}
+
+.cert-photo-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+  display:none;
+}
+.cert-camera-hint{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  pointer-events:none;
+}
+.cam-icon{font-size:clamp(18px,6vw,48px);line-height:1}
+.cam-label{
+  font-family:'Rubik',sans-serif;
+  font-size:clamp(7px,2vw,13px);
+  font-weight:700;
+  color:#7a5c1e;
+  text-align:center;
+  line-height:1.25;
+}
+
+.cert-achievement{
+  position:absolute;
+  top:79%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Rubik',sans-serif;
+  font-size:clamp(8px,2.2vw,15px);
+  font-weight:600;
+  color:#5a3e1b;
+  white-space:nowrap;
+  text-align:center;
+  pointer-events:none;
+  text-shadow:0 1px 3px rgba(255,255,255,.8);
+}
+
+.btn-wa:disabled{opacity:.7;cursor:not-allowed;transform:none!important}
+
+/* ── Buttons ── */
+.buttons-section{
+  max-width:480px;
+  margin:0 auto;
+  padding:20px 20px 48px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.btn-wa{
+  display:block;
+  width:100%;
+  background:#25D366;
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:17px;
+  font-weight:700;
+  padding:16px 24px;
+  border-radius:50px;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(37,211,102,.4);
+  touch-action:manipulation;
+  transition:transform .1s,opacity .15s;
+}
+.btn-wa:active{transform:scale(.97);opacity:.9}
+
+.btn-print{
+  width:100%;
+  background:#fff;
+  color:#25D366;
+  border:2px solid #25D366;
+  border-radius:50px;
+  padding:15px 24px;
+  font-size:17px;
+  font-family:'Rubik',sans-serif;
+  font-weight:700;
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-print:active{transform:scale(.97)}
+
+.btn-next{
+  display:block;
+  width:100%;
+  background:#F5921E;
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:17px;
+  font-weight:700;
+  padding:16px 24px;
+  border-radius:50px;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(245,146,30,.4);
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-next:active{transform:scale(.97)}
+
+.btn-hub{
+  display:block;
+  width:100%;
+  background:none;
+  color:#7a5c1e;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  padding:12px 24px;
+  border-radius:50px;
+  border:2px dashed rgba(122,92,30,.3);
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-hub:active{transform:scale(.97)}
+
+/* ── Print ── */
+@media print{
+  .buttons-section{display:none!important}
+  body{padding:0;background:#fff}
+  .cert-section{display:block}
+  .cert-wrap{max-width:100%!important;width:100%!important}
+  .cert-camera-hint{display:none}
+}
+
+/* ── iPad ── */
+@media(min-width:768px){
+  .cert-wrap{max-width:640px;margin:0 auto}
+  .cert-title{font-size:clamp(18px,2.6vw,34px)}
+  .cert-subline{font-size:clamp(11px,1.4vw,19px)}
+  .cert-name{font-size:clamp(20px,3.2vw,42px)}
+  .cert-achievement{font-size:clamp(10px,1.4vw,17px)}
+  .cam-icon{font-size:clamp(24px,3.5vw,52px)}
+  .cam-label{font-size:clamp(9px,1.2vw,15px)}
+  .buttons-section{max-width:520px;padding:24px 24px 56px}
+  .btn-wa,.btn-print,.btn-next{font-size:20px;padding:18px 28px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ Certificate ══════════════════════════════════════ -->
+<div class="cert-section">
+  <div class="cert-wrap" id="certificate-card">
+
+    <img src="assets/certificate-bg-stem.png"
+         class="cert-bg"
+         alt="תעודת מדען/ית המטבח">
+
+    <div class="cert-title">מדען/ית המטבח</div>
+    <div class="cert-subline">מוענקת בגאווה ל:</div>
+
+    <div class="cert-name" id="cert-name"></div>
+
+    <div class="cert-photo-wrap ring" id="cert-photo-wrap">
+      <img id="cert-photo-img" class="cert-photo-img" alt="">
+      <div class="cert-camera-hint" id="cert-camera-hint">
+        <span class="cam-icon">📷</span>
+        <span class="cam-label">הוסיפו<br>תמונה</span>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" style="display:none">
+    </div>
+
+    <div class="cert-achievement">על השלמת הניסויים במטבח 🧪🔬</div>
+
+  </div>
+</div>
+
+<!-- ══ Buttons ══════════════════════════════════════════ -->
+<div class="buttons-section">
+  <button id="btn-wa" class="btn-wa" onclick="shareCertificate()">
+    שיתוף לוואטסאפ 📲
+  </button>
+  <button class="btn-print" onclick="window.print()">הדפסה 🖨️</button>
+  <a href="../app/packages.html" class="btn-next">לבחירת הרפתקה הבאה ←</a>
+  <a href="index.html" class="btn-hub">🏠 חזרה להאב</a>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var chefName = localStorage.getItem('chefName') || '';
+  if (chefName) {
+    document.getElementById('cert-name').textContent = chefName;
+  }
+
+  var photoWrap  = document.getElementById('cert-photo-wrap');
+  var photoImg   = document.getElementById('cert-photo-img');
+  var cameraHint = document.getElementById('cert-camera-hint');
+  var photoInput = document.getElementById('photo-input');
+
+  var savedPhoto = localStorage.getItem('childPhoto');
+  if (savedPhoto) {
+    photoImg.src = savedPhoto;
+    photoImg.style.display = 'block';
+    cameraHint.style.display = 'none';
+  }
+
+  photoWrap.addEventListener('click', function () {
+    photoInput.click();
+  });
+
+  photoInput.addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      var dataUrl = ev.target.result;
+      localStorage.setItem('childPhoto', dataUrl);
+      photoImg.src = dataUrl;
+      photoImg.style.display = 'block';
+      cameraHint.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+})();
+</script>
+<script>
+  // certificate-bg-stem.png has no baked-in title or rope circle - draw both,
+  // matching the live CSS .cert-title/.cert-subline/.cert-photo-wrap.ring
+  // above. Uses the SAME certificate-share.js as italy (shared, untouched) -
+  // titleY/sublineY are not yet configurable there (that script hardcodes
+  // 0.163/0.281 for those two), so the drawn PNG's title/subline currently
+  // land ~4-5% of H higher than the live CSS overlay above (which was tuned
+  // to clear this background's jar/jam artwork). Flagged to Michal rather
+  // than editing the shared script while italy/ is frozen.
+  window.CERT_CONFIG = {
+    bg: 'assets/certificate-bg-stem.png',
+    title: 'מדען/ית המטבח', titleColor: '#8B4513',
+    subline: 'מוענקת בגאווה ל:', sublineColor: '#5a3e1b',
+    ring: true, ringColor: '#7CB342'
+  };
+</script>
+<script src="../assets/certificate-share.js"></script>
+
+</body>
+</html>
