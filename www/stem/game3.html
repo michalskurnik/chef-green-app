@@ -25,17 +25,25 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 #badge{display:inline-block;background:rgba(255,255,255,.22);border-radius:20px;padding:3px 14px;font-size:12px;font-weight:700;margin-bottom:6px}
 #htitle{font-family:'Fredoka One',cursive;font-size:20px}
 
-#root{padding:16px 18px 22px}
-.intro{font-size:14px;font-weight:700;color:#444;text-align:center;margin-bottom:14px;line-height:1.6}
+#root{padding:20px 20px 28px;min-height:52vh;display:flex;flex-direction:column;justify-content:center}
+.intro{font-size:16px;font-weight:700;color:#444;text-align:center;margin-bottom:18px;line-height:1.6}
 
 /* Prediction / conclusion cards (shared look) */
-.opt-row{display:flex;flex-direction:column;gap:10px;margin-top:4px}
-.opt-card{display:flex;align-items:center;gap:10px;background:#f7f7f7;border:2px solid #eee;border-radius:16px;padding:12px 16px;cursor:pointer;transition:all .2s}
+.opt-row{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+.opt-card{position:relative;display:flex;align-items:center;gap:16px;background:#f7f7f7;border:2px solid #eee;border-radius:20px;padding:16px 20px;cursor:pointer;transition:all .2s}
 .opt-card:active{transform:scale(.98)}
 .opt-card.picked{border-color:var(--c1);background:rgba(0,0,0,.02)}
 .opt-card.correct-pick{border-color:#F7C948;background:rgba(247,201,72,.15)}
-.opt-icon{font-size:22px}
-.opt-label{font-size:14px;font-weight:700;color:#333}
+.opt-card.wrong{animation:cardShake .4s ease;border-color:#EF5350}
+@keyframes cardShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.conclusion-msg{min-height:20px;font-size:14px;font-weight:700;color:#7a5c1e;text-align:center;margin-top:2px}
+.opt-icon-wrap{position:relative;flex-shrink:0;width:58px;height:58px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.12);overflow:hidden}
+.opt-icon-wrap img{position:absolute;object-fit:contain}
+.opt-icon-wrap img.node-apple{width:34px;height:34px;top:6px;left:6px}
+.opt-icon-wrap img.node-strawberry{width:34px;height:34px;bottom:6px;right:6px}
+.opt-icon-wrap img.node-solo{width:44px;height:44px;top:7px;left:7px}
+.opt-icon{font-size:30px;position:relative;z-index:1}
+.opt-label{font-size:15px;font-weight:700;color:#333}
 
 .lab-btn{display:block;width:100%;border:none;border-radius:18px;padding:14px;font-size:16px;font-family:'Fredoka One',cursive;cursor:pointer;margin-top:14px;transition:opacity .2s,transform .1s}
 .lab-btn:active{transform:scale(.97)}
@@ -103,6 +111,19 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 
   function setLevel(n, label) { levelBadge.textContent = label; }
 
+  // Illustration for the two prediction cups: 'a' = strawberries + apple
+  // (pectin network), 'b' = strawberries only - reuses the existing
+  // stem_prop_node_* assets rather than plain emoji.
+  function predIconHtml(id, icon) {
+    if (id === 'a') {
+      return '<span class="opt-icon-wrap"><img class="node-apple" src="assets/props/stem_prop_node_apple.png" alt=""><img class="node-strawberry" src="assets/props/stem_prop_node_strawberry.png" alt=""></span>';
+    }
+    if (id === 'b') {
+      return '<span class="opt-icon-wrap"><img class="node-solo" src="assets/props/stem_prop_node_strawberry.png" alt=""></span>';
+    }
+    return '<span class="opt-icon-wrap"><span class="opt-icon">' + icon + '</span></span>';
+  }
+
   // ── Screen 1: prediction ───────────────────────────────────────────
   function renderPrediction() {
     setLevel(1, 'שלב 1 מתוך 4');
@@ -111,7 +132,7 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
     var row = el('div', 'opt-row');
     Object.keys(NB.cards).forEach(function (id) {
       var c = NB.cards[id];
-      var card = el('div', 'opt-card', '<span class="opt-icon">' + c.icon + '</span><span class="opt-label">' + c.label + '</span>');
+      var card = el('div', 'opt-card', predIconHtml(id, c.icon) + '<span class="opt-label">' + c.label + '</span>');
       card.onclick = function () {
         state.prediction = id;
         localStorage.setItem('stem_station' + STATION_NUM + '_prediction', id);
@@ -395,17 +416,26 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
     var row = el('div', 'opt-row');
     Object.keys(NB.conclusionCards).forEach(function (id) {
       var c = NB.conclusionCards[id];
-      var card = el('div', 'opt-card', '<span class="opt-icon">' + c.icon + '</span><span class="opt-label">' + c.label + '</span>');
+      var card = el('div', 'opt-card', '<span class="opt-icon-wrap"><span class="opt-icon">' + c.icon + '</span></span><span class="opt-label">' + c.label + '</span>');
       card.onclick = function () {
-        localStorage.setItem('stem_station' + STATION_NUM + '_conclusion', id);
-        document.querySelectorAll('.opt-card').forEach(function (cc) { cc.classList.remove('picked', 'correct-pick'); });
-        card.classList.add('picked');
-        if (c.correct) card.classList.add('correct-pick');
-        setTimeout(finishGame, 700);
+        if (c.correct) {
+          localStorage.setItem('stem_station' + STATION_NUM + '_conclusion', id);
+          document.querySelectorAll('.opt-card').forEach(function (cc) { cc.classList.remove('picked', 'correct-pick', 'wrong'); });
+          card.classList.add('picked', 'correct-pick');
+          document.getElementById('conclusion-msg').textContent = '🎉 בדיוק! מצוין!';
+          setTimeout(finishGame, 700);
+        } else {
+          card.classList.add('wrong');
+          document.getElementById('conclusion-msg').textContent = '🤔 לא בדיוק — נסו שוב!';
+          setTimeout(function () { card.classList.remove('wrong'); }, 500);
+        }
       };
       row.appendChild(card);
     });
     root.appendChild(row);
+    var msg = el('p', 'conclusion-msg', '');
+    msg.id = 'conclusion-msg';
+    root.appendChild(msg);
   }
 
   function finishGame() {

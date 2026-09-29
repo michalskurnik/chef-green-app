@@ -44,6 +44,16 @@
  * it always renders that station's own conclusionQ/conclusionCards from
  * StemNotebookConfig, so the notebook and the lab game show the exact
  * same fill-in-the-blank (single source of truth, see progress-keys.md).
+ *
+ * VISUAL DESIGN (per QA tasks 1218980468882124 / 1218980530772508 /
+ * 1218980671925314 / 1218980574822409 / 1218982193949667 / 1218994178291012):
+ * each cup renders a small illustrated "vessel" watermark (which container
+ * this station uses - cup/bag/volcano-cup, from assets/props/) plus a row
+ * of variable icons (per-gameNum mapping in varIconsHtml below) so kids can
+ * tell cups apart at a glance, not just by reading the tag text. The free
+ * -choice screen reuses the same illustrated cup card (no more text-only
+ * chip list). The conclusion step now actually blocks on a wrong pick
+ * (shake + "נסו שוב") instead of always advancing.
  */
 (function () {
   'use strict';
@@ -85,6 +95,56 @@
     if (b) b.textContent = 'שלב ' + state.level + ' מתוך 3';
   }
 
+  // ── Per-game illustration mapping ──────────────────────────────────
+  // One small vessel watermark per station (which container this
+  // experiment uses), so the cup-visual reads as "bag" / "cup" /
+  // "volcano cup" at a glance rather than a generic box.
+  var VESSEL_IMG = {
+    1: 'stem_prop_cup_medium.png',
+    7: 'stem_prop_bag_small.png',
+    9: 'stem_prop_volcano_cup.png'
+  };
+
+  // Variable-icon badges per cup, keyed by gameNum - this is what lets a
+  // child tell cups apart without reading the Hebrew tag text.
+  function varIconsHtml(cup) {
+    var gn = CFG.gameNum;
+    var imgs = [];
+
+    if (gn === 1) {
+      var temp = (cup.vars && cup.vars.temp) || 'warm';
+      imgs.push({ src: 'stem_prop_thermometer.png', cls: 'temp-' + temp, alt: 'טמפרטורה' });
+      var hasSugar = !!(cup.vars && cup.vars.sugar);
+      imgs.push({
+        src: hasSugar ? 'stem_prop_bubble_medium.png' : 'stem_prop_bubble_small.png',
+        cls: hasSugar ? '' : 'dim',
+        alt: 'סוכר'
+      });
+    } else if (gn === 7) {
+      var salt = (cup.vars && cup.vars.salt) || 0;
+      var n = Math.max(salt, 1);
+      for (var i = 0; i < n; i++) {
+        imgs.push({ src: 'stem_prop_salt_spoon.png', cls: salt === 0 ? 'dim' : '', alt: 'מלח' });
+      }
+    } else if (gn === 9) {
+      var soda = (cup.vars && cup.vars.soda) || 'tsp';
+      var sodaImg = soda === 'tsp' ? 'stem_prop_soda_spoon_small.png' : 'stem_prop_soda_spoon_large.png';
+      var sodaCount = soda === '2tbsp' ? 2 : 1;
+      for (var j = 0; j < sodaCount; j++) imgs.push({ src: sodaImg, cls: '', alt: 'סודה' });
+      var vinMap = { 50: 'stem_prop_vinegar_low.png', 100: 'stem_prop_vinegar_medium.png', 150: 'stem_prop_vinegar_full.png' };
+      var vinegar = (cup.vars && cup.vars.vinegar) || 100;
+      imgs.push({ src: vinMap[vinegar] || 'stem_prop_vinegar_medium.png', cls: '', alt: 'חומץ' });
+    }
+
+    if (!imgs.length) return '';
+    var html = '<div class="var-icons">';
+    imgs.forEach(function (im) {
+      html += '<img class="var-icon ' + im.cls + '" src="assets/props/' + im.src + '" alt="' + im.alt + '">';
+    });
+    html += '</div>';
+    return html;
+  }
+
   // ── Level 1: guided ────────────────────────────────────────────────
   function renderGuided() {
     state.level = 1;
@@ -96,7 +156,7 @@
 
     var row = el('div', 'cup-row');
     CFG.guidedCups.forEach(function (cup) {
-      row.appendChild(buildCupCard(cup, true));
+      row.appendChild(buildCupCard(cup, 'guided'));
     });
     root.appendChild(row);
 
@@ -107,11 +167,20 @@
     root.appendChild(startBtn);
   }
 
-  function buildCupCard(cup, selectable) {
+  // mode: 'guided' (single-pick, prediction) | 'free' (multi-pick up to 2)
+  // | null (read-only display, used inside the running/result state)
+  function buildCupCard(cup, mode) {
     var card = el('div', 'cup-card');
     card.dataset.id = cup.id;
 
     var vis = el('div', 'cup-visual');
+    var vesselSrc = VESSEL_IMG[CFG.gameNum];
+    if (vesselSrc) {
+      var vesselImg = el('img', 'cup-vessel-bg');
+      vesselImg.src = 'assets/props/' + vesselSrc;
+      vesselImg.alt = '';
+      vis.appendChild(vesselImg);
+    }
     var liquid = el('div', 'cup-liquid');
     liquid.style.height = '0%';
     vis.appendChild(liquid);
@@ -122,13 +191,17 @@
     vis.appendChild(bubbles);
     card.appendChild(vis);
 
+    var iconsHtml = varIconsHtml(cup);
+    if (iconsHtml) card.insertAdjacentHTML('beforeend', iconsHtml);
+
     card.appendChild(el('div', 'cup-label', cup.label));
     card.appendChild(el('div', 'cup-tag', cup.tag));
     var readout = el('div', 'cup-readout', '');
     card.appendChild(readout);
 
-    if (selectable) {
+    if (mode === 'guided') {
       card.classList.add('selectable');
+      if (state.prediction === cup.id) card.classList.add('picked');
       card.onclick = function () {
         if (state.guidedRun) return;
         document.querySelectorAll('.cup-row .cup-card').forEach(function (c) { c.classList.remove('picked'); });
@@ -136,6 +209,22 @@
         state.prediction = cup.id;
         var btn = document.getElementById('start-guided-btn');
         if (btn) btn.disabled = false;
+      };
+    } else if (mode === 'free') {
+      card.classList.add('selectable');
+      if (state.freeSelected.indexOf(cup.id) > -1) {
+        card.classList.add('picked');
+        card.appendChild(el('div', 'pick-check', '✓'));
+      }
+      card.onclick = function () {
+        var idx = state.freeSelected.indexOf(cup.id);
+        if (idx > -1) {
+          state.freeSelected.splice(idx, 1);
+        } else {
+          if (state.freeSelected.length >= 2) state.freeSelected.shift();
+          state.freeSelected.push(cup.id);
+        }
+        renderFreeGrid();
       };
     }
     return card;
@@ -210,32 +299,13 @@
     setLevelBadge();
     root.innerHTML = '';
 
-    root.appendChild(el('p', 'lab-intro', 'עכשיו בחרו שתי כוסות להשוואה (מתוך כל הכוסות), ולחצו השוו!'));
-
-    var pool = allCupsPool();
-    var chips = el('div', 'chip-row');
-    pool.forEach(function (cup) {
-      var chip = el('button', 'cup-chip', cup.label + ' — ' + cup.tag);
-      chip.dataset.id = cup.id;
-      chip.onclick = function () {
-        var idx = state.freeSelected.indexOf(cup.id);
-        if (idx > -1) {
-          state.freeSelected.splice(idx, 1);
-        } else {
-          if (state.freeSelected.length >= 2) state.freeSelected.shift();
-          state.freeSelected.push(cup.id);
-        }
-        renderFreeSelection();
-      };
-      chips.appendChild(chip);
-    });
-    root.appendChild(chips);
+    root.appendChild(el('p', 'lab-intro', 'עכשיו הקישו על 2 כוסות כדי לבחור אותן להשוואה, ואז לחצו השוו! ⚖️'));
 
     var note = el('p', 'lab-note');
     note.id = 'fair-test-note';
     root.appendChild(note);
 
-    var row = el('div', 'cup-row');
+    var row = el('div', 'cup-row free-grid');
     row.id = 'free-cup-row';
     root.appendChild(row);
 
@@ -253,42 +323,46 @@
     skipBtn.onclick = renderConclusion;
     root.appendChild(skipBtn);
 
-    renderFreeSelection();
+    renderFreeGrid();
   }
 
-  function renderFreeSelection() {
-    document.querySelectorAll('.cup-chip').forEach(function (chip) {
-      chip.classList.toggle('picked', state.freeSelected.indexOf(chip.dataset.id) > -1);
+  function renderFreeGrid() {
+    var row = document.getElementById('free-cup-row');
+    row.innerHTML = '';
+    allCupsPool().forEach(function (cup) {
+      row.appendChild(buildCupCard(cup, 'free'));
     });
+
     var noteEl = document.getElementById('fair-test-note');
     var a = cupById(state.freeSelected[0]), b = cupById(state.freeSelected[1]);
     noteEl.textContent = fairTestNote(a, b);
 
-    var row = document.getElementById('free-cup-row');
-    row.innerHTML = '';
-    state.freeSelected.forEach(function (id) {
-      row.appendChild(buildCupCard(cupById(id), false));
-    });
-
     var btn = document.getElementById('compare-btn');
     var runsLeft = CFG.maxFreeRuns - state.freeRunsUsed;
-    document.getElementById('run-info').textContent = runsLeft > 0
-      ? ('נשארו ' + runsLeft + ' הרצות מתוך ' + CFG.maxFreeRuns)
+    var selCount = state.freeSelected.length;
+    var runInfoEl = document.getElementById('run-info');
+    var selText = selCount === 2 ? '✅ 2/2 כוסות נבחרו' : ('נבחרו ' + selCount + ' מתוך 2 כוסות');
+    runInfoEl.textContent = runsLeft > 0
+      ? (selText + ' · נשארו ' + runsLeft + ' הרצות מתוך ' + CFG.maxFreeRuns)
       : 'ניסיתם את כל ההרצות להיום — יופי של חקירה!';
-    btn.disabled = state.freeSelected.length !== 2 || runsLeft <= 0;
+    btn.disabled = selCount !== 2 || runsLeft <= 0;
   }
 
   function runFree() {
-    var cards = document.querySelectorAll('#free-cup-row .cup-card');
-    if (!cards.length) return;
+    if (state.freeSelected.length !== 2) return;
     document.getElementById('compare-btn').disabled = true;
     state.freeRunsUsed++;
     var done = 0;
+    var cards = [];
+    state.freeSelected.forEach(function (id) {
+      var cardEl = document.querySelector('#free-cup-row .cup-card[data-id="' + id + '"]');
+      if (cardEl) cards.push(cardEl);
+    });
     cards.forEach(function (cardEl) {
       var cup = cupById(cardEl.dataset.id);
       animateCup(cardEl, cup, function () {
         done++;
-        if (done === cards.length) renderFreeSelection();
+        if (done === cards.length) renderFreeGrid();
       });
     });
   }
@@ -301,18 +375,30 @@
 
     root.appendChild(el('p', 'lab-intro', NB.conclusionQ));
 
+    var msg = el('p', 'lab-note conclusion-msg');
+    msg.id = 'conclusion-msg';
+    root.appendChild(msg);
+
     var row = el('div', 'conclusion-row');
     Object.keys(NB.conclusionCards).forEach(function (id) {
       var c = NB.conclusionCards[id];
       var card = el('div', 'conclusion-card', '<span class="cc-icon">' + c.icon + '</span><span class="cc-label">' + c.label + '</span>');
       card.onclick = function () {
         if (state.conclusion) return;
-        state.conclusion = id;
-        localStorage.setItem('stem_station' + STATION_NUM + '_conclusion', id);
-        document.querySelectorAll('.conclusion-card').forEach(function (cc) { cc.classList.remove('picked'); });
-        card.classList.add('picked');
-        if (c.correct) card.classList.add('correct-pick');
-        setTimeout(finishGame, 700);
+        if (c.correct) {
+          state.conclusion = id;
+          localStorage.setItem('stem_station' + STATION_NUM + '_conclusion', id);
+          document.querySelectorAll('.conclusion-card').forEach(function (cc) { cc.classList.remove('wrong'); });
+          card.classList.add('picked', 'correct-pick');
+          msg.textContent = '🎉 בדיוק! מצוין!';
+          setTimeout(finishGame, 700);
+        } else {
+          card.classList.remove('wrong');
+          void card.offsetWidth; // restart animation if clicked twice in a row
+          card.classList.add('wrong');
+          msg.textContent = '🤔 לא בדיוק — נסו שוב!';
+          setTimeout(function () { card.classList.remove('wrong'); }, 500);
+        }
       };
       row.appendChild(card);
     });
