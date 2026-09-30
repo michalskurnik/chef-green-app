@@ -37,7 +37,7 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 .cup-card.picked{border-color:var(--c1);box-shadow:0 4px 16px rgba(0,0,0,.14);background:rgba(0,0,0,.02)}
 
 .cup-visual{position:relative;width:84px;height:116px;border:4px solid #999;border-bottom:none;border-radius:3px 3px 14px 14px;overflow:hidden;background:rgba(255,255,255,.5)}
-.cup-vessel-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:.32;pointer-events:none}
+.cup-vessel-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35;pointer-events:none}
 .cup-liquid{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,var(--c2),var(--c1));transition:height 1s ease;height:0%}
 .cup-ruler{position:absolute;inset:0;display:flex;flex-direction:column-reverse;justify-content:space-between;pointer-events:none}
 .cup-ruler .tick{border-top:1px dashed rgba(0,0,0,.18);height:25%}
@@ -45,8 +45,8 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 .cup-visual.bubbling .cup-bubbles{opacity:1;background:radial-gradient(circle 4px at 30% 80%,rgba(255,255,255,.9) 90%,transparent),radial-gradient(circle 3px at 60% 60%,rgba(255,255,255,.8) 90%,transparent),radial-gradient(circle 5px at 45% 40%,rgba(255,255,255,.7) 90%,transparent);animation:bubbleUp 1.1s ease-in-out infinite}
 @keyframes bubbleUp{0%{background-position:0 100%,0 100%,0 100%;opacity:.3}100%{background-position:0 -20%,0 -30%,0 -40%;opacity:1}}
 
-.var-icons{display:flex;gap:4px;align-items:center;justify-content:center;min-height:22px}
-.var-icon{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15))}
+.var-icons{display:flex;gap:6px;align-items:center;justify-content:center;min-height:36px}
+.var-icon{width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15))}
 .var-icon.dim{opacity:.3;filter:grayscale(1)}
 .var-icon.temp-cold{filter:hue-rotate(150deg) saturate(2.2)}
 .var-icon.temp-hot{filter:hue-rotate(-25deg) saturate(1.8)}
