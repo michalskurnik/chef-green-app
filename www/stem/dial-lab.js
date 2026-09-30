@@ -96,17 +96,15 @@
   }
 
   // ── Per-game illustration mapping ──────────────────────────────────
-  // One small vessel watermark per station (which container this
-  // experiment uses), so the cup-visual reads as "bag" / "cup" /
-  // "volcano cup" at a glance rather than a generic box.
-  var VESSEL_IMG = {
-    1: 'stem_prop_cup_medium.png',
-    7: 'stem_prop_bag_small.png',
-    9: 'stem_prop_volcano_cup.png'
-  };
-
-  // Variable-icon badges per cup, keyed by gameNum - this is what lets a
-  // child tell cups apart without reading the Hebrew tag text.
+  // Earlier version drew a semi-transparent "vessel" watermark (cup/bag
+  // PNG) behind the liquid. Dropped: those PNGs are mostly clear glass /
+  // white plastic, so at the low opacity needed to not fight the liquid
+  // color they were nearly invisible on the white card - it read as "no
+  // illustration at all" rather than "glass". The plain CSS glass shape
+  // (.cup-visual's border) plus a painted highlight streak now IS the
+  // glass, and each cup's variable icons are shown as solid, high-
+  // contrast badges (not washed-out watermarks) so kids can tell cups
+  // apart at a glance.
   function varIconsHtml(cup) {
     var gn = CFG.gameNum;
     var imgs = [];
@@ -139,7 +137,7 @@
     if (!imgs.length) return '';
     var html = '<div class="var-icons">';
     imgs.forEach(function (im) {
-      html += '<img class="var-icon ' + im.cls + '" src="assets/props/' + im.src + '" alt="' + im.alt + '">';
+      html += '<span class="var-icon-badge ' + im.cls + '"><img class="var-icon" src="assets/props/' + im.src + '" alt="' + im.alt + '"></span>';
     });
     html += '</div>';
     return html;
@@ -174,13 +172,6 @@
     card.dataset.id = cup.id;
 
     var vis = el('div', 'cup-visual');
-    var vesselSrc = VESSEL_IMG[CFG.gameNum];
-    if (vesselSrc) {
-      var vesselImg = el('img', 'cup-vessel-bg');
-      vesselImg.src = 'assets/props/' + vesselSrc;
-      vesselImg.alt = '';
-      vis.appendChild(vesselImg);
-    }
     var liquid = el('div', 'cup-liquid');
     liquid.style.height = '0%';
     vis.appendChild(liquid);

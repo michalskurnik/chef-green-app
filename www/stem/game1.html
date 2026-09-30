@@ -36,21 +36,22 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 .cup-card.selectable:active{transform:scale(.96)}
 .cup-card.picked{border-color:var(--c1);box-shadow:0 4px 16px rgba(0,0,0,.14);background:rgba(0,0,0,.02)}
 
-.cup-visual{position:relative;width:84px;height:116px;border:4px solid #999;border-bottom:none;border-radius:3px 3px 14px 14px;overflow:hidden;background:rgba(255,255,255,.5)}
-.cup-vessel-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.35;pointer-events:none}
+.cup-visual{position:relative;width:84px;height:116px;border:4px solid #999;border-bottom:none;border-radius:3px 3px 14px 14px;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.65) 0%,rgba(255,255,255,.2) 45%,rgba(255,255,255,.5) 65%,rgba(255,255,255,.15) 100%)}
+.cup-visual::before{content:'';position:absolute;top:2px;bottom:2px;right:14%;width:11%;background:rgba(255,255,255,.6);border-radius:40%;pointer-events:none;z-index:2}
 .cup-liquid{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,var(--c2),var(--c1));transition:height 1s ease;height:0%}
-.cup-ruler{position:absolute;inset:0;display:flex;flex-direction:column-reverse;justify-content:space-between;pointer-events:none}
+.cup-ruler{position:absolute;inset:0;display:flex;flex-direction:column-reverse;justify-content:space-between;pointer-events:none;z-index:1}
 .cup-ruler .tick{border-top:1px dashed rgba(0,0,0,.18);height:25%}
-.cup-bubbles{position:absolute;inset:0;opacity:0;pointer-events:none}
+.cup-bubbles{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:3}
 .cup-visual.bubbling .cup-bubbles{opacity:1;background:radial-gradient(circle 4px at 30% 80%,rgba(255,255,255,.9) 90%,transparent),radial-gradient(circle 3px at 60% 60%,rgba(255,255,255,.8) 90%,transparent),radial-gradient(circle 5px at 45% 40%,rgba(255,255,255,.7) 90%,transparent);animation:bubbleUp 1.1s ease-in-out infinite}
 @keyframes bubbleUp{0%{background-position:0 100%,0 100%,0 100%;opacity:.3}100%{background-position:0 -20%,0 -30%,0 -40%;opacity:1}}
 
-.var-icons{display:flex;gap:6px;align-items:center;justify-content:center;min-height:36px}
-.var-icon{width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15))}
-.var-icon.dim{opacity:.3;filter:grayscale(1)}
-.var-icon.temp-cold{filter:hue-rotate(150deg) saturate(2.2)}
-.var-icon.temp-hot{filter:hue-rotate(-25deg) saturate(1.8)}
-.var-icon.temp-warm{filter:none}
+.var-icons{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;min-height:46px}
+.var-icon-badge{width:44px;height:44px;flex-shrink:0;border-radius:50%;background:#fff;border:2px solid #f0f0f0;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.var-icon-badge.dim{opacity:.4;filter:grayscale(1)}
+.var-icon-badge.temp-cold{background:#DCEEFB;border-color:#A8D8F0}
+.var-icon-badge.temp-hot{background:#FDE2DC;border-color:#F3B3A6}
+.var-icon-badge.temp-warm{background:#FDF3DC;border-color:#F3DFA6}
+.var-icon{width:30px;height:30px;object-fit:contain}
 .pick-check{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:50%;background:#4CAF50;color:#fff;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.25)}
 
 .cup-label{font-family:'Fredoka One',cursive;font-size:14px;color:#333}
