@@ -27,6 +27,7 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 
 #root{padding:20px 20px 28px;min-height:52vh;display:flex;flex-direction:column;justify-content:center}
 .intro{font-size:16px;font-weight:700;color:#444;text-align:center;margin-bottom:18px;line-height:1.6}
+.note-line{font-size:13.5px;font-weight:700;color:#666;text-align:center;line-height:1.5;margin-bottom:10px}
 
 /* Prediction / conclusion cards (shared look) */
 .opt-row{display:flex;flex-direction:column;gap:14px;margin-top:4px}
@@ -51,25 +52,54 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 .lab-btn.primary:disabled{opacity:.4;pointer-events:none}
 .lab-btn.ghost{background:none;color:#999;box-shadow:none;font-family:'Assistant',sans-serif;font-weight:800;font-size:13px;text-decoration:underline}
 
-/* Net canvas */
-#net-wrap{position:relative;width:100%;height:260px;background:linear-gradient(180deg,#fff0f2,#ffe3e7);border-radius:16px;overflow:hidden;border:2px solid #f5d0d5;margin-bottom:10px}
-.dot{position:absolute;width:16px;height:16px;border-radius:50%;background:#C62839;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transform:translate(-50%,-50%);cursor:pointer;z-index:3}
-.dot.apple{background:#6FA84B}
-.dot.active{box-shadow:0 0 0 4px rgba(247,201,72,.6)}
-.net-line{position:absolute;height:2px;background:rgba(198,40,57,.55);transform-origin:0 0;z-index:2;pointer-events:none}
-.drop{position:absolute;font-size:15px;transform:translate(-50%,-50%);transition:opacity .4s,transform .4s;z-index:4;pointer-events:none}
-.drop.caught{opacity:0;transform:translate(-50%,-50%) scale(.2)}
-#net-hud{display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:#888;margin-bottom:8px}
-#net-msg{text-align:center;font-size:13px;font-weight:700;color:#7a5c1e;min-height:18px;margin-bottom:6px}
+/* Step 1: tap the 4 ingredients — no wrong answer */
+.ing-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:6px 0 4px}
+.ing-card{position:relative;background:#f7f7f7;border:2px dashed #ddd;border-radius:18px;padding:20px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:all .2s}
+.ing-card:active{transform:scale(.96)}
+.ing-card.checked{border:2px solid var(--c1);background:rgba(198,40,57,.06)}
+.ing-emoji{font-size:36px}
+.ing-label{font-size:14px;font-weight:800;color:#333}
+.ing-check{position:absolute;top:8px;left:8px;width:24px;height:24px;border-radius:50%;background:#4CAF50;color:#fff;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.5);transition:all .25s}
+.ing-card.checked .ing-check{opacity:1;transform:scale(1)}
 
-/* Cold plate */
-.plate-row{display:flex;justify-content:center;gap:22px;margin:10px 0}
-.plate{display:flex;flex-direction:column;align-items:center;gap:6px}
-.plate-visual{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle,#eaf6ff,#cfeaf9);border:3px solid #bcdff2;display:flex;align-items:center;justify-content:center;font-size:26px;position:relative;overflow:hidden}
-.jam-drop{position:absolute;bottom:6px;width:22px;height:14px;border-radius:0 0 50% 50%/0 0 60% 60%;background:linear-gradient(180deg,#C62839,#8f1c29);transition:width 1.4s ease,height 1.4s ease}
-.jam-drop.spread{width:52px;height:8px;border-radius:50%}
-.plate-label{font-size:12px;font-weight:800;color:#555;text-align:center}
-.plate-verdict{font-size:12px;font-weight:800;text-align:center;min-height:16px}
+/* Pectin reveal panel */
+.reveal-box{display:flex;flex-direction:column;align-items:center;gap:8px;padding:24px 10px;background:linear-gradient(135deg,#fff7e0,#ffe9c2);border-radius:20px;margin:10px 0}
+.reveal-emoji{font-size:54px;animation:pulseReveal 1.2s ease-in-out infinite}
+@keyframes pulseReveal{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.reveal-word{font-family:'Fredoka One',cursive;font-size:24px;color:#a15b00}
+
+/* Step 2: squish game */
+.squish-row{display:flex;gap:16px;justify-content:center;margin:6px 0 4px}
+.squish-card{flex:1;max-width:150px;background:#f7f7f7;border:2px solid #eee;border-radius:18px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:border-color .2s,transform .15s}
+.squish-card:active{transform:scale(.96)}
+.squish-card.picked{border-color:var(--c1)}
+.squish-emoji{font-size:48px;transition:transform .5s ease;display:inline-block}
+.squish-card[data-id="apple"].squished .squish-emoji{transform:scaleY(.88) scaleX(1.06)}
+.squish-card[data-id="strawberry"].squished .squish-emoji{transform:scaleY(.3) scaleX(1.45)}
+.squish-label{font-size:14px;font-weight:800;color:#333}
+.squish-result{font-size:12px;font-weight:700;text-align:center;min-height:32px;color:#555}
+
+/* Step 3: pot ingredients */
+.pot-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;margin:4px 0 12px}
+.pot-visual{position:relative;width:120px;height:92px}
+.pot-visual img{width:100%;height:100%;object-fit:contain}
+.pot-items-in{position:absolute;bottom:40%;left:50%;transform:translateX(-50%);font-size:18px;letter-spacing:2px}
+#pot-count{font-size:13px;font-weight:800;color:#999}
+.ing-choice-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:6px}
+.ing-choice{position:relative;background:#f7f7f7;border:2px dashed #ddd;border-radius:16px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:all .2s}
+.ing-choice:active{transform:scale(.94)}
+.ing-choice.added{border-style:solid;border-color:#4CAF50;background:rgba(76,175,80,.08);opacity:.5;pointer-events:none}
+.ing-choice.wrong{animation:cardShake .4s ease;border-color:#EF5350}
+.ing-choice-emoji{font-size:26px}
+.ing-choice-label{font-size:11px;font-weight:800;color:#555;text-align:center;line-height:1.25}
+
+/* Step 4: thermometer drag */
+.therm-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;margin:14px 0}
+.therm-readout{font-family:'Fredoka One',cursive;font-size:34px;color:var(--c1)}
+.therm-slider{-webkit-appearance:none;appearance:none;width:82%;height:16px;border-radius:8px;background:linear-gradient(90deg,#9fd8ef,#F7C948,#EF5350);outline:none}
+.therm-slider::-webkit-slider-thumb{-webkit-appearance:none;width:36px;height:36px;border-radius:50%;background:#fff;border:4px solid var(--c1);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer}
+.therm-slider::-moz-range-thumb{width:36px;height:36px;border-radius:50%;background:#fff;border:4px solid var(--c1);box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;border:4px solid var(--c1)}
+.therm-target-note{font-size:14px;font-weight:800;color:#999;min-height:20px}
 
 .lab-done{display:flex;flex-direction:column;align-items:center;padding:16px 4px}
 .lab-done-emoji{font-size:44px;margin-bottom:8px}
@@ -83,7 +113,7 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
   <header id="hdr">
     <span id="level-badge"></span>
     <div id="badge">🍓 ריבת תותים</div>
-    <h2 id="htitle">🕸️ מעבדת הסמיכות</h2>
+    <h2 id="htitle">🍓 מעבדת הסמיכות</h2>
   </header>
   <div id="root"></div>
 </div>
@@ -94,13 +124,22 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 (function () {
   'use strict';
 
+  // Full pedagogical redesign (Asana 1218988523010841) - replaces the old
+  // "connect-net" catching game entirely with 4 short, concrete steps that
+  // build up to "what is pectin": tap the 4 ingredients -> squish apple vs
+  // strawberry -> choose what goes in the pot -> heat to 100°. The opening
+  // guess screen and the closing conclusion screen are unchanged and still
+  // read/write the exact same NOTEBOOK_STATIONS ids, so מחברת המדען keeps
+  // working without any changes there.
+
   var STATION_NUM = 2; // ריבת תותים = index 1 in NOTEBOOK_STATIONS
   var NB = StemNotebookConfig.NOTEBOOK_STATIONS[STATION_NUM - 1];
   var GAME_NUM = 3;
+  var TOTAL_STEPS = 6;
   var root = document.getElementById('root');
   var levelBadge = document.getElementById('level-badge');
 
-  var state = { prediction: null, caught: 0, target: 10, totalDrops: 12, path: [], drops: [], dotEls: {}, timer: null };
+  var state = { prediction: null, checked: [], potAdded: [] };
 
   function el(tag, cls, html) {
     var e = document.createElement(tag);
@@ -109,9 +148,11 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
     return e;
   }
 
-  function setLevel(n, label) { levelBadge.textContent = label; }
+  function setLevel(n, custom) {
+    levelBadge.textContent = custom || ('שלב ' + n + ' מתוך ' + TOTAL_STEPS);
+  }
 
-  // Illustration for the two prediction cups: 'a' = strawberries + apple
+  // Illustration for the two prediction cards: 'a' = strawberries + apple
   // (pectin network), 'b' = strawberries only - reuses the existing
   // stem_prop_node_* assets rather than plain emoji.
   function predIconHtml(id, icon) {
@@ -124,9 +165,10 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
     return '<span class="opt-icon-wrap"><span class="opt-icon">' + icon + '</span></span>';
   }
 
-  // ── Screen 1: prediction ───────────────────────────────────────────
+  // ── Step 0: prediction (kept - feeds stem_station2_prediction, unchanged
+  // question/cards, only the destination screen changed) ────────────────
   function renderPrediction() {
-    setLevel(1, 'שלב 1 מתוך 4');
+    setLevel(1);
     root.innerHTML = '';
     root.appendChild(el('p', 'intro', NB.predictionQ));
     var row = el('div', 'opt-row');
@@ -138,279 +180,219 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
         localStorage.setItem('stem_station' + STATION_NUM + '_prediction', id);
         document.querySelectorAll('.opt-card').forEach(function (cc) { cc.classList.remove('picked'); });
         card.classList.add('picked');
-        setTimeout(renderNetIntro, 400);
+        setTimeout(renderIngredients, 400);
       };
       row.appendChild(card);
     });
     root.appendChild(row);
   }
 
-  // ── Screen 2: level 1 net demo (strawberries only - can't catch) ───
-  function renderNetIntro() {
-    setLevel(2, 'שלב 2 מתוך 4');
+  // ── Step 1: tap the 4 ingredients - no wrong answer, just discovery ──
+  var INGREDIENTS = [
+    { id: 'pectin', emoji: '❓', label: 'פקטין' },
+    { id: 'heat', emoji: '🔥', label: 'חום' },
+    { id: 'sugar', emoji: '🍬', label: 'סוכר' },
+    { id: 'acid', emoji: '🍋', label: 'חומצה' }
+  ];
+  function renderIngredients() {
+    setLevel(2);
     root.innerHTML = '';
-    root.appendChild(el('p', 'intro', 'תותים לבד בונים רשת דלילה מדי — אי אפשר ללכוד בה טיפות מיץ. בואו נראה, ואז נוסיף תפוח!'));
-
-    var wrap = el('div', 'net-wrap');
-    wrap.style.height = '160px';
-    // 5 static strawberry dots + faint static lines, purely illustrative
-    var pts = [[20,30],[80,20],[50,70],[15,90],[85,85]];
-    pts.forEach(function (p) {
-      var d = el('div', 'dot');
-      d.style.left = p[0] + '%'; d.style.top = p[1] + '%';
-      wrap.appendChild(d);
+    root.appendChild(el('p', 'intro', 'מה צריך כדי להכין ריבה? הקישו על כל המרכיבים — אין כאן תשובה לא נכונה, פשוט גלו את כולם!'));
+    state.checked = [];
+    var grid = el('div', 'ing-grid');
+    INGREDIENTS.forEach(function (ing) {
+      var card = el('div', 'ing-card',
+        '<span class="ing-emoji">' + ing.emoji + '</span><span class="ing-label">' + ing.label + '</span><span class="ing-check">✓</span>');
+      card.onclick = function () {
+        if (card.classList.contains('checked')) return;
+        card.classList.add('checked');
+        state.checked.push(ing.id);
+        if (state.checked.length === INGREDIENTS.length) {
+          setTimeout(renderPectinReveal, 500);
+        }
+      };
+      grid.appendChild(card);
     });
-    [[0,1],[1,2],[2,3],[3,4],[4,0]].forEach(function (pair) {
-      wrap.appendChild(staticLine(pts[pair[0]], pts[pair[1]], wrap));
-    });
-    root.appendChild(wrap);
-    root.appendChild(el('p', 'intro', '🕸️ אין מספיק חוטים כדי ללכוד טיפות מיץ...'));
+    root.appendChild(grid);
+  }
 
-    var btn = el('button', 'lab-btn primary', '🍏 בואו נוסיף תפוח!');
-    btn.onclick = renderNetGame;
+  function renderPectinReveal() {
+    root.innerHTML = '';
+    root.appendChild(el('p', 'intro', 'מצוין, כל המרכיבים מסומנים! אבל אחד מהם עדיין מסתורי...'));
+    root.appendChild(el('div', 'reveal-box', '<div class="reveal-emoji">🫙</div><div class="reveal-word">פקטין?</div>'));
+    root.appendChild(el('p', 'note-line', 'בשלב הבא נגלה מה זה פקטין!'));
+    var btn = el('button', 'lab-btn primary', 'בואו נגלה →');
+    btn.onclick = renderSquish;
     root.appendChild(btn);
   }
 
-  function staticLine(a, b, wrap) {
-    var line = el('div', 'net-line');
-    var rect = { w: 100, h: 100 };
-    var dx = (b[0] - a[0]), dy = (b[1] - a[1]);
-    var lenPct = Math.sqrt(dx * dx + dy * dy);
-    line.style.left = a[0] + '%';
-    line.style.top = a[1] + '%';
-    line.style.width = lenPct + '%';
-    line.style.transform = 'rotate(' + (Math.atan2(dy, dx) * 180 / Math.PI) + 'deg)';
-    line.style.opacity = '.5';
-    return line;
-  }
-
-  // ── Screen 3: level 2 - real interactive net + drops ────────────────
-  var DOTS = (function () {
-    // Deterministic layout: 5 "strawberry" dots + 12 "apple" dots, spread
-    // across the canvas (percent coordinates).
-    var straw = [[10,15],[90,12],[50,50],[8,85],[92,88]];
-    var apple = [[30,10],[70,10],[15,35],[85,35],[35,30],[65,30],
-                 [20,60],[80,60],[45,75],[55,75],[30,90],[70,90]];
-    var all = [];
-    straw.forEach(function (p) { all.push({ x: p[0], y: p[1], type: 'straw' }); });
-    apple.forEach(function (p) { all.push({ x: p[0], y: p[1], type: 'apple' }); });
-    return all;
-  })();
-
-  function renderNetGame() {
-    setLevel(3, 'שלב 3 מתוך 4');
+  // ── Step 2: squish game (apple vs strawberry) → explains pectin ──────
+  var SQUISH_ORDER = ['apple', 'strawberry'];
+  var SQUISH = {
+    apple: { emoji: '🍎', label: 'תפוח', resultText: 'קשיח — כמעט לא נמעך!' },
+    strawberry: { emoji: '🍓', label: 'תות', resultText: 'רך — נמעך כמעט לגמרי!' }
+  };
+  function renderSquish() {
+    setLevel(3);
     root.innerHTML = '';
-    root.appendChild(el('p', 'intro', 'עכשיו יש גם תפוח! גררו קו בין הנקודות (הקישו לפי סדר), וכשתסגרו צורה — היא תלכוד טיפות מיץ בפנים.'));
-
-    var hud = el('div', '', '');
-    hud.id = 'net-hud';
-    hud.innerHTML = '<span>🍯 נלכדו: <b id="catch-count">0</b> / ' + state.target + '</span><span>טיפות בסך הכל: ' + state.totalDrops + '</span>';
-    root.appendChild(hud);
-
-    var msg = el('div', '', '');
-    msg.id = 'net-msg';
-    root.appendChild(msg);
-
-    var wrap = el('div', 'net-wrap');
-    wrap.id = 'net-wrap';
-    root.appendChild(wrap);
-
-    var btnRow = el('div', '', '');
-    btnRow.style.display = 'flex';
-    btnRow.style.gap = '8px';
-    var closeBtn = el('button', 'lab-btn primary', '🔒 סגרו את הצורה');
-    closeBtn.id = 'close-net-btn';
-    closeBtn.style.flex = '1';
-    closeBtn.disabled = true;
-    closeBtn.onclick = closeLoop;
-    var clearBtn = el('button', 'lab-btn ghost', 'נקו קווים');
-    clearBtn.onclick = clearPath;
-    root.appendChild(closeBtn);
-    root.appendChild(clearBtn);
-
-    var contBtn = el('button', 'lab-btn primary', 'למדוד את הריבה →');
-    contBtn.id = 'net-continue-btn';
-    contBtn.style.display = 'none';
-    contBtn.onclick = function () { clearInterval(state.timer); renderColdPlate(); };
-    root.appendChild(contBtn);
-
-    buildDots(wrap);
-    spawnDrops(wrap);
-    state.timer = setInterval(function () { stepDrops(wrap); }, 50);
-  }
-
-  function buildDots(wrap) {
-    state.dotEls = {};
-    DOTS.forEach(function (p, i) {
-      var d = el('div', 'dot' + (p.type === 'apple' ? ' apple' : ''));
-      d.style.left = p.x + '%';
-      d.style.top = p.y + '%';
-      d.dataset.idx = i;
-      d.onclick = function () { tapDot(i, d); };
-      wrap.appendChild(d);
-      state.dotEls[i] = d;
-    });
-  }
-
-  function tapDot(i, d) {
-    if (state.path.indexOf(i) === -1) {
-      state.path.push(i);
-      d.classList.add('active');
-      if (state.path.length > 1) {
-        var a = DOTS[state.path[state.path.length - 2]], b = DOTS[i];
-        drawLine(a, b, document.getElementById('net-wrap'));
-      }
-      document.getElementById('close-net-btn').disabled = state.path.length < 3;
-    }
-  }
-
-  function drawLine(a, b, wrap) {
-    var line = el('div', 'net-line');
-    var dx = b.x - a.x, dy = b.y - a.y;
-    var len = Math.sqrt(dx * dx + dy * dy);
-    line.style.left = a.x + '%';
-    line.style.top = a.y + '%';
-    line.style.width = len + '%';
-    line.style.transform = 'rotate(' + (Math.atan2(dy * (wrap.clientHeight / wrap.clientWidth || 1), dx) * 180 / Math.PI) + 'deg)';
-    wrap.appendChild(line);
-  }
-
-  function clearPath() {
-    state.path.forEach(function (i) { state.dotEls[i].classList.remove('active'); });
-    state.path = [];
-    document.querySelectorAll('.net-line').forEach(function (l) { l.remove(); });
-    document.getElementById('close-net-btn').disabled = true;
-  }
-
-  // Point-in-polygon (ray casting) in percent-space.
-  function pointInPolygon(pt, poly) {
-    var inside = false;
-    for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-      var xi = poly[i].x, yi = poly[i].y, xj = poly[j].x, yj = poly[j].y;
-      var intersect = ((yi > pt.y) !== (yj > pt.y)) &&
-        (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi);
-      if (intersect) inside = !inside;
-    }
-    return inside;
-  }
-
-  function closeLoop() {
-    if (state.path.length < 3) return;
-    var poly = state.path.map(function (i) { return DOTS[i]; });
-    // close visually back to first dot
-    drawLine(DOTS[state.path[state.path.length - 1]], DOTS[state.path[0]], document.getElementById('net-wrap'));
-
-    var newlyCaught = 0;
-    state.drops.forEach(function (drop) {
-      if (drop.caught) return;
-      if (pointInPolygon({ x: drop.x, y: drop.y }, poly)) {
-        drop.caught = true;
-        drop.el.classList.add('caught');
-        newlyCaught++;
-      }
-    });
-    state.caught += newlyCaught;
-    document.getElementById('catch-count').textContent = state.caught;
-
-    var msg = document.getElementById('net-msg');
-    msg.textContent = newlyCaught > 0
-      ? ('🎉 לכדתם ' + newlyCaught + ' טיפות בצורה הזו!')
-      : 'הצורה הזו יצאה ריקה — נסו לסגור צורה במקום אחר!';
-
-    clearPath();
-
-    if (state.caught >= state.target) {
-      msg.textContent = '🍯 מעולה! הרשת שלכם לכדה מספיק טיפות — הריבה נהיית סמיכה!';
-      document.getElementById('close-net-btn').style.display = 'none';
-      document.querySelector('.lab-btn.ghost').style.display = 'none';
-      document.getElementById('net-continue-btn').style.display = 'block';
-    }
-  }
-
-  function spawnDrops(wrap) {
-    state.drops = [];
-    var seed = 7;
-    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
-    for (var i = 0; i < state.totalDrops; i++) {
-      var d = { x: 10 + rnd() * 80, y: 10 + rnd() * 80, vx: (rnd() - 0.5) * 1.2, vy: (rnd() - 0.5) * 1.2, caught: false };
-      var dropEl = el('div', 'drop', '💧');
-      dropEl.style.left = d.x + '%';
-      dropEl.style.top = d.y + '%';
-      wrap.appendChild(dropEl);
-      d.el = dropEl;
-      state.drops.push(d);
-    }
-  }
-
-  function stepDrops(wrap) {
-    state.drops.forEach(function (d) {
-      if (d.caught) return;
-      d.x += d.vx * 0.3;
-      d.y += d.vy * 0.3;
-      if (d.x < 5 || d.x > 95) d.vx *= -1;
-      if (d.y < 5 || d.y > 95) d.vy *= -1;
-      d.x = Math.max(5, Math.min(95, d.x));
-      d.y = Math.max(5, Math.min(95, d.y));
-      d.el.style.left = d.x + '%';
-      d.el.style.top = d.y + '%';
-    });
-  }
-
-  // ── Screen 4: cold-plate measurement (writes _result) ──────────────
-  function renderColdPlate() {
-    setLevel(4, 'שלב 4 מתוך 4');
-    root.innerHTML = '';
-    root.appendChild(el('p', 'intro', 'בואו נבדוק על צלחת קרה — מטים כפית ריבה מכל סיר ורואים איזו זורמת פחות.'));
-
-    var row = el('div', 'plate-row');
-    var plates = [
-      { id: 'a', label: 'תותים + תפוח', spread: false },
-      { id: 'b', label: 'תותים בלבד', spread: true }
-    ];
-    plates.forEach(function (p) {
-      var col = el('div', 'plate');
-      var vis = el('div', 'plate-visual');
-      var drop = el('div', 'jam-drop');
-      vis.appendChild(drop);
-      col.appendChild(vis);
-      col.appendChild(el('div', 'plate-label', p.label));
-      var verdict = el('div', 'plate-verdict');
-      col.appendChild(verdict);
-      row.appendChild(col);
-      p._drop = drop; p._verdict = verdict;
+    root.appendChild(el('p', 'intro', 'איזה פרי יתמעך הכי פחות אם נלחץ עליו? נחשו, ואז נבדוק ביחד!'));
+    var row = el('div', 'squish-row');
+    SQUISH_ORDER.forEach(function (id) {
+      var f = SQUISH[id];
+      var card = el('div', 'squish-card',
+        '<span class="squish-emoji">' + f.emoji + '</span><span class="squish-label">' + f.label + '</span><span class="squish-result"></span>');
+      card.dataset.id = id;
+      card.onclick = function () {
+        if (state.squishPicked) return;
+        state.squishPicked = true;
+        document.querySelectorAll('.squish-card').forEach(function (c) { c.classList.remove('picked'); });
+        card.classList.add('picked');
+        setTimeout(function () { runSquishDemo(id); }, 400);
+      };
+      row.appendChild(card);
     });
     root.appendChild(row);
+  }
 
-    var btn = el('button', 'lab-btn primary', '⏱️ הטו את הצלחות');
-    btn.onclick = function () {
-      btn.disabled = true;
-      plates.forEach(function (p) {
-        if (p.spread) {
-          p._drop.classList.add('spread');
-          setTimeout(function () { p._verdict.textContent = '💧 עוד בישול'; p._verdict.style.color = '#C62839'; }, 1450);
+  function runSquishDemo(pickedId) {
+    var cards = document.querySelectorAll('.squish-card');
+    cards.forEach(function (card) {
+      var id = card.dataset.id;
+      card.classList.add('squished');
+      card.querySelector('.squish-result').textContent = SQUISH[id].emoji + ' ' + SQUISH[id].resultText;
+    });
+    setTimeout(function () {
+      var matchLine = el('p', 'intro', pickedId === 'apple'
+        ? '🎉 ניחשתם נכון! תפוח נשאר הכי קשיח.'
+        : '🤔 יצא אחרת — תפוח הוא זה שנשאר הכי קשיח!');
+      root.appendChild(matchLine);
+      root.appendChild(el('p', 'note-line', '🍏 בפירות כמו תפוח ואשכולית יש הרבה פקטין בקליפה שעוזר להם להיות קשיחים, לעומת תות וענבים שיש בהם מעט פקטין.'));
+      var note = el('p', 'note-line', 'קליפות תפוח מביאות המון פקטין ועוזרות לתות להפוך לריבה במרקם ג\'לי!');
+      note.style.fontWeight = '800';
+      note.style.color = '#a15b00';
+      root.appendChild(note);
+      var btn = el('button', 'lab-btn primary', 'בואו נכין ריבה! →');
+      btn.onclick = renderPot;
+      root.appendChild(btn);
+    }, 1200);
+  }
+
+  // ── Step 3: choose what goes in the pot ──────────────────────────────
+  var POT_CORRECT = [
+    { id: 'sugar', emoji: '🍬', label: 'סוכר' },
+    { id: 'strawberries', emoji: '🍓', label: 'תותים' },
+    { id: 'lemon', emoji: '🍋', label: 'לימון' },
+    { id: 'apple', emoji: '🍎', label: 'תפוח (עם הקליפה)' }
+  ];
+  var POT_DECOYS = [
+    { id: 'salt', emoji: '🧂', label: 'מלח' },
+    { id: 'cucumber', emoji: '🥒', label: 'מלפפון' },
+    { id: 'oil', emoji: '🫒', label: 'שמן' }
+  ];
+  function renderPot() {
+    setLevel(4);
+    root.innerHTML = '';
+    root.appendChild(el('p', 'intro', 'מה נכנס לסיר כדי להכין ריבה? הקישו על המרכיבים הנכונים!'));
+    state.potAdded = [];
+
+    var potWrap = el('div', 'pot-wrap');
+    var potVis = el('div', 'pot-visual', '<img src="assets/props/stem_prop_pot_top.png" alt=""><span class="pot-items-in" id="pot-items-in"></span>');
+    potWrap.appendChild(potVis);
+    var potCount = el('div', '', '0 מתוך ' + POT_CORRECT.length + ' מרכיבים בסיר');
+    potCount.id = 'pot-count';
+    potWrap.appendChild(potCount);
+    root.appendChild(potWrap);
+
+    var all = POT_CORRECT.concat(POT_DECOYS)
+      .map(function (item) { return { item: item, sort: Math.sin((item.id.length + 1) * 999) }; })
+      .sort(function (a, b) { return a.sort - b.sort; })
+      .map(function (w) { return w.item; });
+
+    var grid = el('div', 'ing-choice-grid');
+    all.forEach(function (item) {
+      var correct = POT_CORRECT.indexOf(item) > -1;
+      var card = el('div', 'ing-choice',
+        '<span class="ing-choice-emoji">' + item.emoji + '</span><span class="ing-choice-label">' + item.label + '</span>');
+      card.onclick = function () {
+        if (card.classList.contains('added')) return;
+        if (correct) {
+          card.classList.add('added');
+          state.potAdded.push(item.id);
+          document.getElementById('pot-items-in').insertAdjacentHTML('beforeend', item.emoji);
+          document.getElementById('pot-count').textContent = state.potAdded.length + ' מתוך ' + POT_CORRECT.length + ' מרכיבים בסיר';
+          if (state.potAdded.length === POT_CORRECT.length) {
+            setTimeout(showPotMatch, 500);
+          }
         } else {
-          setTimeout(function () { p._verdict.textContent = '✅ מוכנה!'; p._verdict.style.color = '#2E7D32'; }, 1450);
+          card.classList.remove('wrong');
+          void card.offsetWidth;
+          card.classList.add('wrong');
+          setTimeout(function () { card.classList.remove('wrong'); }, 500);
         }
-      });
-      setTimeout(function () {
-        localStorage.setItem('stem_station' + STATION_NUM + '_result', 'a');
-        var matchLine = el('p', 'intro',
-          (state.prediction === 'a')
-            ? '🎉 ניחשתם בדיוק! הריבה עם התפוח נשארה במקום — היא הסמיכה יותר.'
-            : '🤔 יצא אחרת מהניחוש — הריבה עם התפוח היא זו שנשארה סמיכה!');
-        matchLine.style.marginTop = '12px';
-        root.appendChild(matchLine);
-        var nextBtn = el('button', 'lab-btn primary', 'בואו נבין למה →');
-        nextBtn.onclick = renderConclusion;
-        root.appendChild(nextBtn);
-      }, 1700);
-    };
+      };
+      grid.appendChild(card);
+    });
+    root.appendChild(grid);
+  }
+
+  function showPotMatch() {
+    localStorage.setItem('stem_station' + STATION_NUM + '_result', 'a');
+    var matchLine = el('p', 'intro', (state.prediction === 'a')
+      ? '🎉 ניחשתם בדיוק! ריבה עם תפוח וקליפותיו יוצאת סמיכה יותר.'
+      : '🤔 יצא אחרת מהניחוש — ריבה עם תפוח וקליפותיו היא זו שיוצאת סמיכה יותר!');
+    matchLine.style.marginTop = '4px';
+    root.appendChild(matchLine);
+    var btn = el('button', 'lab-btn primary', 'עכשיו מחממים! →');
+    btn.onclick = renderThermometer;
     root.appendChild(btn);
   }
 
-  // ── Screen 5: conclusion (shared with notebook) ────────────────────
+  // ── Step 4: drag the thermometer to boiling (100°) ──────────────────
+  function renderThermometer() {
+    setLevel(5);
+    root.innerHTML = '';
+    root.appendChild(el('p', 'intro', 'פקטין משתחרר מהפירות רק ברתיחה! גררו את המדחום עד 100° כדי להביא את הסיר לרתיחה.'));
+
+    var wrap = el('div', 'therm-wrap');
+    var readout = el('div', 'therm-readout', '25°');
+    wrap.appendChild(readout);
+
+    var slider = el('input', 'therm-slider');
+    slider.type = 'range';
+    slider.min = '25';
+    slider.max = '100';
+    slider.value = '25';
+    wrap.appendChild(slider);
+
+    var note = el('div', 'therm-target-note', 'גררו את המחוון עד 100°');
+    wrap.appendChild(note);
+    root.appendChild(wrap);
+
+    var btn = el('button', 'lab-btn primary', 'המשיכו →');
+    btn.disabled = true;
+    btn.onclick = renderConclusion;
+    root.appendChild(btn);
+
+    slider.addEventListener('input', function () {
+      var v = parseInt(slider.value, 10);
+      if (v >= 97) {
+        slider.value = '100';
+        v = 100;
+        note.textContent = '🌡️ 💯 רתיחה! מעולה!';
+        note.style.color = '#2E7D32';
+        btn.disabled = false;
+      } else {
+        note.textContent = 'גררו את המחוון עד 100°';
+        note.style.color = '#999';
+        btn.disabled = true;
+      }
+      readout.textContent = v + '°';
+    });
+  }
+
+  // ── Step 5: conclusion (shared with the notebook, unchanged) ─────────
   function renderConclusion() {
-    setLevel(5, 'סיכום');
+    setLevel(6, 'סיכום');
     root.innerHTML = '';
     root.appendChild(el('p', 'intro', NB.conclusionQ));
     var row = el('div', 'opt-row');
