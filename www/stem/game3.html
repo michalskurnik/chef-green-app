@@ -69,15 +69,33 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 .reveal-word{font-family:'Fredoka One',cursive;font-size:24px;color:#a15b00}
 
 /* Step 2: squish game */
+.squish-hint{font-size:13px;font-weight:800;color:#b5793f;text-align:center;margin:-10px 0 16px}
 .squish-row{display:flex;gap:16px;justify-content:center;margin:6px 0 4px}
-.squish-card{flex:1;max-width:150px;background:#f7f7f7;border:2px solid #eee;border-radius:18px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:border-color .2s,transform .15s}
+.squish-card{position:relative;flex:1;max-width:150px;background:linear-gradient(160deg,#fff,#f7f7f7);border:3px solid #eee;border-radius:22px;padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.07);transition:border-color .2s,transform .15s,box-shadow .2s}
+.squish-card[data-id="apple"]{background:linear-gradient(160deg,#f4fbe9,#e1f3c9);border-color:#e3f0c4}
+.squish-card[data-id="strawberry"]{background:linear-gradient(160deg,#fff0f3,#ffd9e2);border-color:#ffc9d4}
 .squish-card:active{transform:scale(.96)}
-.squish-card.picked{border-color:var(--c1)}
-.squish-emoji{font-size:48px;transition:transform .5s ease;display:inline-block}
-.squish-card[data-id="apple"].squished .squish-emoji{transform:scaleY(.88) scaleX(1.06)}
-.squish-card[data-id="strawberry"].squished .squish-emoji{transform:scaleY(.3) scaleX(1.45)}
+.squish-card.picked{border-color:var(--c1);box-shadow:0 8px 22px rgba(0,0,0,.15)}
+.squish-emoji{font-size:52px;transition:transform .5s ease;display:inline-block}
+.squish-card:not(.squished) .squish-emoji{animation:squishIdle 1.7s ease-in-out infinite}
+@keyframes squishIdle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-5deg)}}
+.squish-card[data-id="apple"].squished .squish-emoji{animation:none;transform:scaleY(.88) scaleX(1.06)}
+.squish-card[data-id="strawberry"].squished .squish-emoji{animation:none;transform:scaleY(.3) scaleX(1.45)}
 .squish-label{font-size:14px;font-weight:800;color:#333}
 .squish-result{font-size:12px;font-weight:700;text-align:center;min-height:32px;color:#555}
+.squish-burst{position:absolute;top:-4px;left:-4px;font-size:24px;opacity:0;pointer-events:none}
+.squish-card.squished .squish-burst{animation:burstPop .7s ease forwards}
+@keyframes burstPop{0%{opacity:0;transform:scale(.3) translateY(0) rotate(0)}40%{opacity:1;transform:scale(1.3) translateY(-8px) rotate(-10deg)}100%{opacity:0;transform:scale(1) translateY(-22px) rotate(10deg)}}
+.result-banner{font-family:'Fredoka One',cursive;font-size:15.5px;text-align:center;padding:12px 14px;border-radius:16px;margin-bottom:10px;line-height:1.5}
+.result-banner.correct{background:rgba(76,175,80,.14);color:#2E7D32}
+.result-banner.try{background:rgba(255,183,77,.18);color:#a15b00}
+.confetti-wrap{position:relative;height:6px;overflow:visible}
+.confetti-piece{position:absolute;top:-6px;font-size:20px;opacity:0;animation:confettiFall .9s ease forwards}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(46px) rotate(340deg)}}
+.fact-bubble{display:flex;align-items:flex-start;gap:10px;background:linear-gradient(135deg,#fff7e0,#ffe9c2);border-radius:18px;padding:14px 16px;margin:4px 0 10px;text-align:right}
+.fact-bubble .fb-icon{font-size:26px;flex-shrink:0;line-height:1.2}
+.fact-bubble .fb-text{font-size:13.5px;font-weight:700;color:#7a5c1e;line-height:1.55}
+.fact-bubble .fb-text b{color:#a15b00}
 
 /* Step 3: pot ingredients */
 .pot-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;margin:4px 0 12px}
@@ -232,15 +250,17 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
     apple: { emoji: '🍎', label: 'תפוח', resultText: 'קשיח — כמעט לא נמעך!' },
     strawberry: { emoji: '🍓', label: 'תות', resultText: 'רך — נמעך כמעט לגמרי!' }
   };
+  var SQUISH_BURST = { apple: '✨', strawberry: '💦' };
   function renderSquish() {
     setLevel(3);
     root.innerHTML = '';
-    root.appendChild(el('p', 'intro', 'איזה פרי יימעך יותר אם נלחץ עליו? נחשו, ואז נבדוק ביחד!'));
+    root.appendChild(el('p', 'intro', 'איזה פרי יימעך יותר אם נלחץ עליו?'));
+    root.appendChild(el('p', 'squish-hint', '👆 געו בפרי שלדעתכם יימעך יותר, ואז נבדוק ביחד!'));
     var row = el('div', 'squish-row');
     SQUISH_ORDER.forEach(function (id) {
       var f = SQUISH[id];
       var card = el('div', 'squish-card',
-        '<span class="squish-emoji">' + f.emoji + '</span><span class="squish-label">' + f.label + '</span><span class="squish-result"></span>');
+        '<span class="squish-burst">' + SQUISH_BURST[id] + '</span><span class="squish-emoji">' + f.emoji + '</span><span class="squish-label">' + f.label + '</span><span class="squish-result"></span>');
       card.dataset.id = id;
       card.onclick = function () {
         if (state.squishPicked) return;
@@ -262,15 +282,23 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
       card.querySelector('.squish-result').textContent = SQUISH[id].emoji + ' ' + SQUISH[id].resultText;
     });
     setTimeout(function () {
-      var matchLine = el('p', 'intro', pickedId === 'strawberry'
+      var correct = pickedId === 'strawberry';
+      if (correct) {
+        var confWrap = el('div', 'confetti-wrap');
+        ['🎉', '⭐', '🎊', '✨', '🎉'].forEach(function (piece, i) {
+          var span = el('span', 'confetti-piece', piece);
+          span.style.left = (6 + i * 20) + '%';
+          span.style.animationDelay = (i * 0.07) + 's';
+          confWrap.appendChild(span);
+        });
+        root.appendChild(confWrap);
+      }
+      var matchLine = el('div', 'result-banner ' + (correct ? 'correct' : 'try'), correct
         ? '🎉 ניחשתם נכון! התות נמעך הכי הרבה.'
         : '🤔 יצא אחרת — התות הוא זה שנמעך הכי הרבה!');
       root.appendChild(matchLine);
-      root.appendChild(el('p', 'note-line', '🍏 בפירות כמו תפוח ואשכולית יש הרבה פקטין בקליפה שעוזר להם להיות קשיחים, לעומת תות וענבים שיש בהם מעט פקטין.'));
-      var note = el('p', 'note-line', 'קליפות תפוח מביאות המון פקטין ועוזרות לתות להפוך לריבה במרקם ג\'לי!');
-      note.style.fontWeight = '800';
-      note.style.color = '#a15b00';
-      root.appendChild(note);
+      root.appendChild(el('div', 'fact-bubble',
+        '<span class="fb-icon">🍏</span><span class="fb-text">בפירות כמו תפוח ואשכולית יש הרבה <b>פקטין</b> בקליפה שעוזר להם להיות קשיחים, לעומת תות וענבים שיש בהם מעט פקטין.<br><b>קליפות תפוח מביאות פקטין ועוזרות לריבה להפוך לג\'לי!</b></span>'));
       var btn = el('button', 'lab-btn primary', 'בואו נכין ריבה! →');
       btn.onclick = renderPot;
       root.appendChild(btn);
