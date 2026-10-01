@@ -235,7 +235,7 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
   function renderSquish() {
     setLevel(3);
     root.innerHTML = '';
-    root.appendChild(el('p', 'intro', 'איזה פרי יתמעך הכי פחות אם נלחץ עליו? נחשו, ואז נבדוק ביחד!'));
+    root.appendChild(el('p', 'intro', 'איזה פרי יימעך יותר אם נלחץ עליו? נחשו, ואז נבדוק ביחד!'));
     var row = el('div', 'squish-row');
     SQUISH_ORDER.forEach(function (id) {
       var f = SQUISH[id];
@@ -262,9 +262,9 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
       card.querySelector('.squish-result').textContent = SQUISH[id].emoji + ' ' + SQUISH[id].resultText;
     });
     setTimeout(function () {
-      var matchLine = el('p', 'intro', pickedId === 'apple'
-        ? '🎉 ניחשתם נכון! תפוח נשאר הכי קשיח.'
-        : '🤔 יצא אחרת — תפוח הוא זה שנשאר הכי קשיח!');
+      var matchLine = el('p', 'intro', pickedId === 'strawberry'
+        ? '🎉 ניחשתם נכון! התות נמעך הכי הרבה.'
+        : '🤔 יצא אחרת — התות הוא זה שנמעך הכי הרבה!');
       root.appendChild(matchLine);
       root.appendChild(el('p', 'note-line', '🍏 בפירות כמו תפוח ואשכולית יש הרבה פקטין בקליפה שעוזר להם להיות קשיחים, לעומת תות וענבים שיש בהם מעט פקטין.'));
       var note = el('p', 'note-line', 'קליפות תפוח מביאות המון פקטין ועוזרות לתות להפוך לריבה במרקם ג\'לי!');
