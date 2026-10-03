@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<script src="../assets/rc-config.js"></script>
+<script src="../assets/stem-config.js"></script>
+<script src="access-guard.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>דף הורים — ניסויים במטבח 🧪 | עלילות השף הירוק</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+*:not(p):not(h1):not(h2):not(li):not(a){-webkit-user-select:none;user-select:none}
+p,h1,h2,h3,li{-webkit-user-select:text;user-select:text}
+
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{
+  background:#F5F0DC;
+  color:#1A3D1F;
+  font-family:'Rubik',sans-serif;
+  direction:rtl;
+  overflow-y:auto;
+  overflow-x:hidden;
+  position:relative;
+  height:auto;
+  overscroll-behavior-y:none;
+  padding-bottom:80px;
+}
+
+.page{max-width:600px;margin:0 auto;padding:20px 24px 0}
+
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  color:#1A3D1F;opacity:.5;font-size:14px;font-weight:500;
+  text-decoration:none;padding:8px 0;margin-bottom:20px;
+  cursor:pointer;-webkit-user-select:none;user-select:none;
+  touch-action:manipulation;transition:opacity .2s;
+}
+.back-btn:hover{opacity:.85}
+
+.header{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding-bottom:28px;margin-bottom:28px;
+  border-bottom:1.5px solid rgba(26,61,31,.14);
+}
+.chef-logo{
+  width:80px;height:80px;object-fit:contain;border-radius:50%;
+  background:rgba(26,61,31,.07);padding:10px;margin-bottom:16px;
+}
+.header-title{font-size:28px;font-weight:700;color:#1A3D1F;line-height:1.2;margin-bottom:6px}
+.header-sub{font-size:16px;color:#F5921E;font-weight:500}
+
+.section{margin-bottom:0}
+.section-title{
+  font-size:17px;font-weight:700;color:#1A3D1F;margin-bottom:13px;
+  display:flex;align-items:center;gap:8px;line-height:1.3;
+}
+.section-body{font-size:16px;line-height:1.85;color:#2D4A32}
+.section-body+.section-body{margin-top:13px}
+
+.tip-list{list-style:none;padding:0;display:flex;flex-direction:column;gap:11px}
+.tip-list li{font-size:16px;line-height:1.75;color:#2D4A32;padding-right:18px;position:relative}
+.tip-list li::before{content:"•";color:#F5921E;position:absolute;right:0;top:0;font-size:20px;line-height:1.45}
+.tip-list strong{color:#1A3D1F;font-weight:700}
+
+/* Station accordion-style list */
+.station-list{display:flex;flex-direction:column;gap:14px}
+.station-item{
+  background:#fff;border:2px solid rgba(26,61,31,.1);border-radius:16px;
+  padding:16px 18px;box-shadow:0 2px 8px rgba(26,61,31,.06);
+}
+.station-item-title{
+  font-size:15.5px;font-weight:700;color:#1A3D1F;
+  display:flex;align-items:center;gap:8px;margin-bottom:7px;
+}
+.station-item p{font-size:14.5px;line-height:1.7;color:#2D4A32}
+
+/* Safety callout */
+.safety-box{
+  background:rgba(217,83,30,.08);border:2px solid rgba(217,83,30,.3);
+  border-radius:16px;padding:16px 18px;
+}
+.safety-box .tip-list li::before{content:"⚠";color:#D9531E;font-size:15px;top:1px}
+.safety-box .tip-list li{padding-right:22px}
+
+.divider{height:1px;background:rgba(26,61,31,.12);margin:28px 0}
+
+.recipe-list{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.recipe-dl-btn{
+  display:flex;align-items:center;gap:10px;background:#fff;
+  border:2px solid rgba(26,61,31,.15);border-radius:16px;padding:14px 18px;
+  text-decoration:none;color:#1A3D1F;font-family:'Rubik',sans-serif;
+  font-size:16px;font-weight:600;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+  transition:background .15s, transform .1s, box-shadow .15s;
+  box-shadow:0 2px 8px rgba(26,61,31,.08);cursor:pointer;
+}
+.recipe-dl-btn:active{background:#F5F0DC;transform:scale(.98);box-shadow:none}
+.recipe-dl-icon{font-size:26px;flex-shrink:0}
+.recipe-dl-label{flex:1;line-height:1.3}
+.recipe-dl-sub{display:block;font-size:12px;font-weight:500;color:rgba(26,61,31,.55);margin-top:2px}
+.recipe-dl-arrow{font-size:18px;color:#F5921E;flex-shrink:0}
+
+@media(min-width:768px){
+  .page{padding:32px 40px 0}
+  .chef-logo{width:96px;height:96px}
+  .header-title{font-size:32px}
+  .section-title{font-size:19px}
+  .section-body,.tip-list li{font-size:17px}
+  .recipe-dl-btn{font-size:17px;padding:16px 20px}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a href="index.html" class="back-btn">← חזרה לתפריט</a>
+
+  <div class="header">
+    <img src="../assets/images/onboarding-chef.png" alt="השף הירוק" class="chef-logo">
+    <h1 class="header-title">דף הורים — ניסויים במטבח 🧪</h1>
+    <p class="header-sub">עלילות השף הירוק</p>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">🌿 ברוכים הבאים</h2>
+    <p class="section-body">
+      ״עלילות השף הירוק״ היא אפליקציית משחק אינטראקטיבית לילדים בגילאי 6–10. דרך משחקונים, אתגרים, משימות יצירתיות ומתכונים מותאמי גיל, הילדים יוצאים להרפתקה מהנה עם השף הירוק וביטו הרובוט ומגלים את עולם הבישול הבריא בדרך חווייתית ומסקרנת.
+    </p>
+    <p class="section-body">
+      אנחנו מאמינים שסקרנות היא המפתח ללמידה. לכן האפליקציה נועדה לעודד ילדים לחקור, לשאול שאלות, ולהרגיש בטוחים יותר סביב אוכל, בישול ומדע.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <h2 class="section-title">🧪 חבילת "ניסויים במטבח"</h2>
+    <p class="section-body">
+      בחבילה הזו המטבח הופך למעבדת מדע! הילד/ה עוברים חמישה תחנות-ניסוי — כל אחת משלבת מעבדה וירטואלית קטנה (ניחוש, מדידה והסקת מסקנות) יחד עם מתכון אמיתי להכנה במטבח הבית. תחנה חמישית (הר געש) היא בונוס אקסטרא שנפתח אחרי השלמת ארבע התחנות הראשונות.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <h2 class="section-title">📚 מה הילד/ה לומדים בכל תחנה?</h2>
+    <div class="station-list">
+      <div class="station-item">
+        <div class="station-item-title">🍞 מעבדת השמרים</div>
+        <p>שמרים הם יצורים חד-תאיים חיים שניזונים מסוכר ומשחררים גז פחמן דו-חמצני — זה מה שגורם לבצק לתפוח. הילד/ה משווים בין כוסות עם תנאים שונים (חום, סוכר) ולומדים לבודד משתנה אחד כדי להבין מה באמת משפיע על התוצאה.</p>
+      </div>
+      <div class="station-item">
+        <div class="station-item-title">🍓 מעבדת הריבה</div>
+        <p>פקטין — חומר טבעי שנמצא בקליפות ובליבות של פירות כמו תפוחים — יחד עם חום וחומצה (לימון) הופכים נוזל פירות לריבה סמיכה. הילד/ה מתנסים בבדיקת "מוכנות" מדעית אמיתית (מבחן הצלחת הקרה) במקום רק להעריך בעין.</p>
+      </div>
+      <div class="station-item">
+        <div class="station-item-title">🥬 מעבדת הצבעים (כרוב סגול)</div>
+        <p>מיץ כרוב סגול הוא מחוון טבעי לחומציות: הוא משנה צבע לפי אם הנוזל חומצי (כמו חומץ ולימון) או בסיסי (כמו סודה לשתייה). הילד/ה לומדים לסווג חומרים מהמטבח לפי תכונה משותפת.</p>
+      </div>
+      <div class="station-item">
+        <div class="station-item-title">🍨 מעבדת הגלידה בשקית</div>
+        <p>מלח מוריד את נקודת הקיפאון של הקרח, וכך הקרח נהיה קר יותר ומקפיא את תערובת הגלידה מהר יותר. הילד/ה עורכים ניסוי השוואתי אמיתי — שקית עם מלח מול שקית בלי מלח (קבוצת ביקורת).</p>
+      </div>
+      <div class="station-item">
+        <div class="station-item-title">🌋 מעבדת ההר געש (אקסטרא)</div>
+        <p>תגובה כימית בין חומצה (חומץ) לבסיס (סודה לשתייה) משחררת גז פחמן דו-חמצני שיוצר את "ההתפרצות". הילד/ה מתנסים ב"מבחן הוגן" — שינוי משתנה אחד בלבד, כדי לדעת בוודאות מה גרם להבדל.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <h2 class="section-title">💬 שאלות לשיחה עם הילד/ה</h2>
+    <ul class="tip-list">
+      <li>למה לדעתך הבצק תפח יותר בכוס עם הסוכר מאשר בכוס בלי סוכר?</li>
+      <li>מה קורה לדעתך לפירות כשמבשלים אותם הרבה זמן עם סוכר?</li>
+      <li>איזה עוד נוזל מהמטבח יכול לשנות את צבע מיץ הכרוב, ולמה בעיניך?</li>
+      <li>איך לדעתך אפשר להפוך את הגלידה שלנו לקרה יותר, מהר יותר?</li>
+      <li>למה חשוב לשנות רק דבר אחד בכל פעם כשבודקים ניסוי?</li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <h2 class="section-title">⚠️ הערות בטיחות</h2>
+    <div class="safety-box">
+      <ul class="tip-list">
+        <li>כל שימוש בכיריים, בתנור או במים רותחים (ניסויים 1, 2, 3) — בעזרת מבוגר בלבד.</li>
+        <li>מיץ הכרוב הסגול וניסוי הר הגעש אינם למאכל או לשתייה — כדאי להסביר זאת לילד/ה מראש.</li>
+        <li>בניסוי הר הגעש: מומלץ להתרחק מעט ולהיזהר מהתזות בזמן ההתפרצות; מזיגת החומץ — בעזרת מבוגר, ורצוי הגנה על העיניים.</li>
+        <li>בניסוי הגלידה בשקית: השקית נעשית קרה מאוד — מנענעים אותה עם כפפות או מגבת, ולא מחזיקים קרח זמן רב בידיים חשופות.</li>
+        <li>מומלץ פיקוח צמוד של מבוגר לאורך כל חמשת הניסויים.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <h2 class="section-title">🛒 רשימת קניות מאוחדת</h2>
+    <p class="section-body">
+      שמרים יבשים וקמח · סוכר · שמן צמחי/זית · ביצה ושומשום (ניסוי 1) · תותים טריים ותפוח עץ ירוק ולימון (ניסוי 2) · כרוב סגול, חומץ וסודה לשתייה (ניסוי 3) · חלב קוקוס, תמצית וניל, מלח גס ושקיות עם סגירה (ניסוי 4) · נייר כסף וסבון כלים (ניסוי 5, בנוסף לחומץ ולסודה שכבר ברשימה).
+    </p>
+    <p class="section-body">
+      הרשימה המלאה עם כמויות מדויקות לכל ניסוי נמצאת בעמוד האחרון של חוברת המתכונים להורדה למטה.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <h2 class="section-title">📖 מתכוני ניסויים במטבח</h2>
+    <p class="section-body">
+      להלן דפי המתכון המלאים להורדה. מומלץ להדפיס ולתלות במטבח לפני שמתחילים לבשל יחד!
+    </p>
+    <div class="recipe-list">
+      <a href="assets/recipes/recipe_page_1_yeast_buns.png" class="recipe-dl-btn" target="_blank" download="מתכון לחמניות שמרים.png">
+        <span class="recipe-dl-icon">🍞</span>
+        <span class="recipe-dl-label">לחמניות שמרים</span>
+        <span class="recipe-dl-arrow">📥</span>
+      </a>
+      <a href="assets/recipes/recipe_page_2_jam_apple.png" class="recipe-dl-btn" target="_blank" download="מתכון ריבת תותים.png">
+        <span class="recipe-dl-icon">🍓</span>
+        <span class="recipe-dl-label">ריבת תותים</span>
+        <span class="recipe-dl-arrow">📥</span>
+      </a>
+      <a href="assets/recipes/recipe_page_3_purple_cabbage.png" class="recipe-dl-btn" target="_blank" download="מתכון מיץ כרוב סגול.png">
+        <span class="recipe-dl-icon">🥬</span>
+        <span class="recipe-dl-label">מיץ כרוב סגול</span>
+        <span class="recipe-dl-arrow">📥</span>
+      </a>
+      <a href="assets/recipes/recipe_page_4_ice_cream_bag.png" class="recipe-dl-btn" target="_blank" download="מתכון גלידה בשקית.png">
+        <span class="recipe-dl-icon">🍨</span>
+        <span class="recipe-dl-label">גלידה בשקית</span>
+        <span class="recipe-dl-arrow">📥</span>
+      </a>
+      <a href="assets/recipes/recipe_page_5_volcano.png" class="recipe-dl-btn" target="_blank" download="מתכון הר געש.png">
+        <span class="recipe-dl-icon">🌋</span>
+        <span class="recipe-dl-label">הר געש (אקסטרא)</span>
+        <span class="recipe-dl-arrow">📥</span>
+      </a>
+      <a href="assets/recipe_book_stem.pdf"
+         id="booklet-dl-btn"
+         class="recipe-dl-btn"
+         target="_blank"
+         download="חוברת מתכונים - ניסויים במטבח.pdf"
+         onclick="return downloadBooklet(event, this)">
+        <span class="recipe-dl-icon">📖</span>
+        <span class="recipe-dl-label">כל המתכונים בחוברת אחת<span class="recipe-dl-sub">קובץ PDF · כ-4.5MB · כולל רשימת קניות והערות בטיחות</span></span>
+        <span class="recipe-dl-arrow">📥</span>
+      </a>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+function downloadBooklet(e, el) {
+  e.preventDefault();
+  var label = el.querySelector('.recipe-dl-label');
+  var arrow = el.querySelector('.recipe-dl-arrow');
+  var originalLabel = label.innerHTML;
+  var originalArrow = arrow.textContent;
+  label.textContent = 'מוריד...';
+  arrow.textContent = '⏳';
+  el.style.pointerEvents = 'none';
+
+  fetch(el.getAttribute('href'))
+    .then(function (res) { return res.blob(); })
+    .then(function (blob) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = el.getAttribute('download');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+    })
+    .catch(function () {
+      window.location.href = el.getAttribute('href');
+    })
+    .finally(function () {
+      label.innerHTML = originalLabel;
+      arrow.textContent = originalArrow;
+      el.style.pointerEvents = '';
+    });
+
+  return false;
+}
+</script>
+</body>
+</html>
