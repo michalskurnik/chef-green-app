@@ -366,6 +366,12 @@
 
     root.appendChild(el('p', 'lab-intro', NB.conclusionQ));
 
+    if (CFG.hintComic && window.openHintComic) {
+      var hintBtn = el('button', 'lab-btn ghost', '💡 לא בטוחים? רמז');
+      hintBtn.onclick = function () { window.openHintComic(CFG.hintComic); };
+      root.appendChild(hintBtn);
+    }
+
     var msg = el('p', 'lab-note conclusion-msg');
     msg.id = 'conclusion-msg';
     root.appendChild(msg);

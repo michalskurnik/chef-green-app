@@ -103,8 +103,23 @@ button{touch-action:manipulation;-webkit-appearance:none;font-family:inherit}
 <script src="unlock-logic.js"></script>
 <script src="../assets/stem-notebook-config.js"></script>
 <script>
-window.LAB_CONFIG = {"gameNum": 1, "stationIndex": 0, "title": "מעבדת השמרים", "emoji": "🍞", "color1": "#C68C46", "color2": "#E0A868", "unit": "ס״מ", "maxScale": 6, "varLabels": {"temp": "טמפרטורה", "sugar": "סוכר"}, "guidedCups": [{"id": "a", "label": "כוס א׳", "tag": "פושר + סוכר", "vars": {"temp": "warm", "sugar": true}, "resultCm": 5}, {"id": "b", "label": "כוס ב׳", "tag": "פושר, בלי סוכר", "vars": {"temp": "warm", "sugar": false}, "resultCm": 1}, {"id": "c", "label": "כוס ג׳", "tag": "קר + סוכר", "vars": {"temp": "cold", "sugar": true}, "resultCm": 2}], "freeExtraCups": [{"id": "d", "label": "כוס ד׳", "tag": "חם + סוכר", "vars": {"temp": "hot", "sugar": true}, "resultCm": 0}, {"id": "e", "label": "כוס ה׳", "tag": "קר, בלי סוכר", "vars": {"temp": "cold", "sugar": false}, "resultCm": 0}], "maxFreeRuns": 3, "nextHref": "game2.html"};
+window.LAB_CONFIG = {"gameNum": 1, "stationIndex": 0, "title": "מעבדת השמרים", "emoji": "🍞", "color1": "#C68C46", "color2": "#E0A868", "unit": "ס״מ", "maxScale": 6, "varLabels": {"temp": "טמפרטורה", "sugar": "סוכר"}, "guidedCups": [{"id": "a", "label": "כוס א׳", "tag": "פושר + סוכר", "vars": {"temp": "warm", "sugar": true}, "resultCm": 5}, {"id": "b", "label": "כוס ב׳", "tag": "פושר, בלי סוכר", "vars": {"temp": "warm", "sugar": false}, "resultCm": 1}, {"id": "c", "label": "כוס ג׳", "tag": "קר + סוכר", "vars": {"temp": "cold", "sugar": true}, "resultCm": 2}], "freeExtraCups": [{"id": "d", "label": "כוס ד׳", "tag": "חם + סוכר", "vars": {"temp": "hot", "sugar": true}, "resultCm": 0}, {"id": "e", "label": "כוס ה׳", "tag": "קר, בלי סוכר", "vars": {"temp": "cold", "sugar": false}, "resultCm": 0}], "maxFreeRuns": 3, "nextHref": "game2.html",
+  "hintComic": {
+    "bg": "assets/backgrounds/stem_bg_s1_yeast.png",
+    "accent": "#C68C46",
+    "ctaLabel": "הבנתי! 💡",
+    "panels": [
+      { "caption": "שמרים הן פטריות חד-תאיות 🔬", "char": "bito_pointing", "char2": "yeast_sleeping", "bottle": {} },
+      { "caption": "מוסיפים אותן למים", "char": "bito_pointing", "bottle": { "water": 0.45 } },
+      { "caption": "ומוסיפים סוכר - האוכל שלהן", "char": "bito_thinking", "bottle": { "water": 0.55, "sugar": true } },
+      { "caption": "השמרים מתעוררות ואוכלות!", "char": "yeast_happy", "bounce": true, "bottle": { "water": 0.6, "sugar": true, "bubbles": true }, "balloon": 0.15 },
+      { "caption": "משחררות פחמן דו-חמצני ואנרגיה!", "char": "yeast_happy", "bounce": true, "bottle": { "water": 0.6, "sugar": true, "bubbles": true }, "balloon": 0.65 },
+      { "caption": "קסם המדע! 🎈", "char": "bito_surprised", "char2": "chef_stand", "bottle": { "water": 0.6, "sugar": true, "bubbles": true }, "balloon": 1 }
+    ]
+  }
+};
 </script>
+<script src="hint-comic.js"></script>
 <script src="dial-lab.js"></script>
 </body>
 </html>
