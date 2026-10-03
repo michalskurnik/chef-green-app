@@ -5,6 +5,24 @@
 <script src="../assets/rc-config.js"></script>
 <script src="../assets/protein-config.js"></script>
 <script src="access-guard.js"></script>
+<script>
+// First-time visitor → send straight to the comic intro, before anything paints.
+// Returning players (any stars saved) or anyone who already watched it skip this.
+(function(){
+  try {
+    var seen = localStorage.getItem('protein_comic_seen');
+    var starsRaw = localStorage.getItem('protein_stars_detail');
+    var hasStars = false;
+    if (starsRaw) {
+      var arr = JSON.parse(starsRaw);
+      hasStars = Array.isArray(arr) && arr.some(function(s){ return s > 0; });
+    }
+    if (!seen && !hasStars) {
+      window.location.replace('comic.html');
+    }
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -102,7 +120,13 @@ button,[role=button]{touch-action:manipulation;-webkit-appearance:none}
   background:linear-gradient(90deg,var(--green) 33%,var(--gold) 33%,var(--gold) 66%,var(--orange) 66%);
 }
 #back-btn{
-  position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);left:16px;
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);left:16px;z-index:2;
+  background:rgba(31,59,23,.1);border:none;border-radius:12px;
+  padding:7px 14px;font-size:14px;font-weight:800;color:var(--dark);
+  cursor:pointer;font-family:'Assistant',sans-serif;
+}
+#comic-btn{
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;z-index:2;
   background:rgba(31,59,23,.1);border:none;border-radius:12px;
   padding:7px 14px;font-size:14px;font-weight:800;color:var(--dark);
   cursor:pointer;font-family:'Assistant',sans-serif;
@@ -278,6 +302,7 @@ button,[role=button]{touch-action:manipulation;-webkit-appearance:none}
 <div id="menu-screen">
   <div id="map-header">
     <button id="back-btn" onclick="goBack()">← חזרה</button>
+    <button id="comic-btn" onclick="window.location.href='comic.html'">🎬 הסיפור</button>
     <h2>🌱 מטבח הצומח</h2>
     <p id="map-sub">כל מתכון מגלה דרך חדשה לבשל חלבון מהצומח!</p>
     <div class="stars-badge">
