@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<script src="../assets/rc-config.js"></script>
+<script src="../assets/protein-config.js"></script>
+<script src="access-guard.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>תעודת שף מתחיל 🏆</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html{touch-action:pan-y;overscroll-behavior-y:none}
+body{
+  background:#f5f0dc;
+  font-family:'Rubik',sans-serif;
+  direction:rtl;
+  overflow-y:auto;
+  overflow-x:hidden;
+  position:relative;
+  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 32px);
+}
+
+/* ── Certificate section ── */
+.cert-section{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  background:#f5f0dc;
+}
+
+.cert-wrap{
+  position:relative;
+  width:100%;
+  max-width:640px;
+  flex-shrink:0;
+  overflow:visible;
+}
+.cert-bg{
+  width:100%;
+  display:block;
+  /* certificate-bg-protein.png: 4:3, border art only - no title/ring baked in */
+}
+
+.cert-title{
+  position:absolute;
+  top:12%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(15px,4.5vw,34px);
+  color:#5A7D1E;
+  white-space:nowrap;
+  text-align:center;
+  text-shadow:0 1px 4px rgba(255,255,255,.85);
+  pointer-events:none;
+}
+
+.cert-subline{
+  position:absolute;
+  top:26%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Rubik',sans-serif;
+  font-size:clamp(9px,2.2vw,17px);
+  font-weight:600;
+  color:#3F5A14;
+  white-space:nowrap;
+  text-align:center;
+  pointer-events:none;
+  text-shadow:0 1px 3px rgba(255,255,255,.8);
+}
+
+.cert-name{
+  position:absolute;
+  top:39%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(14px,4.8vw,36px);
+  color:#7CB342;
+  white-space:nowrap;
+  text-align:center;
+  text-shadow:0 1px 4px rgba(255,255,255,.9);
+  pointer-events:none;
+  letter-spacing:.5px;
+  max-width:55%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.cert-photo-wrap{
+  position:absolute;
+  top:63%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:31%;
+  aspect-ratio:1;
+  border-radius:50%;
+  overflow:hidden;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,253,240,.15);
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:opacity .15s;
+}
+.cert-photo-wrap:active{opacity:.8}
+
+/* This artwork has no baked-in rope circle, same approach as italy's
+   background - draw a gold ring in CSS. border-width can't be a true
+   percentage, so it uses the same vw-clamp approximation already used
+   for every font-size on this page (~1% of a 640px-max certificate). */
+.cert-photo-wrap.ring{
+  border:clamp(3px,1vw,7px) solid #C9A227;
+  box-shadow:0 0 0 1px rgba(0,0,0,.06);
+}
+
+.cert-photo-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+  display:none;
+}
+.cert-camera-hint{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+  pointer-events:none;
+}
+.cam-icon{font-size:clamp(18px,6vw,48px);line-height:1}
+.cam-label{
+  font-family:'Rubik',sans-serif;
+  font-size:clamp(7px,2vw,13px);
+  font-weight:700;
+  color:#4A6A1E;
+  text-align:center;
+  line-height:1.25;
+}
+
+.cert-achievement{
+  position:absolute;
+  top:79%;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Rubik',sans-serif;
+  font-size:clamp(8px,2.2vw,15px);
+  font-weight:600;
+  color:#3F5A14;
+  white-space:nowrap;
+  text-align:center;
+  pointer-events:none;
+  text-shadow:0 1px 3px rgba(255,255,255,.8);
+}
+
+.btn-wa:disabled{opacity:.7;cursor:not-allowed;transform:none!important}
+
+/* ── Buttons ── */
+.buttons-section{
+  max-width:480px;
+  margin:0 auto;
+  padding:20px 20px 48px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.btn-wa{
+  display:block;
+  width:100%;
+  background:#25D366;
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:17px;
+  font-weight:700;
+  padding:16px 24px;
+  border-radius:50px;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(37,211,102,.4);
+  touch-action:manipulation;
+  transition:transform .1s,opacity .15s;
+}
+.btn-wa:active{transform:scale(.97);opacity:.9}
+
+.btn-print{
+  width:100%;
+  background:#fff;
+  color:#25D366;
+  border:2px solid #25D366;
+  border-radius:50px;
+  padding:15px 24px;
+  font-size:17px;
+  font-family:'Rubik',sans-serif;
+  font-weight:700;
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-print:active{transform:scale(.97)}
+
+.btn-next{
+  display:block;
+  width:100%;
+  background:#F5921E;
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:17px;
+  font-weight:700;
+  padding:16px 24px;
+  border-radius:50px;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(245,146,30,.4);
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-next:active{transform:scale(.97)}
+
+.btn-booklet{
+  display:block;
+  width:100%;
+  background:#fff;
+  color:#F5921E;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:16px;
+  font-weight:700;
+  padding:14px 24px;
+  border-radius:50px;
+  border:2px solid #F5921E;
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-booklet:active{transform:scale(.97)}
+.btn-booklet-size{font-weight:500;opacity:.75;font-size:.85em}
+
+.btn-parents{
+  display:block;
+  width:100%;
+  background:none;
+  color:#4A6A1E;
+  text-align:center;
+  text-decoration:none;
+  font-family:'Rubik',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  padding:12px 24px;
+  border-radius:50px;
+  border:2px dashed rgba(74,106,30,.3);
+  cursor:pointer;
+  touch-action:manipulation;
+  transition:transform .1s;
+}
+.btn-parents:active{transform:scale(.97)}
+
+/* ── Print ── */
+@media print{
+  .buttons-section{display:none!important}
+  body{padding:0;background:#fff}
+  .cert-section{display:block}
+  .cert-wrap{max-width:100%!important;width:100%!important}
+  .cert-camera-hint{display:none}
+}
+
+/* ── iPad ── */
+@media(min-width:768px){
+  .cert-wrap{max-width:640px;margin:0 auto}
+  .cert-title{font-size:clamp(18px,2.8vw,38px)}
+  .cert-subline{font-size:clamp(11px,1.4vw,19px)}
+  .cert-name{font-size:clamp(20px,3.2vw,42px)}
+  .cert-achievement{font-size:clamp(10px,1.4vw,17px)}
+  .cam-icon{font-size:clamp(24px,3.5vw,52px)}
+  .cam-label{font-size:clamp(9px,1.2vw,15px)}
+  .buttons-section{max-width:520px;padding:24px 24px 56px}
+  .btn-wa,.btn-print,.btn-next,.btn-booklet{font-size:20px;padding:18px 28px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ Certificate ══════════════════════════════════════ -->
+<div class="cert-section">
+  <div class="cert-wrap" id="certificate-card">
+
+    <!-- Background image: protein-specific art, border only - title and ring are drawn in code -->
+    <img src="assets/certificate-bg-protein.png"
+         class="cert-bg"
+         alt="תעודת מומחה לחלבון מהצומח">
+
+    <!-- Title + sub-line (not baked into this artwork, unlike the shared dinner background) -->
+    <div class="cert-title">תעודת מומחה לחלבון מהצומח</div>
+    <div class="cert-subline">מוענקת בגאווה ל:</div>
+
+    <!-- Child's name (read from localStorage) -->
+    <div class="cert-name" id="cert-name"></div>
+
+    <!-- Photo upload circle with a drawn gold ring (artwork has no rope circle) -->
+    <div class="cert-photo-wrap ring" id="cert-photo-wrap">
+      <img id="cert-photo-img" class="cert-photo-img" alt="">
+      <div class="cert-camera-hint" id="cert-camera-hint">
+        <span class="cam-icon">📷</span>
+        <span class="cam-label">הוסיפו<br>תמונה</span>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" style="display:none">
+    </div>
+
+    <!-- Achievement text (below photo area inside circle) -->
+    <div class="cert-achievement">על השלמת הרפתקת החלבון מהצומח 🌱</div>
+
+  </div>
+</div>
+
+<!-- ══ Buttons ══════════════════════════════════════════ -->
+<div class="buttons-section">
+  <button id="btn-wa" class="btn-wa" onclick="shareCertificate()">
+    שיתוף לוואטסאפ 📲
+  </button>
+  <button class="btn-print" onclick="window.print()">הדפסה 🖨️</button>
+  <a href="assets/recipe_book_protein.pdf"
+     id="booklet-dl-btn"
+     class="btn-booklet"
+     target="_blank"
+     download="חוברת מתכונים - חלבונים מהצומח.pdf"
+     onclick="return downloadBooklet(event, this)">
+    📖 הורדת חוברת המתכונים <span class="btn-booklet-size">(כ-2.3MB)</span>
+  </a>
+  <a href="../app/packages.html" class="btn-next">לבחירת הרפתקה הבאה ←</a>
+  <a href="parents.html" class="btn-parents">👨‍👩‍👧‍👦 להורים</a>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Load child's name ──────────────────────────────────
+  var chefName = localStorage.getItem('chefName') || '';
+  if (chefName) {
+    document.getElementById('cert-name').textContent = chefName;
+  }
+
+  // ── Photo upload — restore saved photo on load ─────────
+  var photoWrap  = document.getElementById('cert-photo-wrap');
+  var photoImg   = document.getElementById('cert-photo-img');
+  var cameraHint = document.getElementById('cert-camera-hint');
+  var photoInput = document.getElementById('photo-input');
+
+  var savedPhoto = localStorage.getItem('childPhoto');
+  if (savedPhoto) {
+    photoImg.src = savedPhoto;
+    photoImg.style.display = 'block';
+    cameraHint.style.display = 'none';
+  }
+
+  photoWrap.addEventListener('click', function () {
+    photoInput.click();
+  });
+
+  photoInput.addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      var dataUrl = ev.target.result;
+      localStorage.setItem('childPhoto', dataUrl);
+      photoImg.src = dataUrl;
+      photoImg.style.display = 'block';
+      cameraHint.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+})();
+</script>
+<script>
+// On iOS, tapping a PDF link opens WebKit's built-in viewer rather than
+// saving to Files directly - the fetch+blob dance below at least gives
+// accurate "downloading..." feedback for the ~2.3MB booklet over a slow
+// connection. Once handed off, iOS still shows its viewer; the parent
+// can save/share from there via the native share-sheet icon.
+function downloadBooklet(e, el) {
+  e.preventDefault();
+  var original = el.innerHTML;
+  el.innerHTML = '⏳ מוריד...';
+  el.style.pointerEvents = 'none';
+
+  fetch(el.getAttribute('href'))
+    .then(function (res) { return res.blob(); })
+    .then(function (blob) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = el.getAttribute('download');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+    })
+    .catch(function () {
+      window.location.href = el.getAttribute('href');
+    })
+    .finally(function () {
+      el.innerHTML = original;
+      el.style.pointerEvents = '';
+    });
+
+  return false;
+}
+</script>
+<script>
+  // This artwork has no baked-in title or rope circle - draw both, matching
+  // the live CSS .cert-title/.cert-subline/.cert-photo-wrap.ring above.
+  window.CERT_CONFIG = {
+    bg: 'assets/certificate-bg-protein.png',
+    title: 'תעודת מומחה לחלבון מהצומח', titleColor: '#5A7D1E',
+    subline: 'מוענקת בגאווה ל:',          sublineColor: '#3F5A14',
+    ring: true, ringColor: '#C9A227'
+  };
+</script>
+<script src="../assets/certificate-share.js"></script>
+
+</body>
+</html>

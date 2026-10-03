@@ -6,7 +6,7 @@
 <script src="../assets/protein-config.js"></script>
 <script src="access-guard.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>מודדים להמבורגר עדשים</title>
+<title>מכינים לכדורי בטטה וקינואה</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%;overscroll-behavior:none}
@@ -87,8 +87,8 @@
   <div class="top">
     <button class="pause" id="pauseBtn" aria-label="השהיה">❚❚</button>
     <div class="dots" id="dots"><i></i><i></i><i></i></div>
-    <h1 id="title">מוזגים עדשים</h1>
-    <div class="goal" id="goal">עד הקו של ½</div>
+    <h1 id="title">שמים בטטה מעוכה</h1>
+    <div class="goal" id="goal">עד הקו של כוס מלאה</div>
   </div>
 
   <div class="stage">
@@ -123,29 +123,42 @@
 <script>
 (function(){
   /* ------------------------------------------------------------------
-     Measuring game — package 3 (protein)
+     Measuring game — package 3 (protein), recipe 3 (כדורי בטטה וקינואה)
 
-     Storage contract for this package:
+     Clone of game3.html's engine (itself a clone of game1.html). Unlike
+     arayes (recipe 2), this recipe states THREE ingredients by cup
+     volume directly on the recipe card (1 cup mashed sweet potato,
+     1 cup cooked quinoa, 1/2 cup fine rolled oats) - so this is the
+     "clean" case the original game1.html engine was built for, no
+     flat-colour fallback needed. tex-oats.png already existed (shared
+     with recipe 1's burger); tex-sweet-potato.png / tex-quinoa.png were
+     generated via ChatGPT this pass to match the existing house style.
+
+     Storage contract, same shape as game1-4.html:
        one writer  : this file, into protein_stars_detail[starsIndex]
        one reader  : protein/unlock-logic.js
-       no completion flags, no flat-sum key, no shared router.
+     starsIndex is 2 here - recipe 1 (burger) = index 0 (game1/game2),
+     recipe 2 (arayes) = index 1 (game3/game4), recipe 3 (this one) =
+     index 2 (game5/game6). Follows italy's unlock-logic.js convention:
+     recipe i's pair of games is game(2i+1).html + game(2i+2).html and
+     both write stars_detail[i].
      ------------------------------------------------------------------ */
   var CONFIG = {
-    starsIndex: 0,
+    starsIndex: 2,
     storageKeyPrefix: 'protein',
-    next: 'game2.html',
+    next: 'game6.html',
     hub: 'index.html',
-    /* calibrated against the printed marks on assets/cup-marked.png:
-       emptyPct  = height of the inner base
-       perCupPct = height of one cup on the printed scale       */
+    /* same physical cup graphic/calibration as game1.html/game3.html (assets/cup-marked.png) -
+       the goal line is drawn programmatically at r.cups, so it does not need to
+       land on one of the cup's own printed marks. */
     cup: { emptyPct: 90.02, perCupPct: 61.68, leftPct: 13.04, rightPct: 75.39,
            maxCups: 1.35 },
     rounds: [
-      { name:'מוזגים עדשים',       cups:0.5,  label:'\u00bd', tol:0.055,
-        tex:'assets/tex-lentil.png' },
-      { name:'מוזגים אורז',        cups:0.75, label:'\u00be', tol:0.045,
-        tex:'assets/tex-rice.png' },
-      { name:'מוזגים שיבולת שועל', cups:0.25, label:'\u00bc', tol:0.035,
+      { name:'שמים בטטה מעוכה',      cups:1.0, label:'כוס מלאה', tol:0.06,
+        tex:'assets/tex-sweet-potato.png' },
+      { name:'מוסיפים קינואה מבושלת', cups:1.0, label:'כוס מלאה', tol:0.06,
+        tex:'assets/tex-quinoa.png' },
+      { name:'מוסיפים שיבולת שועל',   cups:0.5, label:'חצי כוס',  tol:0.04,
         tex:'assets/tex-oats.png' }
     ]
   };
@@ -203,7 +216,13 @@
     var r = CONFIG.rounds[idx];
     title.textContent = r.name;
     goal.textContent  = 'עד הקו של ' + r.label;
-    fill.style.backgroundImage = 'url(' + r.tex + ')';
+    if (r.tex) {
+      fill.style.backgroundImage = 'url(' + r.tex + ')';
+      fill.style.backgroundColor = '';
+    } else {
+      fill.style.backgroundImage = 'none';
+      fill.style.backgroundColor = r.color || '#999';
+    }
     gline.style.top   = topFor(r.cups) + '%';
     gline.style.left  = (C.leftPct - 3) + '%';
     gline.style.width = (C.rightPct - C.leftPct + 6) + '%';

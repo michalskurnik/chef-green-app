@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<script src="../assets/rc-config.js"></script>
+<script src="../assets/protein-config.js"></script>
+<script src="access-guard.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>חלבונים מהצומח 🌱</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:    #1F3B17;
+  --card:  #F5F0DC;
+  --orange:#F5921E;
+  --gold:  #F7C948;
+  --green: #7CB342;
+  --dark:  #1F3B17;
+  --light: #F5F0DC;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{min-height:100%;background:var(--bg);font-family:'Assistant',sans-serif;direction:rtl;-webkit-text-size-adjust:100%}
+body{display:flex;flex-direction:column;align-items:center;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(env(safe-area-inset-bottom,0px) + 32px)}
+button,[role=button]{touch-action:manipulation;-webkit-appearance:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-11px) rotate(2deg)}}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 6px 28px rgba(245,146,30,.45)}50%{transform:scale(1.04);box-shadow:0 10px 36px rgba(245,146,30,.7)}}
+@keyframes twinkle{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.2) rotate(12deg)}}
+
+/* ── Page wrapper ── */
+.page{width:100%;max-width:420px;padding:0 16px}
+
+/* ═══════════════════════════════════════════
+   INTRO SCREEN
+═══════════════════════════════════════════ */
+#intro-screen{width:100%;max-width:420px}
+
+#hero-banner{
+  background:var(--card);
+  border-radius:0 0 36px 36px;
+  padding:calc(env(safe-area-inset-top,0px) + 18px) 0 28px;
+  text-align:center;
+  position:relative;overflow:hidden;
+  animation:fadeUp .5s ease both;
+  box-shadow:0 10px 40px rgba(0,0,0,.35);
+}
+#hero-banner::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--green) 33%,var(--gold) 33%,var(--gold) 66%,var(--orange) 66%);
+}
+.hero-deco{position:absolute;animation:twinkle ease-in-out infinite;pointer-events:none;z-index:2}
+#hero-img{
+  width:100%;max-height:200px;object-fit:cover;display:block;
+  margin-bottom:14px;
+  position:relative;z-index:1;
+}
+#hero-title{font-family:'Fredoka One',cursive;font-size:30px;line-height:1.1;color:var(--dark);position:relative;z-index:1;margin-bottom:6px;padding:0 24px}
+#hero-sub{font-size:16px;font-weight:700;color:rgba(31,59,23,.65);position:relative;z-index:1;margin-bottom:20px;line-height:1.5;padding:0 24px}
+
+#dish-row{display:flex;gap:10px;justify-content:center;position:relative;z-index:1}
+.dish{
+  width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,#3a3a3a,#555);
+  border:3px solid rgba(31,59,23,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.22);
+}
+
+.story-text{padding:20px 4px 16px;text-align:center}
+.story-text p{font-size:17px;font-weight:400;color:rgba(245,240,220,.72);line-height:1.85}
+.story-text strong{font-weight:800;color:var(--gold)}
+
+#cta-primary{
+  background:var(--orange);color:#fff;border:none;border-radius:22px;
+  padding:18px 24px;font-size:22px;font-family:'Fredoka One',cursive;
+  cursor:pointer;width:100%;margin-bottom:12px;
+  box-shadow:0 6px 28px rgba(245,146,30,.5);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+#cta-primary:active{transform:scale(.97);animation:none}
+
+/* ═══════════════════════════════════════════
+   MENU SCREEN
+═══════════════════════════════════════════ */
+#menu-screen{display:none;width:100%;max-width:420px;animation:fadeUp .4s ease}
+
+#map-header{
+  background:var(--card);
+  border-radius:0 0 32px 32px;
+  padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 22px;
+  text-align:center;
+  box-shadow:0 8px 28px rgba(0,0,0,.28);
+  margin-bottom:16px;
+  position:relative;
+}
+#map-header::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--green) 33%,var(--gold) 33%,var(--gold) 66%,var(--orange) 66%);
+}
+#back-btn{
+  position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);left:16px;
+  background:rgba(31,59,23,.1);border:none;border-radius:12px;
+  padding:7px 14px;font-size:14px;font-weight:800;color:var(--dark);
+  cursor:pointer;font-family:'Assistant',sans-serif;
+}
+#map-header h2{font-family:'Fredoka One',cursive;font-size:26px;color:var(--dark);margin-bottom:4px}
+#map-header p{font-size:15px;font-weight:700;color:rgba(31,59,23,.6);margin-bottom:14px}
+
+.stars-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--dark);border-radius:30px;padding:9px 20px;
+  box-shadow:0 3px 14px rgba(0,0,0,.18);
+}
+#stars-count{font-family:'Fredoka One',cursive;font-size:24px;color:var(--gold)}
+.stars-label{font-size:14px;font-weight:700;color:rgba(245,240,220,.65)}
+
+/* Progress */
+#progress-card{
+  margin:0 16px 16px;
+  background:rgba(245,240,220,.07);
+  border:2px solid rgba(245,240,220,.11);
+  border-radius:20px;padding:13px 18px;
+}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.prog-row span{font-size:14px;font-weight:700;color:rgba(245,240,220,.55)}
+#progress-txt{font-family:'Fredoka One',cursive;font-size:17px;color:var(--orange)}
+.prog-track{background:rgba(245,240,220,.12);border-radius:8px;height:9px;overflow:hidden;margin-bottom:10px}
+#progress-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--orange),var(--gold));transition:width .6s ease;width:0%}
+#prog-dots{display:flex;gap:8px;justify-content:center}
+
+/* Recipe cards */
+#recipe-list{padding:0 16px}
+
+.recipe-wrap{margin-bottom:10px;animation:fadeUp .4s ease both}
+.connector{display:flex;flex-direction:column;align-items:center;gap:3px;margin-bottom:10px}
+.conn-dot{width:6px;height:6px;border-radius:50%;background:rgba(245,240,220,.18)}
+
+.recipe-card{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 18px;border-radius:20px;
+  width:100%;border:none;cursor:pointer;
+  direction:rtl;text-align:right;
+  transition:transform .15s,box-shadow .15s;
+  min-height:80px;
+}
+.recipe-card:active{transform:scale(.976)}
+.recipe-card.locked{
+  background:rgba(245,240,220,.05) !important;
+  border:2px dashed rgba(245,240,220,.14) !important;
+  box-shadow:none;cursor:not-allowed;
+}
+.recipe-card.unlocked{box-shadow:0 6px 24px rgba(0,0,0,.28)}
+.recipe-card.fresh{
+  box-shadow:0 8px 32px rgba(247,201,72,.55);
+  border:3px solid var(--gold) !important;
+  animation:pulse 2s ease-in-out infinite;
+}
+.recipe-card.done{box-shadow:0 4px 16px rgba(0,0,0,.2)}
+
+/* Icon circle */
+.r-icon{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;
+}
+.recipe-card.unlocked .r-icon,.recipe-card.done .r-icon{background:rgba(255,255,255,.2)}
+.recipe-card.locked .r-icon{background:rgba(245,240,220,.08);font-size:20px;color:rgba(245,240,220,.3)}
+
+/* Text */
+.r-text{flex:1;min-width:0}
+.r-name{
+  font-family:'Fredoka One',cursive;font-size:18px;line-height:1.25;
+  margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.r-sub{font-size:13px;font-weight:700}
+.recipe-card.unlocked .r-name,.recipe-card.done .r-name{color:#fff}
+.recipe-card.locked .r-name{color:rgba(245,240,220,.28)}
+.recipe-card.unlocked .r-sub{color:rgba(255,255,255,.6)}
+.recipe-card.done .r-sub{color:rgba(255,255,255,.7)}
+.recipe-card.locked .r-sub{color:rgba(245,240,220,.2)}
+
+/* Stars row inside card */
+.r-stars{font-size:13px;letter-spacing:1px;margin-top:3px}
+
+/* Right chip */
+.r-chip{
+  flex-shrink:0;font-family:'Fredoka One',cursive;font-size:14px;
+  padding:7px 13px;border-radius:14px;white-space:nowrap;
+}
+.recipe-card.unlocked .r-chip{background:rgba(255,255,255,.2);color:#fff}
+.recipe-card.fresh .r-chip{background:var(--gold);color:var(--dark)}
+.recipe-card.done .r-chip{background:rgba(255,255,255,.18);color:rgba(255,255,255,.85)}
+.recipe-card.locked .r-chip{color:rgba(245,240,220,.22);font-size:20px}
+
+/* Success toast */
+#success-toast{
+  display:none;margin:0 16px 12px;
+  background:linear-gradient(135deg,#2E7D32,#43A047);
+  border-radius:18px;padding:14px 18px;text-align:center;
+  box-shadow:0 4px 18px rgba(46,125,50,.35);animation:fadeUp .4s ease;
+}
+#success-toast p{font-family:'Fredoka One',cursive;font-size:18px;color:#fff;margin-bottom:2px}
+#success-toast small{font-size:13px;font-weight:700;color:rgba(255,255,255,.82)}
+
+/* Trophy button */
+#trophy-btn{
+  display:none;width:calc(100% - 32px);margin:8px 16px 0;
+  background:linear-gradient(135deg,var(--gold),var(--orange));
+  color:#fff;border:none;border-radius:22px;padding:18px;
+  font-size:22px;font-family:'Fredoka One',cursive;
+  cursor:pointer;box-shadow:0 6px 24px rgba(245,200,66,.5);
+  animation:pulse 2s ease-in-out infinite;
+}
+
+#recap-btn{
+  display:none;width:calc(100% - 32px);margin:10px 16px 0;
+  background:rgba(245,240,220,.08);
+  color:var(--light);border:2px solid rgba(245,240,220,.2);
+  border-radius:20px;padding:13px;
+  font-size:15px;font-weight:800;font-family:'Assistant',sans-serif;
+  cursor:pointer;touch-action:manipulation;
+}
+#recap-btn:active{opacity:.7}
+
+#parents-btn{
+  width:calc(100% - 32px);margin:10px 16px 0;
+  background:rgba(245,240,220,.08);
+  color:var(--light);border:2px solid rgba(245,240,220,.2);
+  border-radius:20px;padding:13px;
+  font-size:15px;font-weight:800;font-family:'Assistant',sans-serif;
+  cursor:pointer;touch-action:manipulation;
+}
+#parents-btn:active{opacity:.7}
+
+@media(min-width:420px){
+  #hero-title{font-size:36px}
+  .recipe-card{padding:18px 20px}
+  .r-name{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ INTRO ══════════════════════════════════════════════════════ -->
+<div id="intro-screen">
+  <header id="hero-banner">
+    <div class="hero-deco" style="top:16px;right:22px;font-size:22px;animation-duration:2.2s">🌱</div>
+    <div class="hero-deco" style="top:20px;left:26px;font-size:17px;animation-duration:3s;animation-delay:.4s">⭐</div>
+    <img id="hero-img" src="../assets/images/pkg-protein.jpg" alt="השף הירוק וביטו מכינים חלבון מהצומח">
+    <h1 id="hero-title">חלבונים מהצומח</h1>
+    <p id="hero-sub">4 מתכונים עשירים בחלבון מהצומח מחכים לגילוי! 🌱</p>
+    <div id="dish-row">
+      <div class="dish"><span id="d0">🔒</span></div>
+      <div class="dish"><span id="d1">🔒</span></div>
+      <div class="dish"><span id="d2">🔒</span></div>
+      <div class="dish"><span id="d3">🔒</span></div>
+    </div>
+  </header>
+
+  <div class="page" style="padding-top:18px">
+    <div class="story-text">
+      <p>
+        השף הירוק וביטו מצאו ארגז מלא מצרכים מהצומח…<br>
+        אבל 4 המתכונים החלבוניים <strong>נעלמו!</strong><br>
+        רק אתם תוכלו לשחזר אותם דרך משחקים ורמזים.
+      </p>
+    </div>
+    <button id="cta-primary" onclick="goMenu()">🌱 צאו לגלות את המתכונים!</button>
+  </div>
+</div>
+
+
+<!-- ══ MENU ═══════════════════════════════════════════════════════ -->
+<div id="menu-screen">
+  <div id="map-header">
+    <button id="back-btn" onclick="goBack()">← חזרה</button>
+    <h2>🌱 מטבח הצומח</h2>
+    <p id="map-sub">כל מתכון מגלה דרך חדשה לבשל חלבון מהצומח!</p>
+    <div class="stars-badge">
+      <span style="font-size:22px">⭐</span>
+      <span id="stars-count">0</span>
+      <span class="stars-label">כוכבים שנצברו</span>
+    </div>
+  </div>
+
+  <div id="success-toast">
+    <p>🎉 מתכון חדש נפתח!</p>
+    <small>המשיכו לשלב הבא 🔓</small>
+  </div>
+
+  <div id="progress-card">
+    <div class="prog-row">
+      <span>התקדמות</span>
+      <span id="progress-txt">0/4 מתכונים</span>
+    </div>
+    <div class="prog-track"><div id="progress-fill"></div></div>
+    <div id="prog-dots"></div>
+  </div>
+
+  <div id="recipe-list"></div>
+
+  <button id="trophy-btn" onclick="window.location.href='completion.html'">
+    🏆 סיימתם את הרפתקת החלבון מהצומח — ראו את ההישג!
+  </button>
+  <button id="recap-btn" onclick="window.location.href='final_screen.html'">🎉 צפו שוב במסך הסיום</button>
+  <button id="parents-btn" onclick="window.location.href='parents.html'">👨‍👩‍👧‍👦 להורים</button>
+</div>
+
+
+<script src="unlock-logic.js"></script>
+<script>
+// ── Navigation ────────────────────────────────────────────────────
+function goBack() {
+  window.location.href = '../app/start.html';
+}
+
+function goMenu() {
+  document.getElementById('intro-screen').style.display = 'none';
+  document.getElementById('menu-screen').style.display  = 'block';
+  buildMenu();
+}
+
+// ── Build menu ────────────────────────────────────────────────────
+function buildMenu() {
+  var chefName = localStorage.getItem('chefName');
+  if (chefName) {
+    document.getElementById('map-sub').textContent = 'שלום ' + chefName + '! כל מתכון מגלה דרך חדשה לבשל חלבון מהצומח!';
+  }
+
+  var done  = getDoneCount();
+  var total = RECIPES.length;
+
+  document.getElementById('stars-count').textContent = getTotalStars();
+  document.getElementById('progress-txt').textContent = done + '/' + total + ' מתכונים';
+  document.getElementById('progress-fill').style.width = (done / total * 100) + '%';
+
+  // Progress dots
+  var dotsEl = document.getElementById('prog-dots');
+  dotsEl.innerHTML = '';
+  RECIPES.forEach(function(_, i) {
+    var dot = document.createElement('div');
+    dot.style.cssText = [
+      'width:12px','height:12px','border-radius:50%','flex-shrink:0',
+      'background:' + (isDone(i) ? 'var(--orange)' : isUnlocked(i) ? 'rgba(245,240,220,.32)' : 'rgba(245,240,220,.1)'),
+      'box-shadow:' + (isDone(i) ? '0 1px 6px rgba(245,146,30,.6)' : 'none'),
+      'transition:all .3s',
+    ].join(';');
+    dotsEl.appendChild(dot);
+  });
+
+  // Show success toast if any recipe just became unlocked
+  var anyFresh = false;
+  for (var k = 1; k < RECIPES.length; k++) {
+    if (isUnlocked(k) && !isDone(k)) { anyFresh = true; break; }
+  }
+  document.getElementById('success-toast').style.display = anyFresh ? 'block' : 'none';
+
+  // Trophy button if all done
+  document.getElementById('trophy-btn').style.display = done === total ? 'block' : 'none';
+  document.getElementById('recap-btn').style.display  = done === total ? 'block' : 'none';
+
+  // Build recipe cards
+  var list = document.getElementById('recipe-list');
+  list.innerHTML = '';
+
+  RECIPES.forEach(function(r, i) {
+    var unlocked = isUnlocked(i);
+    var done_i   = isDone(i);
+    var fresh    = unlocked && !done_i && i > 0 && isDone(i - 1);
+    var stars    = recipeStars(i);
+
+    // Connector dots between cards
+    if (i > 0) {
+      var conn = document.createElement('div');
+      conn.className = 'connector';
+      for (var d = 0; d < 3; d++) {
+        var dot = document.createElement('div');
+        dot.className = 'conn-dot';
+        conn.appendChild(dot);
+      }
+      list.appendChild(conn);
+    }
+
+    var wrap = document.createElement('div');
+    wrap.className = 'recipe-wrap';
+    wrap.style.animationDelay = (i * 0.07) + 's';
+
+    var card = document.createElement('button');
+    card.className = 'recipe-card';
+    card.style.background = 'linear-gradient(135deg,' + r.color + ',' + r.color + 'BB)';
+
+    if      (done_i)  card.classList.add('done');
+    else if (fresh)   card.classList.add('unlocked', 'fresh');
+    else if (unlocked) card.classList.add('unlocked');
+    else              { card.classList.add('locked'); card.disabled = true; }
+
+    if (unlocked) {
+      card.onclick = function(href){ return function(){ window.location.href = href; }; }(r.href);
+    }
+
+    // Icon
+    var icon = document.createElement('div');
+    icon.className = 'r-icon';
+    icon.textContent = unlocked ? (done_i ? '✅' : r.emoji) : '🔒';
+
+    // Text
+    var text = document.createElement('div');
+    text.className = 'r-text';
+
+    var name = document.createElement('div');
+    name.className = 'r-name';
+    name.textContent = unlocked ? r.name : '??? מתכון סודי';
+
+    var sub = document.createElement('div');
+    sub.className = 'r-sub';
+    if      (done_i)   { sub.textContent = '✓ שוחק'; sub.style.color = 'rgba(255,255,255,.7)'; }
+    else if (fresh)    { sub.textContent = '✨ נפתח!'; sub.style.color = 'var(--gold)'; }
+    else if (unlocked) { sub.textContent = 'לחצו להתחיל ▶'; sub.style.color = 'rgba(255,255,255,.6)'; }
+    else               { sub.textContent = '🔒 עדיין נעול'; sub.style.color = 'rgba(245,240,220,.22)'; }
+
+    // Stars row if has score
+    if (done_i && stars > 0) {
+      var starsEl = document.createElement('div');
+      starsEl.className = 'r-stars';
+      starsEl.textContent = '⭐'.repeat(stars) + '☆'.repeat(Math.max(0, 3 - stars));
+      text.appendChild(name);
+      text.appendChild(sub);
+      text.appendChild(starsEl);
+    } else {
+      text.appendChild(name);
+      text.appendChild(sub);
+    }
+
+    // Chip
+    var chip = document.createElement('div');
+    chip.className = 'r-chip';
+    if      (done_i)   chip.textContent = 'שחקו שוב';
+    else if (fresh)    { chip.textContent = 'התחילו!'; chip.style.background = 'var(--gold)'; chip.style.color = 'var(--dark)'; }
+    else if (unlocked) { chip.textContent = '▶'; chip.style.fontSize = '22px'; chip.style.padding = '5px 10px'; }
+    else               { chip.textContent = '🔒'; chip.style.fontSize = '20px'; }
+
+    card.appendChild(icon);
+    card.appendChild(text);
+    card.appendChild(chip);
+    wrap.appendChild(card);
+    list.appendChild(wrap);
+  });
+}
+
+// ── Intro dishes ──────────────────────────────────────────────────
+function updateDishes() {
+  var emojis = ['🍔','🥙','🥔','🧆'];
+  RECIPES.forEach(function(_, i) {
+    var span = document.getElementById('d' + i);
+    if (!span) return;
+    if (isDone(i)) {
+      span.textContent = '✅';
+      span.parentElement.style.background = 'linear-gradient(135deg,#2E7D32,#43A047)';
+    } else if (isUnlocked(i)) {
+      span.textContent = emojis[i];
+      span.parentElement.style.background = 'linear-gradient(135deg,rgba(245,146,30,.55),rgba(247,201,72,.45))';
+    }
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  updateDishes();
+  var chefName = localStorage.getItem('chefName');
+  if (chefName) {
+    document.getElementById('hero-sub').textContent = 'שלום ' + chefName + '! 🌱 4 מתכונים חלבוניים מחכים לך';
+  }
+  // Auto-jump to menu if there's any progress
+  if (getTotalStars() > 0) goMenu();
+});
+</script>
+</body>
+</html>
