@@ -95,6 +95,34 @@
     if (b) b.textContent = 'שלב ' + state.level + ' מתוך 3';
   }
 
+  // ── Hint-trigger button (prominent, glowing pill - injects its own
+  // style once, so any game setting CFG.hintComic gets it for free) ───
+  function ensureHintTriggerStyle() {
+    if (document.getElementById('hint-trigger-style')) return;
+    var css =
+      '.hint-trigger-wrap{display:flex;justify-content:center;margin:2px 0 18px}' +
+      '.hint-trigger{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;' +
+      'border-radius:30px;border:2px solid #F7C948;background:linear-gradient(135deg,#FFF6DD,#FFE9AE);' +
+      'color:#8a6412;font-family:\'Fredoka One\',cursive;font-size:15px;cursor:pointer;position:relative;' +
+      'box-shadow:0 4px 14px rgba(0,0,0,.1);animation:hintPulse 2.2s ease-in-out infinite}' +
+      '.hint-trigger:active{transform:scale(.96)}' +
+      '.hint-trigger .hint-emoji{font-size:21px;display:inline-block;animation:hintBulbGlow 1.8s ease-in-out infinite}' +
+      '.hint-trigger .hint-spark{position:absolute;font-size:13px;pointer-events:none;opacity:0;' +
+      'animation:hintSparkTwinkle 2.4s ease-in-out infinite}' +
+      '.hint-trigger .hint-spark.s1{top:-8px;right:8px;animation-delay:.2s}' +
+      '.hint-trigger .hint-spark.s2{bottom:-7px;left:12px;animation-delay:1.1s}' +
+      '.hint-trigger .hint-spark.s3{top:2px;left:-10px;animation-delay:.7s;font-size:11px}' +
+      '@keyframes hintPulse{0%,100%{box-shadow:0 0 0 0 rgba(247,201,72,.55),0 4px 14px rgba(0,0,0,.1)}' +
+      '50%{box-shadow:0 0 0 10px rgba(247,201,72,0),0 4px 14px rgba(0,0,0,.1)}}' +
+      '@keyframes hintBulbGlow{0%,100%{filter:drop-shadow(0 0 0px #F7C948)}50%{filter:drop-shadow(0 0 6px #F7C948)}}' +
+      '@keyframes hintSparkTwinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0deg)}' +
+      '50%{opacity:1;transform:scale(1.15) rotate(18deg)}}';
+    var style = document.createElement('style');
+    style.id = 'hint-trigger-style';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
   // ── Per-game illustration mapping ──────────────────────────────────
   // Earlier version drew a semi-transparent "vessel" watermark (cup/bag
   // PNG) behind the liquid. Dropped: those PNGs are mostly clear glass /
@@ -367,9 +395,17 @@
     root.appendChild(el('p', 'lab-intro', NB.conclusionQ));
 
     if (CFG.hintComic && window.openHintComic) {
-      var hintBtn = el('button', 'lab-btn ghost', '💡 לא בטוחים? רמז');
+      ensureHintTriggerStyle();
+      var hintWrap = el('div', 'hint-trigger-wrap');
+      var hintBtn = el('button', 'hint-trigger',
+        '<span class="hint-spark s1">✨</span>' +
+        '<span class="hint-spark s3">✨</span>' +
+        '<span class="hint-emoji">💡</span>' +
+        '<span>לא בטוחים? רמז</span>' +
+        '<span class="hint-spark s2">✨</span>');
       hintBtn.onclick = function () { window.openHintComic(CFG.hintComic); };
-      root.appendChild(hintBtn);
+      hintWrap.appendChild(hintBtn);
+      root.appendChild(hintWrap);
     }
 
     var msg = el('p', 'lab-note conclusion-msg');
