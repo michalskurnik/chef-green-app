@@ -17,7 +17,10 @@
   'use strict';
 
   var LIVE_PRODUCT_IDS = [
-    'com.michalskurnik.chefapp.italy'
+    'com.michalskurnik.chefapp.italy',
+    'com.michalskurnik.hashefhayarok.protein',
+    'com.michalskurnik.hashefhayarok.science',
+    'com.michalskurnik.hashefhayarok.bundle'
   ];
 
   var api = { LIVE_PRODUCT_IDS: LIVE_PRODUCT_IDS };

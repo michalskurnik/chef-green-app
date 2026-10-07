@@ -8,15 +8,17 @@
  * Mirrors assets/protein-config.js (package 3). PRODUCT_ID here is the
  * proposal from the Asana task notes — note it follows protein's bundle
  * scheme (com.michalskurnik.hashefhayarok.*), which differs from italy's
- * older com.michalskurnik.chefapp.italy. Confirm/reconcile before wiring
- * up a real purchase flow or submitting to the stores.
+ * older com.michalskurnik.chefapp.italy. ENTITLEMENT/PRODUCT_ID match what is
+ * configured in App Store Connect, Google Play and RevenueCat ('science').
+ * STORAGE_KEY_PREFIX stays 'stem' so existing localStorage unlock flags
+ * (stem_unlocked) and the pages that read them keep working.
  */
 (function () {
   'use strict';
 
   var STEM_CONFIG = {
-    ENTITLEMENT: 'stem',
-    PRODUCT_ID: 'com.michalskurnik.hashefhayarok.stem',
+    ENTITLEMENT: 'science',
+    PRODUCT_ID: 'com.michalskurnik.hashefhayarok.science',
     STORAGE_KEY_PREFIX: 'stem'
   };
 

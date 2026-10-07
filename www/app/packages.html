@@ -453,6 +453,8 @@
 
   <script src="../assets/rc-config.js"></script>
   <script src="../assets/live-products.js"></script>
+  <script src="../assets/protein-config.js"></script>
+  <script src="../assets/stem-config.js"></script>
   <script>
     // ── Greeting ─────────────────────────────────────────────
     const name = localStorage.getItem('chefName');
@@ -517,18 +519,70 @@
     // ── RevenueCat ────────────────────────────────────────────
     // TODO(release): RC_API_KEY comes from www/assets/rc-config.js, which
     // is gitignored and never committed. Copy rc-config.example.js to
-    // rc-config.js and fill in the real production key before building
-    // for the App Store.
-    const RC_API_KEY        = window.RC_API_KEY;
-    const ITALY_ENTITLEMENT = 'italy';
-    const ITALY_PRODUCT_ID  = 'com.michalskurnik.chefapp.italy';
+    // rc-config.js and fill in the real production keys before building
+    // for the App Store / Google Play.
+    const RC_API_KEY = window.RC_API_KEY;
+
+    // One row per single package. Entitlement / product strings for protein
+    // and science come from their *-config.js files (single source of truth,
+    // shared with each package's access-guard.js). `pkgId` is the RevenueCat
+    // package identifier in the default offering - used as a fallback match
+    // if the store product identifier doesn't line up.
+    const PACKAGES = [
+      { card: 'card-italy',   pkgId: 'italy',
+        productId:   'com.michalskurnik.chefapp.italy',
+        entitlement: 'italy',
+        storageKey:  'italy_unlocked',
+        url:         '/italy/index.html' },
+      { card: 'card-plant',   pkgId: 'protein',
+        productId:   window.PROTEIN_CONFIG.PRODUCT_ID,
+        entitlement: window.PROTEIN_CONFIG.ENTITLEMENT,
+        storageKey:  window.PROTEIN_CONFIG.STORAGE_KEY_PREFIX + '_unlocked',
+        url:         '/protein/index.html' },
+      { card: 'card-science', pkgId: 'science',
+        productId:   window.STEM_CONFIG.PRODUCT_ID,
+        entitlement: window.STEM_CONFIG.ENTITLEMENT,
+        storageKey:  window.STEM_CONFIG.STORAGE_KEY_PREFIX + '_unlocked',
+        url:         '/stem/index.html' }
+    ];
+    // The bundle is one product that unlocks all three entitlements above
+    // (configured in RevenueCat), so it has no entitlement/url of its own.
+    const BUNDLE = { card: 'card-bundle', pkgId: 'bundle',
+                     productId: 'com.michalskurnik.hashefhayarok.bundle' };
 
     let rcPurchases = null;
+
+    function isUnlocked(pkg) {
+      return localStorage.getItem(pkg.storageKey) === 'true';
+    }
+
+    function markPurchased(card, label) {
+      const btn = document.querySelector('#' + card + ' .btn-price, #' + card + ' .btn-bundle');
+      if (!btn) return;
+      btn.innerHTML = label;
+      btn.style.background = 'linear-gradient(135deg,#2E7D32,#1B5E20)';
+    }
+
+    // Reflect localStorage unlock flags on the cards (singles + bundle).
+    function renderOwnership() {
+      PACKAGES.forEach(function (pkg) {
+        if (isUnlocked(pkg)) markPurchased(pkg.card, '✅ נרכש — כניסה');
+      });
+      if (PACKAGES.every(isUnlocked)) markPurchased(BUNDLE.card, '✅ נרכשה');
+    }
+
+    // Cache every entitlement RevenueCat reports as active, then re-render.
+    function syncFromCustomerInfo(customerInfo) {
+      const active = (customerInfo && customerInfo.entitlements && customerInfo.entitlements.active) || {};
+      PACKAGES.forEach(function (pkg) {
+        if (active[pkg.entitlement]) localStorage.setItem(pkg.storageKey, 'true');
+      });
+      renderOwnership();
+    }
 
     async function initRC() {
       if (!(window.Capacitor && window.Capacitor.isNativePlatform())) {
         // Browser / web preview — skip RC, rely on localStorage only
-        if (localStorage.getItem('italy_unlocked') === 'true') updateItalyButton(true);
         return;
       }
       if (!RC_API_KEY || RC_API_KEY === 'REPLACE_ME') {
@@ -540,39 +594,45 @@
         if (!rcPurchases) return;
         await rcPurchases.configure({ apiKey: RC_API_KEY });
         const { customerInfo } = await rcPurchases.getCustomerInfo();
-        if (customerInfo.entitlements.active[ITALY_ENTITLEMENT]) {
-          localStorage.setItem('italy_unlocked', 'true');
-          updateItalyButton(true);
-        }
+        syncFromCustomerInfo(customerInfo);
       } catch (e) {
         console.error('RC init', e);
       }
     }
 
-    function updateItalyButton(purchased) {
-      const btn = document.querySelector('#card-italy .btn-price');
-      if (!btn) return;
-      if (purchased) {
-        btn.innerHTML = '✅ נרכש — כניסה';
-        btn.style.background = 'linear-gradient(135deg,#2E7D32,#1B5E20)';
-      }
-    }
-
-    async function purchaseItaly() {
-      if (!rcPurchases) { alert('רכישות לא זמינות כרגע.'); return; }
+    // Buy one product (single package or bundle). Returns the customerInfo
+    // on success, or null if the user cancelled / something failed (already
+    // alerted).
+    async function purchaseProduct(item) {
+      if (!rcPurchases) { alert('רכישות לא זמינות כרגע.'); return null; }
       try {
         const { current } = await rcPurchases.getOfferings();
-        const pkg = current && current.availablePackages &&
-          current.availablePackages.find(p => p.product && p.product.identifier === ITALY_PRODUCT_ID);
-        if (!pkg) { alert('המוצר לא נמצא. נסו שוב מאוחר יותר.'); return; }
+        const list = (current && current.availablePackages) || [];
+        const pkg =
+          list.find(p => p.product && p.product.identifier === item.productId) ||
+          list.find(p => p.identifier === item.pkgId);
+        if (!pkg) { alert('המוצר לא נמצא. נסו שוב מאוחר יותר.'); return null; }
         const { customerInfo } = await rcPurchases.purchasePackage({ aPackage: pkg });
-        if (customerInfo.entitlements.active[ITALY_ENTITLEMENT]) {
-          localStorage.setItem('italy_unlocked', 'true');
-          window.location.href = '/italy/index.html';
-        }
+        syncFromCustomerInfo(customerInfo);
+        return customerInfo;
       } catch (e) {
         const cancelled = e.code === 'PURCHASE_CANCELLED' || e.userCancelled === true;
         if (!cancelled) alert('שגיאה ברכישה: ' + (e.message || ''));
+        return null;
+      }
+    }
+
+    async function purchaseSingle(pkg) {
+      const info = await purchaseProduct(pkg);
+      if (info && info.entitlements.active[pkg.entitlement]) {
+        window.location.href = pkg.url;
+      }
+    }
+
+    async function purchaseBundle() {
+      const info = await purchaseProduct(BUNDLE);
+      if (info && PACKAGES.every(p => info.entitlements.active[p.entitlement])) {
+        alert('תודה! כל החבילות נפתחו 🎉');
       }
     }
 
@@ -580,9 +640,10 @@
       if (!rcPurchases) { alert('שחזור לא זמין כרגע.'); return; }
       try {
         const { customerInfo } = await rcPurchases.restorePurchases();
-        if (customerInfo.entitlements.active[ITALY_ENTITLEMENT]) {
-          localStorage.setItem('italy_unlocked', 'true');
-          window.location.href = '/italy/index.html';
+        syncFromCustomerInfo(customerInfo);
+        const restored = PACKAGES.filter(p => customerInfo.entitlements.active[p.entitlement]);
+        if (restored.length) {
+          alert('הרכישות שוחזרו בהצלחה ✅');
         } else {
           alert('לא נמצאה רכישה קודמת.');
         }
@@ -591,21 +652,24 @@
       }
     }
 
-    // Update italy button immediately from localStorage (before RC responds)
-    if (localStorage.getItem('italy_unlocked') === 'true') updateItalyButton(true);
+    // Show cached ownership immediately (before RC responds)
+    renderOwnership();
 
-    navigate(document.getElementById('card-italy'), function() {
-      if (localStorage.getItem('italy_unlocked') === 'true') {
-        window.location.href = '/italy/index.html';
-      } else {
-        purchaseItaly();
-      }
+    // Wire only cards whose product is live (see gating block above); a
+    // not-live card gets no handler at all.
+    PACKAGES.forEach(function (pkg) {
+      if (!isProductLive(pkg.productId)) return;
+      navigate(document.getElementById(pkg.card), function () {
+        if (isUnlocked(pkg)) window.location.href = pkg.url;
+        else purchaseSingle(pkg);
+      });
     });
-    // card-plant / card-science / card-bundle: intentionally NOT wired to
-    // navigate() here. The gating block above already marks them .disabled
-    // when their product isn't in LIVE_PRODUCT_IDS, and none of them are
-    // today - so there is no click handler, alert, or navigation attached
-    // to these cards at all until a real product goes live.
+    if (isProductLive(BUNDLE.productId)) {
+      navigate(document.getElementById(BUNDLE.card), function () {
+        if (PACKAGES.every(isUnlocked)) return; // already owns everything
+        purchaseBundle();
+      });
+    }
 
     document.getElementById('restore-btn').addEventListener('click', restorePurchases);
 
