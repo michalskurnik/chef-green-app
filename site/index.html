@@ -6,7 +6,7 @@
 <title>השף הירוק – משחק בישול לילדים | מבשלים, משחקים ולומדים במטבח</title>
 <meta name="description" content="השף הירוק וביטו הרובוט מזמינים ילדים בגילאי 5-10 להרפתקאות בישול: משימות, חידות, משחקים ומתכונים אמיתיים שמכינים יחד עם ההורים. בלי פרסומות.">
 <meta name="apple-itunes-app" content="app-id=6760778442">
-<meta name="theme-color" content="#1f4d2e">
+<meta name="theme-color" content="#4fa3a5">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="he_IL">
 <meta property="og:title" content="השף הירוק – משחק בישול לילדים">
@@ -15,7 +15,7 @@
 <link rel="icon" href="/site/img/chef.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&family=Varela+Round&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site/assets/style.css">
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
@@ -24,25 +24,25 @@
 
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="./"><img src="/site/img/chef.webp" alt="" width="40" height="40">השף הירוק</a>
+    <a class="brand" href="./"><img src="/site/img/chef.webp" alt="" width="42" height="42">השף הירוק</a>
     <nav class="nav" aria-label="ניווט ראשי">
-      <a class="hide-sm" href="#how">איך זה עובד</a>
+      <a class="hide-sm" href="#recipe">איך זה עובד</a>
       <a class="hide-sm" href="#parents">להורים</a>
       <a href="workshops">סדנאות</a>
-      <a class="btn btn-gold btn-sm" href="#download">להורדה</a>
+      <a class="btn btn-yolk btn-sm" href="#download">להורדה</a>
     </nav>
   </div>
 </header>
 
 <main id="main">
 
-  <!-- 1. Hero -->
-  <section class="hero">
+  <!-- Hero: the kitchen table -->
+  <section class="hero gingham">
     <div class="wrap">
-      <div class="hero-text">
-        <span class="tag">מומלץ לגילאי 5-10</span>
-        <h1>מבשלים, משחקים<br>ו<span>לומדים במטבח</span></h1>
-        <p class="lead">השף הירוק וביטו הרובוט מזמינים את הילדים להרפתקאות בישול: משימות, חידות ומשחקים, ובסוף מתכון אמיתי שמכינים יחד.</p>
+      <div class="menu-card">
+        <span class="ages">לגילאי 5 עד 10</span>
+        <h1>מבשלים, משחקים ולומדים במטבח</h1>
+        <p class="lead">השף הירוק וביטו הרובוט יוצאים להרפתקאות בישול. הילדים פותרים משימות וחידות, ובסוף מכינים מתכון אמיתי, יחד איתכם.</p>
         <div class="stores" id="download">
           <a class="store" data-store="ios" href="https://apps.apple.com/app/id6760778442" rel="noopener">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
@@ -53,39 +53,37 @@
             <span><small>להורדה ב-</small><strong>Google Play</strong></span>
           </a>
         </div>
-        <p class="secondary">רוצים לראות קודם? <a href="#how">איך זה עובד</a></p>
+        <p class="more">ההרפתקה הראשונה בחינם. <a href="#recipe">מה יש בפנים?</a></p>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="card-tilt c1"><img src="/site/img/pkg-italy.webp" alt=""><span>מסביב לעולם: איטליה</span></div>
-        <div class="card-tilt c3"><img src="/site/img/pkg-science.webp" alt=""><span>ניסויים במטבח</span></div>
-        <div class="card-tilt c2"><img src="/site/img/pkg-protein.webp" alt=""><span>חלבונים מהצומח</span></div>
-        <img class="chef" src="/site/img/chef.webp" alt="" width="700" height="700">
-        <img class="bito" src="/site/img/bito.webp" alt="" width="280" height="420">
+      <div class="table-top" aria-hidden="true">
+        <div class="photo-card c1 taped"><img src="/site/img/pkg-italy.webp" alt=""><span>איטליה</span></div>
+        <div class="photo-card c2 taped"><img src="/site/img/pkg-protein.webp" alt=""><span>חלבונים מהצומח</span></div>
+        <img class="chef sticker" src="/site/img/chef.webp" alt="" width="700" height="700">
+        <img class="bito sticker" src="/site/img/bito.webp" alt="" width="280" height="420">
       </div>
     </div>
   </section>
 
-  <!-- 2. Meet the characters -->
-  <section class="intro center bg-sage">
-    <div class="wrap reveal">
+  <!-- Meet the characters -->
+  <section class="meet">
+    <div class="wrap">
+      <div>
+        <h2>מכירים את השף הירוק?</h2>
+        <p>השף הירוק הוא שף פרוותי וחביב שאוהב ירקות, צבעים וטעמים חדשים. לידו תמיד נמצא ביטו, רובוט סקרן עם חמנייה על הראש, שמסביר, שואל ומעודד.</p>
+        <p>יחד הם יוצאים להרפתקאות: מארוחת ערב בבית ועד פסטה באיטליה וניסויים במעבדת המטבח. בכל הרפתקה הילדים לומדים משהו חדש על האוכל שהם אוכלים.</p>
+      </div>
       <div class="duo">
-        <img src="/site/img/chef.webp" alt="השף הירוק" loading="lazy" width="150" height="150">
-        <img src="/site/img/bito.webp" alt="ביטו הרובוט" loading="lazy" width="100" height="150">
+        <img class="bito sticker" src="/site/img/bito.webp" alt="ביטו הרובוט" loading="lazy" width="280" height="420">
+        <img class="chef sticker" src="/site/img/chef.webp" alt="השף הירוק" loading="lazy" width="700" height="700">
       </div>
-      <h2>מכירים את השף הירוק?</h2>
-      <p>השף הירוק הוא שף חביב שאוהב ירקות, צבעים וטעמים חדשים. לצידו תמיד נמצא ביטו, רובוט סקרן עם חמנייה על הראש, שמסביר, שואל ומעודד.</p>
-      <p>יחד הם יוצאים להרפתקאות בכל רחבי המטבח ומחוצה לו. בכל הרפתקה הילדים פותרים משימות, לומדים על המרכיבים, ובסוף מכינים מתכון אמיתי.</p>
     </div>
   </section>
 
-  <!-- 3. Video -->
-  <section class="center">
-    <div class="wrap reveal">
-      <div class="section-head">
-        <h2>ככה זה נראה</h2>
-        <p class="lead">הצצה קצרה להרפתקה בתוך האפליקציה</p>
-      </div>
-      <div class="video-box">
+  <!-- Video -->
+  <section class="video soft">
+    <div class="wrap">
+      <h2>ככה זה נראה בתוך האפליקציה</h2>
+      <div class="video-frame">
         <video controls playsinline preload="none" poster="/site/img/pkg-bundle.webp">
           <source src="/site/img/demo.mp4" type="video/mp4">
         </video>
@@ -93,143 +91,123 @@
     </div>
   </section>
 
-  <!-- 4. What's inside -->
-  <section class="bg-cream">
+  <!-- The app as a recipe card -->
+  <section id="recipe">
     <div class="wrap">
-      <div class="section-head center reveal">
-        <h2>מה מחכה בכל הרפתקה?</h2>
-        <p class="lead">כל חבילה בנויה כמו מסע קטן, מהמשימה הראשונה ועד לצלחת על השולחן</p>
-      </div>
-      <div class="grid grid-3">
-        <div class="card reveal">
-          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9a3 3 0 1 1 4 2.8c-.6.3-1 .8-1 1.5V14"/><circle cx="12" cy="18" r=".6"/><circle cx="12" cy="12" r="10"/></svg></div>
-          <h3>משימות וחידות</h3>
-          <p>בכל שלב מחכה אתגר חדש שמקדם את הסיפור ופותח את המשימה הבאה.</p>
+      <article class="recipe-card">
+        <header>
+          <h2>מתכון להרפתקה</h2>
+          <p>מה יש בכל חבילה, ואיך מתחילים</p>
+        </header>
+        <div class="recipe-body">
+          <div>
+            <h3>מה יש בפנים</h3>
+            <ul class="ingredients">
+              <li><b>+</b>מתכונים אמיתיים שמבשלים בבית</li>
+              <li><b>+</b>משימות וחידות שמקדמות את הסיפור</li>
+              <li><b>+</b>משחקי חשיבה סביב מרכיבים אמיתיים</li>
+              <li><b>+</b>קומיקס עם ביטו ורמזים כשנתקעים</li>
+              <li><b>1</b>תעודת שף עם השם של הילד</li>
+              <li><b>1</b>חוברת מתכונים להדפסה</li>
+            </ul>
+          </div>
+          <div>
+            <h3>אופן ההכנה</h3>
+            <ol class="method">
+              <li>מורידים את האפליקציה</li>
+              <li>מתחילים בהרפתקה החינמית</li>
+              <li>הילדים משחקים ופותרים משימות</li>
+              <li>נכנסים למטבח ומבשלים יחד</li>
+              <li>תולים את תעודת השף על המקרר</li>
+            </ol>
+          </div>
         </div>
-        <div class="card reveal">
-          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="12" rx="4"/><path d="M7 11v4M5 13h4"/><circle cx="16" cy="12" r=".8"/><circle cx="18" cy="14" r=".8"/></svg></div>
-          <h3>משחקי חשיבה</h3>
-          <p>מיונים, התאמות וזיכרון סביב מרכיבים אמיתיים, כך שהלמידה קורית תוך כדי משחק.</p>
-        </div>
-        <div class="card reveal">
-          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></div>
-          <h3>קומיקס עם ביטו</h3>
-          <p>ביטו הרובוט מספר את הסיפור ונותן רמזים כשצריך עזרה.</p>
-        </div>
-        <div class="card reveal">
-          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 13a6 6 0 0 0 12 0z"/><path d="M4 13h16M9 6c0-1 1-1 1-2M13 6c0-1 1-1 1-2"/></svg></div>
-          <h3>מתכון אמיתי</h3>
-          <p>כל הרפתקה נגמרת במתכון פשוט ובריא שמכינים במטבח, יחד עם ההורים.</p>
-        </div>
-        <div class="card reveal">
-          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.5 14l-1.5 8 5-3 5 3-1.5-8"/></svg></div>
-          <h3>תעודת שף אישית</h3>
-          <p>בסוף ההרפתקה הילדים מקבלים תעודה עם השם שלהם, ואפשר להוסיף גם תמונה.</p>
-        </div>
-        <div class="card reveal">
-          <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></div>
-          <h3>חוברת מתכונים</h3>
-          <p>את המתכונים אפשר להוריד כקובץ ולהדפיס, כדי לבשל שוב גם בלי מסך.</p>
-        </div>
-      </div>
+      </article>
     </div>
   </section>
 
-  <!-- 5. Packages -->
-  <section class="bg-sun">
+  <!-- Packages -->
+  <section class="warm">
     <div class="wrap">
-      <div class="section-head center reveal">
-        <h2>ההרפתקאות</h2>
-        <p class="lead">מתחילים בחינם, וממשיכים להרפתקאות נוספות בתוך האפליקציה</p>
+      <div class="pkgs-head">
+        <div>
+          <h2>ההרפתקאות</h2>
+          <p class="lead">מתחילים בחינם, וממשיכים להרפתקאות נוספות בתוך האפליקציה.</p>
+        </div>
       </div>
       <div class="pkgs" role="list">
-        <article class="pkg" role="listitem">
+        <article class="pkg taped" role="listitem">
           <img src="/site/img/pkg-dinner.webp" alt="השף הירוק מכין ארוחת ערב" loading="lazy" width="510" height="321">
-          <div class="body"><span class="pill free">חינם</span><h3>ארוחת ערב שילדים אוהבים</h3><p>5 מתכונים פשוטים וטעימים להתחלה.</p></div>
+          <h3>ארוחת ערב שילדים אוהבים</h3><p>5 מתכונים פשוטים להתחלה</p><span class="price free">חינם</span>
         </article>
-        <article class="pkg" role="listitem">
+        <article class="pkg taped" role="listitem">
           <img src="/site/img/pkg-italy.webp" alt="השף הירוק באיטליה" loading="lazy" width="510" height="314">
-          <div class="body"><span class="pill">רכישה באפליקציה</span><h3>מסביב לעולם: איטליה</h3><p>פסטה צבעונית ומנות יצירתיות.</p></div>
+          <h3>מסביב לעולם: איטליה</h3><p>פסטה צבעונית ומנות יצירתיות</p><span class="price">רכישה באפליקציה</span>
         </article>
-        <article class="pkg" role="listitem">
+        <article class="pkg taped" role="listitem">
           <img src="/site/img/pkg-protein.webp" alt="השף הירוק עם קטניות וטופו" loading="lazy" width="510" height="302">
-          <div class="body"><span class="pill">רכישה באפליקציה</span><h3>חלבונים מהצומח</h3><p>טופו, חומוס ועדשים לכל המשפחה.</p></div>
+          <h3>חלבונים מהצומח</h3><p>טופו, חומוס ועדשים</p><span class="price">רכישה באפליקציה</span>
         </article>
-        <article class="pkg" role="listitem">
+        <article class="pkg taped" role="listitem">
           <img src="/site/img/pkg-science.webp" alt="השף הירוק במעבדת מטבח" loading="lazy" width="510" height="286">
-          <div class="body"><span class="pill">רכישה באפליקציה</span><h3>ניסויים פשוטים במטבח</h3><p>מדע, יצירתיות ואוכל.</p></div>
+          <h3>ניסויים פשוטים במטבח</h3><p>מדע, יצירתיות ואוכל</p><span class="price">רכישה באפליקציה</span>
         </article>
-        <article class="pkg" role="listitem">
+        <article class="pkg taped" role="listitem">
           <img src="/site/img/pkg-bundle.webp" alt="כל ההרפתקאות בחבילה אחת" loading="lazy" width="640" height="456">
-          <div class="body"><span class="pill">רכישה באפליקציה</span><h3>חבילת הכל כלול</h3><p>כל ההרפתקאות במחיר מיוחד.</p></div>
+          <h3>חבילת הכל כלול</h3><p>כל ההרפתקאות במחיר מיוחד</p><span class="price">רכישה באפליקציה</span>
         </article>
       </div>
-      <p class="scroll-hint">החליקו לצד לראות את כל ההרפתקאות</p>
     </div>
   </section>
 
-  <!-- 6. How it works -->
-  <section id="how">
+  <!-- Parents -->
+  <section id="parents" class="parents">
     <div class="wrap">
-      <div class="section-head center reveal"><h2>איך זה עובד?</h2></div>
-      <div class="grid grid-3 steps">
-        <div class="step reveal"><div class="num">1</div><h3>מורידים</h3><p>מורידים את האפליקציה מ-App Store או מ-Google Play ומתחילים בהרפתקה החינמית.</p></div>
-        <div class="step reveal"><div class="num">2</div><h3>יוצאים להרפתקה</h3><p>הילדים פותרים משימות, משחקים ולומדים על המרכיבים, בקצב שלהם.</p></div>
-        <div class="step reveal"><div class="num">3</div><h3>מבשלים יחד</h3><p>בסוף ההרפתקה נכנסים למטבח ומכינים את המתכון, יחד עם ההורים.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7. For parents -->
-  <section id="parents" class="bg-sage">
-    <div class="wrap split">
-      <div class="reveal">
-        <h2>להורים</h2>
-        <p class="lead" style="margin-bottom:22px">זמן מסך שנגמר במטבח, עם ערך אמיתי</p>
+      <div>
+        <h2>זמן מסך שנגמר במטבח</h2>
+        <p class="lead">מה חשוב לדעת לפני שמורידים:</p>
         <ul class="checks">
           <li>בלי פרסומות ובלי מעקב פרסומי</li>
-          <li>הילדים לומדים על מרכיבים, תזונה ובריאות דרך משחק</li>
-          <li>מתכונים פשוטים שמתאימים לבישול משותף של הורה וילד</li>
-          <li>דף הורים באפליקציה עם הסבר על כל הרפתקה</li>
+          <li>הילדים לומדים על מרכיבים ותזונה דרך משחק</li>
+          <li>מתכונים פשוטים לבישול משותף של הורה וילד</li>
+          <li>דף הורים באפליקציה שמסביר כל הרפתקה</li>
           <li>תשלום חד-פעמי לכל חבילה, בלי מנוי</li>
         </ul>
       </div>
-      <img class="rounded reveal" src="/site/img/ashdod-24.webp" alt="ילדה מחזיקה צלחת סלט צבעונית שהכינה" loading="lazy" width="900" height="1200" style="max-height:520px">
+      <figure class="polaroid taped">
+        <img src="/site/img/ashdod-24.webp" alt="ילדה מחזיקה צלחת סלט צבעונית שהכינה" loading="lazy" width="900" height="1200">
+        <figcaption>מה שיוצא בסוף ההרפתקה</figcaption>
+      </figure>
     </div>
   </section>
 
-  <!-- 8. Testimonials: hidden until real quotes are added -->
-  <section class="center" hidden>
-    <div class="wrap">
-      <div class="section-head"><h2>מה הורים אומרים</h2></div>
-      <div class="grid grid-3"><!-- quotes go here --></div>
-    </div>
+  <!-- Testimonials: hidden until real quotes are added -->
+  <section hidden>
+    <div class="wrap"><h2>מה הורים אומרים</h2><!-- quotes go here --></div>
   </section>
 
-  <!-- 9. Workshops band -->
-  <section>
+  <!-- Workshops -->
+  <section class="band gingham">
     <div class="wrap">
-      <div class="band reveal">
-        <div class="photos">
-          <img src="/site/img/ashdod-21.webp" alt="ילדה מציגה את המנה שהכינה בסדנה" loading="lazy" width="900" height="1200">
-          <img src="/site/img/orot-14.webp" alt="ילד מחזיק צלחת ירקות שהכין בסדנה" loading="lazy" width="900" height="1200">
-        </div>
-        <div class="text">
-          <span class="tag" style="align-self:flex-start">מאושר בגפ"ן</span>
-          <h2>סדנאות השף הירוק</h2>
-          <p>השף הירוק יוצא מהמסך ומגיע אליכם: סדנאות בישול ומשחק לבתי ספר, מרכזים קהילתיים וימי הולדת.</p>
-          <a class="btn btn-gold" href="workshops">לפרטים על הסדנאות</a>
-        </div>
+      <div class="note">
+        <span class="tag hot">מאושר בגפ"ן</span>
+        <h2 style="margin-top:14px">השף הירוק מגיע אליכם</h2>
+        <p>סדנאות בישול ומשחק לבתי ספר, למרכזים קהילתיים ולימי הולדת, עם כל הציוד והמצרכים.</p>
+        <a class="btn btn-yolk" href="workshops">לפרטים על הסדנאות</a>
+      </div>
+      <div class="pics" aria-hidden="true">
+        <figure class="polaroid taped"><img src="/site/img/ashdod-21.webp" alt="" loading="lazy" width="900" height="1200"></figure>
+        <figure class="polaroid taped"><img src="/site/img/orot-14.webp" alt="" loading="lazy" width="900" height="1200"></figure>
       </div>
     </div>
   </section>
 
-  <!-- 10. FAQ -->
-  <section class="bg-cream">
+  <!-- FAQ -->
+  <section>
     <div class="wrap">
-      <div class="section-head center reveal"><h2>שאלות נפוצות</h2></div>
+      <h2>שאלות נפוצות</h2>
       <div class="faq">
-        <details><summary>לאיזה גיל מתאימה האפליקציה?</summary><div>לילדים בגילאי 5-10. ילדים צעירים ייהנו יותר עם ליווי של הורה, בעיקר בשלב הבישול.</div></details>
+        <details><summary>לאיזה גיל מתאימה האפליקציה?</summary><div>לילדים בגילאי 5 עד 10. ילדים צעירים ייהנו יותר עם ליווי של הורה, בעיקר בשלב הבישול.</div></details>
         <details><summary>מה אפשר לשחק בחינם?</summary><div>הרפתקת "ארוחת ערב שילדים אוהבים" עם 5 מתכונים חינמית לגמרי. שאר ההרפתקאות נרכשות בתוך האפליקציה.</div></details>
         <details><summary>האם יש פרסומות?</summary><div>לא. באפליקציה אין פרסומות ואין מעקב פרסומי.</div></details>
         <details><summary>צריך מבוגר בזמן הבישול?</summary><div>כן. המתכונים פשוטים, אבל הבישול עצמו מיועד להורה וילד יחד.</div></details>
@@ -239,24 +217,26 @@
     </div>
   </section>
 
-  <!-- 11. Final CTA -->
-  <section class="bg-green final">
-    <div class="wrap reveal">
-      <div class="duo">
-        <img src="/site/img/chef.webp" alt="" loading="lazy" width="120" height="120">
-        <img src="/site/img/bito.webp" alt="" loading="lazy" width="80" height="120">
-      </div>
-      <h2>מוכנים להתחיל לבשל?</h2>
-      <p class="lead" style="margin:0 auto">ההרפתקה הראשונה מחכה, והיא בחינם</p>
-      <div class="stores">
-        <a class="store" data-store="ios" href="https://apps.apple.com/app/id6760778442" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
-          <span><small>להורדה ב-</small><strong>App Store</strong></span>
-        </a>
-        <a class="store" data-store="android" href="https://play.google.com/store/apps/details?id=com.michalskurnik.chefapp" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4l13 8-13 8z"/></svg>
-          <span><small>להורדה ב-</small><strong>Google Play</strong></span>
-        </a>
+  <!-- Final call -->
+  <section class="final gingham">
+    <div class="wrap">
+      <div class="note">
+        <div class="duo" aria-hidden="true">
+          <img class="chef sticker" src="/site/img/chef.webp" alt="" loading="lazy" width="700" height="700">
+          <img class="bito sticker" src="/site/img/bito.webp" alt="" loading="lazy" width="280" height="420">
+        </div>
+        <h2>מוכנים להתחיל לבשל?</h2>
+        <p class="lead">ההרפתקה הראשונה מחכה, והיא בחינם.</p>
+        <div class="stores">
+          <a class="store" data-store="ios" href="https://apps.apple.com/app/id6760778442" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
+            <span><small>להורדה ב-</small><strong>App Store</strong></span>
+          </a>
+          <a class="store" data-store="android" href="https://play.google.com/store/apps/details?id=com.michalskurnik.chefapp" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4l13 8-13 8z"/></svg>
+            <span><small>להורדה ב-</small><strong>Google Play</strong></span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -265,7 +245,7 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    <span>© <span id="year">2026</span> השף הירוק · FOOD GAMES</span>
+    <span>© <span id="year">2026</span> השף הירוק, FOOD GAMES</span>
     <nav aria-label="קישורים">
       <a href="workshops">סדנאות</a>
       <a href="/privacy.html">מדיניות פרטיות</a>
@@ -276,7 +256,7 @@
   </div>
 </footer>
 
-<div class="sticky-cta"><a class="btn btn-gold" data-auto-store href="#download">להורדת האפליקציה</a></div>
+<div class="sticky-cta"><a class="btn btn-yolk" data-auto-store href="#download">להורדת האפליקציה</a></div>
 
 <script src="/site/assets/main.js"></script>
 </body>
