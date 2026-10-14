@@ -5,6 +5,33 @@
       "dest": "/api/$1"
     },
     {
+      "src": "/site/(.*)",
+      "dest": "/site/$1"
+    },
+    {
+      "src": "/",
+      "has": [{ "type": "host", "value": "greenchef.foodgames.co.il" }],
+      "dest": "/site/index.html"
+    },
+    {
+      "src": "/(workshops|accessibility)",
+      "has": [{ "type": "host", "value": "greenchef.foodgames.co.il" }],
+      "dest": "/site/$1.html"
+    },
+    {
+      "src": "/greenchef",
+      "headers": { "Location": "/greenchef/" },
+      "status": 301
+    },
+    {
+      "src": "/greenchef/",
+      "dest": "/site/index.html"
+    },
+    {
+      "src": "/greenchef/(workshops|accessibility)",
+      "dest": "/site/$1.html"
+    },
+    {
       "src": "/",
       "dest": "/app/start.html",
       "status": 302
