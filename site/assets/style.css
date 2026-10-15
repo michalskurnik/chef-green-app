@@ -253,7 +253,7 @@ html[data-os='android'] .store[data-store='ios'] { background: var(--paper); col
 .menu > p.lead { text-align: center; margin: 0 auto 18px; }
 .dish { padding: 20px 0; border-top: 2px dashed var(--cloth); }
 .dish-head { display: flex; align-items: baseline; gap: 12px; }
-.dish-head h3 { margin: 0; white-space: nowrap; }
+.dish-head h3 { margin: 0; }
 .dish-head .dots { flex: 1; border-bottom: 3px dotted var(--ink-soft); transform: translateY(-6px); min-width: 20px; }
 .dish-head .for { font-family: var(--display); font-weight: 500; color: var(--tomato); white-space: nowrap; }
 .dish p { color: var(--ink-soft); margin-top: 4px; }
@@ -281,3 +281,7 @@ html[data-os='android'] .store[data-store='ios'] { background: var(--paper); col
 .wa-float { position: fixed; bottom: 20px; left: 20px; z-index: 50; width: 62px; height: 62px; border-radius: 50%; background: var(--wa); display: grid; place-items: center; border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
 .wa-float svg { width: 32px; height: 32px; fill: var(--paper); }
 @media (max-width: 760px) { .wa-float { display: none; } }
+
+/* Third package card in the hero (science / STEM) */
+.photo-card.c3 { top: 30%; left: 16%; width: 40%; transform: rotate(3deg); z-index: 2; }
+.table-top .c3 { --r: 3deg; animation-delay: 0.35s; }
