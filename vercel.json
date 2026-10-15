@@ -14,7 +14,7 @@
       "dest": "/site/index.html"
     },
     {
-      "src": "/(workshops|accessibility)",
+      "src": "/(workshops|accessibility|birthdays)",
       "has": [{ "type": "host", "value": "greenchef.foodgames.co.il" }],
       "dest": "/site/$1.html"
     },
@@ -28,7 +28,7 @@
       "dest": "/site/index.html"
     },
     {
-      "src": "/greenchef/(workshops|accessibility)",
+      "src": "/greenchef/(workshops|accessibility|birthdays)",
       "dest": "/site/$1.html"
     },
     {

@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-const pages = { '/': 'site/index.html', '/workshops': 'site/workshops.html', '/accessibility': 'site/accessibility.html' };
+const pages = { '/': 'site/index.html', '/workshops': 'site/workshops.html', '/accessibility': 'site/accessibility.html', '/birthdays': 'site/birthdays.html' };
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4' };
 
 http.createServer((req, res) => {

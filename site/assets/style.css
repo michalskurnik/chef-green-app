@@ -285,3 +285,7 @@ html[data-os='android'] .store[data-store='ios'] { background: var(--paper); col
 /* Third package card in the hero (science / STEM) */
 .photo-card.c3 { top: 30%; left: 16%; width: 40%; transform: rotate(3deg); z-index: 2; }
 .table-top .c3 { --r: 3deg; animation-delay: 0.35s; }
+
+/* Small photo strip under a card's main photo */
+.mini-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: -2px 0 4px; }
+.mini-strip img { aspect-ratio: 1; object-fit: cover; border: 2px solid var(--ink); border-radius: 6px; }
