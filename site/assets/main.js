@@ -41,6 +41,25 @@
   // Safety net: never leave content hidden (slow devices, crawlers, screenshots).
   setTimeout(function () { items.forEach(function (el) { el.classList.add('in'); }); }, 2500);
 
+  // Party clips: load and play only while on screen; respect reduced motion.
+  var clips = document.querySelectorAll('video[data-src]');
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (clips.length && !still && 'IntersectionObserver' in window) {
+    var vo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        var v = e.target;
+        if (e.isIntersecting) {
+          if (!v.src) v.src = v.getAttribute('data-src');
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        } else if (v.src) {
+          v.pause();
+        }
+      });
+    }, { rootMargin: '200px 0px' });
+    clips.forEach(function (v) { vo.observe(v); });
+  }
+
   var year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
 })();

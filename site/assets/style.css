@@ -270,7 +270,7 @@ html[data-os='android'] .store[data-store='ios'] { background: var(--paper); col
 .board figure { break-inside: avoid; margin-bottom: 22px; background: var(--paper); padding: 8px; border: 2px solid var(--ink); border-radius: 6px; }
 .board figure:nth-child(3n+1) { transform: rotate(-1.2deg); }
 .board figure:nth-child(3n+2) { transform: rotate(1deg); }
-.board img { width: 100%; border-radius: 3px; }
+.board img, .board video { display: block; width: 100%; height: auto; border-radius: 3px; }
 
 .facts-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 48px; margin-top: 20px; max-width: 900px; }
 .facts-list div { padding: 18px 0; border-top: 2px dashed var(--cloth); }
