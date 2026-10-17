@@ -60,6 +60,45 @@
     clips.forEach(function (v) { vo.observe(v); });
   }
 
+  // Characters: tap to hop and say the next line in a comic bubble.
+  document.querySelectorAll('.char[data-lines]').forEach(function (btn) {
+    var lines = JSON.parse(btn.getAttribute('data-lines'));
+    var bubble = btn.querySelector('.bubble');
+    var i = 0, timer;
+    btn.addEventListener('click', function () {
+      bubble.textContent = lines[i++ % lines.length];
+      btn.classList.remove('hop');
+      void btn.offsetWidth;
+      btn.classList.add('hop', 'talk');
+      clearTimeout(timer);
+      timer = setTimeout(function () { btn.classList.remove('talk'); }, 2800);
+    });
+  });
+
+  // End-of-adventure flip-through: swipe, arrows, dots and a label per slide.
+  document.querySelectorAll('.flip').forEach(function (fig) {
+    var track = fig.querySelector('.flip-track');
+    var slides = track.querySelectorAll('img');
+    var dots = fig.querySelectorAll('.flip-dots span');
+    var label = fig.querySelector('.flip-label');
+    var current = 0;
+    function index() { return Math.round(Math.abs(track.scrollLeft) / track.clientWidth); }
+    function show(i) {
+      current = (i + slides.length) % slides.length;
+      dots.forEach(function (d, n) { d.classList.toggle('on', n === current); });
+      if (label) label.textContent = slides[current].getAttribute('data-label');
+    }
+    function go(i) {
+      i = (i + slides.length) % slides.length;
+      track.scrollTo({ left: slides[i].offsetLeft - slides[0].offsetLeft, behavior: 'smooth' });
+      show(i);
+    }
+    var t;
+    track.addEventListener('scroll', function () { clearTimeout(t); t = setTimeout(function () { show(index()); }, 80); });
+    fig.querySelector('.flip-btn.next').addEventListener('click', function () { go(current + 1); });
+    fig.querySelector('.flip-btn.prev').addEventListener('click', function () { go(current - 1); });
+  });
+
   var year = document.getElementById('year');
   if (year) year.textContent = new Date().getFullYear();
 })();

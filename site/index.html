@@ -24,7 +24,7 @@
 
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="./"><img src="/site/img/chef.webp" alt="" width="42" height="42">השף הירוק</a>
+    <a class="brand" href="./"><img src="/site/img/chef.webp" alt="" width="42" height="42"><span class="brand-text"><span class="brand-name">השף הירוק</span><span class="brand-by"><img src="/site/img/foodgames-logo.webp" alt="" width="18" height="18">מבית פוד גיימס</span></span></a>
     <nav class="nav" aria-label="ניווט ראשי">
       <a class="hide-sm" href="#recipe">איך זה עובד</a>
       <a class="hide-sm" href="#parents">להורים</a>
@@ -56,11 +56,11 @@
         <p class="more">ההרפתקה הראשונה בחינם. <a href="#recipe">מה יש בפנים?</a></p>
       </div>
       <div class="table-top" aria-hidden="true">
-        <div class="photo-card c1 taped"><img src="/site/img/pkg-italy.webp" alt=""><span>איטליה</span></div>
-        <div class="photo-card c2 taped"><img src="/site/img/pkg-protein.webp" alt=""><span>חלבונים מהצומח</span></div>
-        <div class="photo-card c3 taped"><img src="/site/img/pkg-science.webp" alt=""><span>מדע במטבח (STEM)</span></div>
-        <img class="chef sticker" src="/site/img/chef.webp" alt="" width="700" height="700">
-        <img class="bito sticker" src="/site/img/bito.webp" alt="" width="280" height="420">
+        <div class="photo-card c1 taped"><img src="/site/img/pkg-dinner.webp" alt=""><span>ארוחת ערב</span></div>
+        <div class="photo-card c2 taped"><img src="/site/img/pkg-italy.webp" alt=""><span>איטליה</span></div>
+        <div class="photo-card c3 taped"><img src="/site/img/pkg-protein.webp" alt=""><span>חלבונים מהצומח</span></div>
+        <div class="photo-card c4 taped"><img src="/site/img/pkg-science.webp" alt=""><span>מדע במטבח (STEM)</span></div>
+        <div class="photo-card c5 taped"><img src="/site/img/pkg-bundle.webp" alt=""><span>הכל כלול</span></div>
       </div>
     </div>
   </section>
@@ -73,9 +73,18 @@
         <p>השף הירוק הוא שף יצירתי וחביב שאוהב ירקות, צבעים וטעמים חדשים. לידו תמיד נמצא ביטו, רובוט סקרן עם חמנייה על הראש, שמסביר, שואל ומעודד.</p>
         <p>יחד הם יוצאים להרפתקאות בעולמות המטבח והמדעים ומסביב לעולם. בכל הרפתקה הילדים לומדים משהו חדש על האוכל שהם אוכלים.</p>
       </div>
-      <div class="duo">
-        <img class="bito sticker" src="/site/img/bito.webp" alt="ביטו הרובוט" loading="lazy" width="280" height="420">
-        <img class="chef sticker" src="/site/img/chef.webp" alt="השף הירוק" loading="lazy" width="700" height="700">
+      <div class="duo-wrap">
+        <div class="duo">
+          <button class="char bito" type="button" aria-label="ביטו הרובוט, לחצו כדי לשמוע מה הוא אומר" data-lines='["ביפ בופ! אני ביטו","יש לי רמז בשבילכם","החמנייה שלי צמאה","ניסוי מדעי? אני בפנים!"]'>
+            <span class="bubble" aria-live="polite"></span>
+            <img class="sticker" src="/site/img/bito.webp" alt="" loading="lazy" width="280" height="420">
+          </button>
+          <button class="char chef" type="button" aria-label="השף הירוק, לחצו כדי לשמוע מה הוא אומר" data-lines='["היי! אני השף הירוק","מה מבשלים היום?","ירקות זה צבעים שאוכלים","בואו נבשל יחד!"]'>
+            <span class="bubble" aria-live="polite"></span>
+            <img class="sticker" src="/site/img/chef.webp" alt="" loading="lazy" width="700" height="700">
+          </button>
+        </div>
+        <p class="tap-hint">לחצו על השף ועל ביטו</p>
       </div>
     </div>
   </section>
@@ -175,9 +184,18 @@
           <li>תשלום חד-פעמי לכל חבילה, בלי מנוי</li>
         </ul>
       </div>
-      <figure class="polaroid taped">
-        <img src="/site/img/robot-made.webp" alt="ילדה ליד הרובוט שהרכיבה מטורטיה, גבינה וירקות" loading="lazy" width="900" height="1200">
-        <figcaption>מה שיוצא בסוף ההרפתקה</figcaption>
+      <figure class="polaroid taped flip" aria-roledescription="קרוסלה" aria-label="מה שיוצא בסוף ההרפתקה">
+        <div class="flip-view">
+          <div class="flip-track" tabindex="0">
+            <img src="/site/img/end-robot.webp" alt="ילדה ליד הרובוט שהרכיבה מטורטיה, גבינה וירקות" data-label="ארוחת ערב: רובוט מטורטיה" loading="lazy" width="720" height="900">
+            <img src="/site/img/end-bruschetta.webp" alt="ברוסקטה עם פסטו ועגבנייה בצורת חיפושית" data-label="איטליה: ברוסקטת חיפושית" loading="lazy" width="720" height="900">
+            <img src="/site/img/end-falafel.webp" alt="צלחת פלאפל עם טחינה וירקות" data-label="חלבונים מהצומח: פלאפל" loading="lazy" width="720" height="900">
+          </div>
+          <button class="flip-btn prev" type="button" aria-label="התמונה הקודמת">›</button>
+          <button class="flip-btn next" type="button" aria-label="התמונה הבאה">‹</button>
+        </div>
+        <figcaption>מה שיוצא בסוף ההרפתקה<small class="flip-label" aria-live="polite">ארוחת ערב: רובוט מטורטיה</small></figcaption>
+        <div class="flip-dots" aria-hidden="true"><span class="on"></span><span></span><span></span></div>
       </figure>
     </div>
   </section>

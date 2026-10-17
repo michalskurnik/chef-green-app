@@ -58,7 +58,10 @@ section { padding: 88px 0; }
 .site-header { position: sticky; top: 0; z-index: 40; background: var(--paper); border-bottom: 3px solid var(--ink); }
 .site-header .wrap { display: flex; align-items: center; justify-content: space-between; height: 66px; gap: 12px; }
 .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 22px; }
-.brand img { width: 42px; height: 42px; object-fit: contain; }
+.brand > img { width: 42px; height: 42px; object-fit: contain; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.05; }
+.brand-by { display: flex; align-items: center; gap: 5px; margin-top: 3px; font-family: var(--text); font-weight: 600; font-size: 13px; color: var(--ink-soft); }
+.brand-by img { width: 18px; height: 18px; }
 .nav { display: flex; gap: 22px; align-items: center; }
 .nav a { text-decoration: none; font-weight: 600; font-size: 16px; }
 .nav a:not(.btn):hover { text-decoration: underline; text-decoration-thickness: 3px; text-decoration-color: var(--yolk); text-underline-offset: 6px; }
@@ -99,36 +102,55 @@ html[data-os='android'] .store[data-store='ios'] { background: var(--paper); col
 .menu-card h1 { margin-bottom: 16px; }
 .menu-card .lead { margin-bottom: 26px; }
 .menu-card .more { margin-top: 18px; font-weight: 600; }
-.table-top { position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 540px; margin-inline-start: auto; }
-.table-top .chef { position: absolute; width: 60%; bottom: 0; right: 8%; z-index: 3; }
-.table-top .bito { position: absolute; width: 27%; bottom: 2%; left: 4%; z-index: 4; }
-.photo-card { position: absolute; background: var(--paper); padding: 8px 8px 30px; border: 2px solid var(--ink); border-radius: 6px; width: 44%; }
+.table-top { position: relative; aspect-ratio: 1 / 1.06; width: 100%; max-width: 540px; margin-inline-start: auto; }
+.photo-card { position: absolute; background: var(--paper); padding: 8px 8px 30px; border: 2px solid var(--ink); border-radius: 6px; width: 47%; }
+/* Five adventures taped to the table */
+.photo-card.c1 { top: 1%; right: 1%; --r: 5deg; }
+.photo-card.c2 { top: 5%; left: 0; --r: -7deg; }
+.photo-card.c3 { top: 35%; right: 5%; --r: -3deg; z-index: 2; }
+.photo-card.c4 { top: 39%; left: 3%; --r: 6deg; z-index: 2; }
+.photo-card.c5 { top: 67%; left: 25%; --r: -2deg; z-index: 3; }
+.photo-card { transform: rotate(var(--r, 0deg)); }
 .photo-card img { aspect-ratio: 16 / 10; object-fit: cover; width: 100%; border-radius: 3px; }
 .photo-card span { position: absolute; bottom: 4px; right: 0; left: 0; text-align: center; font-family: var(--display); font-size: 14px; font-weight: 500; }
-.photo-card.c1 { top: 4%; left: 0; transform: rotate(-8deg); }
-.photo-card.c2 { top: 0; right: 2%; transform: rotate(6deg); width: 40%; }
 @media (max-width: 880px) {
   .hero .wrap { grid-template-columns: 1fr; }
   .menu-card { padding: 28px 22px; transform: rotate(-0.6deg); }
-  .table-top { max-width: 420px; margin: 8px auto 0; }
+  .table-top { max-width: 440px; margin: 8px auto 0; aspect-ratio: 1 / 1.14; }
+  .photo-card { padding: 6px 6px 26px; }
+  .photo-card span { font-size: 13px; }
 }
 
 /* The one orchestrated moment: stickers land on the table */
 @keyframes land { 0% { opacity: 0; transform: translateY(-40px) rotate(var(--r, 0deg)) scale(1.08); } 70% { opacity: 1; transform: translateY(4px) rotate(var(--r, 0deg)); } 100% { opacity: 1; transform: rotate(var(--r, 0deg)); } }
 .table-top > * { animation: land 0.7s cubic-bezier(.2, .8, .3, 1.2) both; }
-.table-top .c1 { --r: -8deg; animation-delay: 0.1s; }
-.table-top .c2 { --r: 6deg; animation-delay: 0.25s; }
-.table-top .chef { animation-delay: 0.45s; }
-.table-top .bito { animation-delay: 0.65s; }
+.table-top .c1 { animation-delay: 0.1s; }
+.table-top .c2 { animation-delay: 0.22s; }
+.table-top .c3 { animation-delay: 0.34s; }
+.table-top .c4 { animation-delay: 0.46s; }
+.table-top .c5 { animation-delay: 0.6s; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 
 /* ===== Meet the characters ===== */
 .meet .wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; }
 .meet p { margin-bottom: 14px; font-size: 19px; }
 .meet .duo { display: flex; align-items: flex-end; justify-content: center; gap: 10px; }
-.meet .duo .chef { width: 58%; }
-.meet .duo .bito { width: 30%; }
-@media (max-width: 880px) { .meet .wrap { grid-template-columns: 1fr; } .meet .duo { order: -1; max-width: 360px; margin: 0 auto; } }
+.meet .duo .chef { width: 58%; flex: none; }
+.meet .duo .bito { width: 30%; flex: none; }
+@media (max-width: 880px) { .meet .wrap { grid-template-columns: 1fr; } .meet .duo-wrap { order: -1; max-width: 360px; margin: 0 auto; } }
+
+/* Tap the characters: they hop and talk in comic bubbles */
+.meet .duo { padding-top: 64px; }
+.char { position: relative; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.char img { display: block; width: 100%; height: auto; }
+.char:focus-visible { outline: 3px solid var(--yolk); outline-offset: 6px; border-radius: 12px; }
+.char.hop img { animation: hop 0.5s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes hop { 0% { transform: none; } 40% { transform: translateY(-18px) rotate(-4deg); } 100% { transform: none; } }
+.bubble { position: absolute; bottom: calc(100% - 6px); left: 50%; z-index: 2; min-width: 120px; max-width: 190px; padding: 8px 14px; background: var(--paper); border: 3px solid var(--ink); border-radius: 18px; box-shadow: 3px 3px 0 var(--ink); font-family: var(--display); font-weight: 600; font-size: 16px; line-height: 1.25; color: var(--ink); text-align: center; opacity: 0; transform: translateX(-50%) scale(0.6); transform-origin: 50% 100%; transition: opacity 0.18s ease, transform 0.22s cubic-bezier(.3, 1.5, .5, 1); pointer-events: none; }
+.bubble::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -9px; border: 9px solid transparent; border-top-color: var(--ink); }
+.char.talk .bubble { opacity: 1; transform: translateX(-50%) scale(1); }
+.char.chef .bubble { left: 58%; }
+.tap-hint { margin-top: 8px; text-align: center; font-family: var(--display); font-size: 15px; color: var(--ink-soft); }
 
 /* ===== Video ===== */
 .video-frame { border: 3px solid var(--ink); border-radius: 22px; overflow: hidden; box-shadow: 8px 8px 0 var(--cloth); background: var(--ink); max-width: 920px; }
@@ -282,10 +304,21 @@ html[data-os='android'] .store[data-store='ios'] { background: var(--paper); col
 .wa-float svg { width: 32px; height: 32px; fill: var(--paper); }
 @media (max-width: 760px) { .wa-float { display: none; } }
 
-/* Third package card in the hero (science / STEM) */
-.photo-card.c3 { top: 30%; left: 16%; width: 40%; transform: rotate(3deg); z-index: 2; }
-.table-top .c3 { --r: 3deg; animation-delay: 0.35s; }
-
 /* Small photo strip under a card's main photo */
 .mini-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: -2px 0 4px; }
 .mini-strip img { aspect-ratio: 1; object-fit: cover; border: 2px solid var(--ink); border-radius: 6px; }
+
+/* End-of-adventure flip-through (home, parents section) */
+.flip-view { position: relative; }
+.flip-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 3px; overscroll-behavior-x: contain; }
+.flip-track::-webkit-scrollbar { display: none; }
+.flip-track img { flex: 0 0 100%; scroll-snap-align: center; }
+.flip-btn { position: absolute; top: 50%; width: 40px; height: 40px; margin-top: -20px; border-radius: 50%; border: 2px solid var(--ink); background: var(--paper); color: var(--ink); font-size: 26px; line-height: 1; cursor: pointer; box-shadow: 2px 2px 0 var(--ink); }
+.flip-btn.prev { right: 8px; }
+.flip-btn.next { left: 8px; }
+.flip-btn:focus-visible { outline: 3px solid var(--yolk); outline-offset: 2px; }
+.flip figcaption small { display: block; font-family: var(--text); font-size: 15px; font-weight: 600; color: var(--ink-soft); margin-top: 2px; }
+.flip-dots { display: flex; justify-content: center; gap: 8px; margin-top: 8px; }
+.flip-dots span { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--ink); }
+.flip-dots span.on { background: var(--ink); }
+.flip.polaroid { padding-bottom: 18px; }
