@@ -99,7 +99,7 @@ html[data-os='android'] .store[data-store='ios'] { background: var(--paper); col
 .hero .wrap { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: center; }
 .menu-card { background: var(--paper); border: 3px solid var(--ink); border-radius: 22px; padding: 36px 34px 32px; box-shadow: 8px 8px 0 var(--ink); transform: rotate(-1.2deg); position: relative; }
 .menu-card .ages { display: inline-block; font-family: var(--display); font-weight: 500; background: var(--tomato); color: var(--paper); padding: 4px 14px; border-radius: 999px; transform: rotate(-3deg); margin-bottom: 14px; }
-.menu-card h1 { margin-bottom: 16px; }
+.menu-card h1 { margin-bottom: 16px; font-size: clamp(36px, 4.6vw, 58px); text-wrap: balance; }
 .menu-card .lead { margin-bottom: 26px; }
 .menu-card .more { margin-top: 18px; font-weight: 600; }
 .table-top { position: relative; aspect-ratio: 1 / 1.06; width: 100%; max-width: 540px; margin-inline-start: auto; }
@@ -322,3 +322,19 @@ html[data-os='android'] .store[data-store='ios'] { background: var(--paper); col
 .flip-dots span { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--ink); }
 .flip-dots span.on { background: var(--ink); }
 .flip.polaroid { padding-bottom: 18px; }
+
+/* Why it's good for your child: four index cards on the table */
+.benefits-sec { padding-top: 0; }
+.benefits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 26px; }
+.benefits article { background: var(--paper-warm); border: 3px solid var(--ink); border-radius: 14px; box-shadow: 4px 4px 0 var(--ink); padding: 18px 18px 20px; border-top-width: 10px; }
+.benefits article:nth-child(1) { border-top-color: var(--chef); transform: rotate(-0.8deg); }
+.benefits article:nth-child(2) { border-top-color: var(--yolk); transform: rotate(0.6deg); }
+.benefits article:nth-child(3) { border-top-color: var(--tomato); transform: rotate(-0.4deg); }
+.benefits article:nth-child(4) { border-top-color: var(--cloth); transform: rotate(0.8deg); }
+.benefits h3 { font-size: 21px; margin-bottom: 6px; }
+.benefits p { font-size: 17px; color: var(--ink-soft); line-height: 1.55; }
+@media (max-width: 980px) { .benefits { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .benefits { grid-template-columns: 1fr; gap: 14px; } .benefits article { transform: none !important; } }
+
+/* The free adventure stands out from the paid ones */
+.pkg.pkg-free { border-color: var(--chef-deep); box-shadow: 5px 5px 0 var(--chef); }
