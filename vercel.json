@@ -9,18 +9,40 @@
       "dest": "/site/$1"
     },
     {
+      "src": "/(robots\\.txt|sitemap\\.xml)",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "dest": "/site/$1"
+    },
+    {
       "src": "/",
-      "has": [{ "type": "host", "value": "greenchef.foodgames.co.il" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
       "dest": "/site/index.html"
     },
     {
       "src": "/(workshops|accessibility|birthdays)",
-      "has": [{ "type": "host", "value": "greenchef.foodgames.co.il" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
       "dest": "/site/$1.html"
     },
     {
       "src": "/greenchef",
-      "headers": { "Location": "/greenchef/" },
+      "headers": {
+        "Location": "/greenchef/"
+      },
       "status": 301
     },
     {
@@ -38,7 +60,9 @@
     },
     {
       "src": "^/(italy|dinner)$",
-      "headers": { "Location": "/$1/" },
+      "headers": {
+        "Location": "/$1/"
+      },
       "status": 301
     },
     {

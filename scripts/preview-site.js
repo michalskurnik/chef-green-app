@@ -5,8 +5,8 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
-const pages = { '/': 'site/index.html', '/workshops': 'site/workshops.html', '/accessibility': 'site/accessibility.html', '/birthdays': 'site/birthdays.html' };
-const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4' };
+const pages = { '/': 'site/index.html', '/workshops': 'site/workshops.html', '/accessibility': 'site/accessibility.html', '/birthdays': 'site/birthdays.html', '/robots.txt': 'site/robots.txt', '/sitemap.xml': 'site/sitemap.xml' };
+const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.webp': 'image/webp', '.jpg': 'image/jpeg', '.png': 'image/png', '.mp4': 'video/mp4', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml' };
 
 http.createServer((req, res) => {
   const url = decodeURIComponent(req.url.split('?')[0]);
