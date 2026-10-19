@@ -8,6 +8,31 @@
   var os = isIOS ? 'ios' : (isAndroid ? 'android' : 'desktop');
   document.documentElement.setAttribute('data-os', os);
 
+  // Google Analytics 4: page views plus clicks on store and WhatsApp buttons.
+  var GA_ID = 'G-2KMDQX2WND';
+  var gtag = function () {};
+  if (!/X{6}/.test(GA_ID)) {
+    window.dataLayer = window.dataLayer || [];
+    gtag = window.gtag = function () { window.dataLayer.push(arguments); };
+    gtag('js', new Date());
+    gtag('config', GA_ID, { anonymize_ip: true });
+    var ga = document.createElement('script');
+    ga.async = true;
+    ga.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(ga);
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var where = a.closest('.sticky-cta') ? 'sticky' : (a.closest('.hero, .ws-hero') ? 'top' : 'page');
+    if (/apps\.apple\.com|play\.google\.com/.test(a.href)) {
+      gtag('event', 'store_click', { store: /apple/.test(a.href) ? 'app_store' : 'google_play', button_location: where, transport_type: 'beacon' });
+    } else if (/wa\.me\//.test(a.href)) {
+      var text = decodeURIComponent((a.href.split('text=')[1] || '').replace(/\+/g, ' '));
+      gtag('event', 'whatsapp_click', { topic: text.replace(/^היי, אשמח (לשמוע פרטים על |לתאם )?/, '').slice(0, 80) || 'general', button_location: where, transport_type: 'beacon' });
+    }
+  });
+
   // The sticky button goes straight to the matching store on phones.
   var sticky = document.querySelector('.sticky-cta');
   if (sticky) {
