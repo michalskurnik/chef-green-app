@@ -1,6 +1,149 @@
 {
   "routes": [
     {
+      "src": "/family",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/?utm_source=whatsapp&utm_medium=message&utm_campaign=family"
+      }
+    },
+    {
+      "src": "/staff",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/?utm_source=whatsapp&utm_medium=message&utm_campaign=staff"
+      }
+    },
+    {
+      "src": "/friends",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/?utm_source=whatsapp&utm_medium=message&utm_campaign=friends"
+      }
+    },
+    {
+      "src": "/wa",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/?utm_source=whatsapp&utm_medium=status&utm_campaign=launch"
+      }
+    },
+    {
+      "src": "/yummi",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/?utm_source=email&utm_medium=email&utm_campaign=yummi"
+      }
+    },
+    {
+      "src": "/ig",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/?utm_source=instagram&utm_medium=bio&utm_campaign=launch"
+      }
+    },
+    {
+      "src": "/li",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/?utm_source=linkedin&utm_medium=post&utm_campaign=launch"
+      }
+    },
+    {
+      "src": "/fb1",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/?utm_source=facebook&utm_medium=group&utm_campaign=imahot_mevashlot"
+      }
+    },
+    {
+      "src": "/fb2",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/?utm_source=facebook&utm_medium=group&utm_campaign=megadlim_yeladim"
+      }
+    },
+    {
+      "src": "/fb3",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/birthdays?utm_source=facebook&utm_medium=group&utm_campaign=imahot_yom_huledet"
+      }
+    },
+    {
+      "src": "/fb4",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "status": 302,
+      "headers": {
+        "Location": "/workshops?utm_source=facebook&utm_medium=group&utm_campaign=nashim_rg_givatayim"
+      }
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/$1"
     },
