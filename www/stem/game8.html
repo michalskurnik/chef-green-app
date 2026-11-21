@@ -146,7 +146,20 @@ let checked=false;
 let dragSrc=null;
 let touchCard=null, touchClone=null, touchSrcIdx=null;
 
+// Touch-drag safety: remove leftover floating copies when a touch is
+// cancelled (long-press, system gesture, second finger) instead of ended.
+function cancelTouchDrag(){
+  document.querySelectorAll('.touch-ghost').forEach(g=>g.remove());
+  touchClone=null;
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('over','dragging'));
+  touchCard=null;touchSrcIdx=null;
+}
+document.addEventListener('dragstart',e=>{if(touchClone)e.preventDefault();},true);
+window.addEventListener('blur',()=>{if(touchClone)cancelTouchDrag();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&touchClone)cancelTouchDrag();});
+
 function buildList(){
+  document.querySelectorAll('.touch-ghost').forEach(g=>g.remove());
   const list=document.getElementById('list');
   list.innerHTML='';
   void list.offsetHeight;
@@ -162,6 +175,7 @@ function buildList(){
     card.addEventListener('touchstart',onTouchStart,{passive:true});
     card.addEventListener('touchmove',onTouchMove,{passive:false});
     card.addEventListener('touchend',onTouchEnd);
+    card.addEventListener('touchcancel',cancelTouchDrag);
     list.appendChild(card);
   });
   document.getElementById('check-btn').classList.add('ready');
@@ -178,10 +192,12 @@ function onDrop(e){
 function onDragEnd(){document.querySelectorAll('.card').forEach(c=>c.classList.remove('dragging','over'));}
 
 function onTouchStart(e){
+  if(e.touches&&e.touches.length>1)return;
+  if(touchClone)cancelTouchDrag();
   if(checked)return;
   touchCard=this;touchSrcIdx=parseInt(this.dataset.idx);
   const t=e.touches[0],r=this.getBoundingClientRect();
-  touchClone=this.cloneNode(true);
+  touchClone=this.cloneNode(true);touchClone.classList.add('touch-ghost');
   touchClone.style.cssText=`position:fixed;z-index:9999;width:${r.width}px;opacity:.88;top:${r.top}px;left:${r.left}px;pointer-events:none;border-radius:16px;box-shadow:0 8px 28px rgba(0,0,0,.22);background:#fff;border:2px solid #2E9BC6;transform:scale(1.04);`;
   document.body.appendChild(touchClone);
   this.classList.add('dragging');

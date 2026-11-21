@@ -373,11 +373,23 @@ body{
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function (ev) {
-      var dataUrl = ev.target.result;
-      localStorage.setItem('childPhoto', dataUrl);
-      photoImg.src = dataUrl;
-      photoImg.style.display = 'block';
-      cameraHint.style.display = 'none';
+      // Phone photos are several MB; stored as-is they exceed the
+      // localStorage quota and setItem throws, so the photo never showed.
+      // Shrink to 800px before saving.
+      var img = new Image();
+      img.onload = function () {
+        var scale = Math.min(1, 800 / Math.max(img.width, img.height));
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        photoImg.src = dataUrl;
+        photoImg.style.display = 'block';
+        cameraHint.style.display = 'none';
+        try { localStorage.setItem('childPhoto', dataUrl); } catch (err) {}
+      };
+      img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
   });

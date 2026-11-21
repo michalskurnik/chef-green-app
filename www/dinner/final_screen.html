@@ -32,6 +32,7 @@ body{font-family:'Assistant',sans-serif;direction:rtl;background:#FFFBF0}
 @keyframes popIn{0%{transform:scale(0) rotate(-8deg);opacity:0}65%{transform:scale(1.08) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
 @keyframes badgeGlow{0%,100%{filter:drop-shadow(0 0 18px rgba(247,201,72,.55)) drop-shadow(0 8px 24px rgba(0,0,0,.18))}50%{filter:drop-shadow(0 0 32px rgba(247,201,72,.85)) drop-shadow(0 8px 32px rgba(0,0,0,.22))}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 @keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0)}50%{opacity:1;transform:scale(1) rotate(180deg)}}
 @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 6px 22px rgba(255,107,53,.42)}50%{transform:scale(1.025);box-shadow:0 8px 30px rgba(255,107,53,.62)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
@@ -92,7 +93,6 @@ body{font-family:'Assistant',sans-serif;direction:rtl;background:#FFFBF0}
   position:absolute;inset:-10px;
   border-radius:50%;
   background:conic-gradient(from 0deg,rgba(247,201,72,.6),rgba(247,201,72,.0),rgba(247,201,72,.6),rgba(247,201,72,.0),rgba(247,201,72,.6));
-  animation:shimmer 4s linear infinite;
   filter:blur(3px);
 }
 .badge-img{
@@ -100,7 +100,7 @@ body{font-family:'Assistant',sans-serif;direction:rtl;background:#FFFBF0}
   object-fit:contain;
   border-radius:50%;
   position:relative;z-index:1;
-  animation:badgeGlow 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 22px rgba(247,201,72,.65)) drop-shadow(0 8px 24px rgba(0,0,0,.2));
 }
 .badge-caption{
   font-size:11px;font-weight:800;
