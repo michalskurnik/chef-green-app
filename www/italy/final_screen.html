@@ -28,6 +28,7 @@ body{display:flex;flex-direction:column;align-items:center;overflow-y:auto;overf
 @keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
 @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
 @keyframes badgeGlow{0%,100%{filter:drop-shadow(0 0 16px rgba(247,201,72,.55)) drop-shadow(0 8px 20px rgba(0,0,0,.25))}50%{filter:drop-shadow(0 0 30px rgba(247,201,72,.85)) drop-shadow(0 8px 28px rgba(0,0,0,.3))}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 @keyframes badgeBounce{0%{transform:translateY(-50px) scale(.7);opacity:0}60%{transform:translateY(6px) scale(1.05)}80%{transform:translateY(-3px) scale(.98)}100%{transform:translateY(0) scale(1);opacity:1}}
 @keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0)}50%{opacity:1;transform:scale(1) rotate(180deg)}}
 @keyframes cardReveal{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -68,11 +69,11 @@ body{display:flex;flex-direction:column;align-items:center;overflow-y:auto;overf
 .badge-ring{
   position:absolute;inset:-8px;border-radius:50%;
   background:conic-gradient(from 0deg,rgba(247,201,72,.6),rgba(247,201,72,0),rgba(247,201,72,.6),rgba(247,201,72,0),rgba(247,201,72,.6));
-  animation:shimmer 4s linear infinite;filter:blur(3px);
+  filter:blur(3px);
 }
 #trophy-icon{
   font-size:48px;line-height:1;position:relative;z-index:1;display:block;
-  animation:pop .6s ease .1s both,badgeGlow 3s ease-in-out infinite;
+  animation:pop .6s ease .1s both;filter:drop-shadow(0 0 22px rgba(247,201,72,.65)) drop-shadow(0 8px 24px rgba(0,0,0,.2));
 }
 
 #hero-title{font-family:'Fredoka One',cursive;font-size:19px;color:#1A3D1F;line-height:1.15;margin-bottom:4px}
@@ -229,7 +230,7 @@ body{display:flex;flex-direction:column;align-items:center;overflow-y:auto;overf
   // Sparkles
   var c = document.getElementById('sparkles');
   var cols = ['#F7C948', '#FFD54F', '#F5921E', '#4CAF50', '#FFCA28'];
-  for (var k = 0; k < 24; k++) {
+  for (var k = 0; k < 12; k++) {
     var s2 = document.createElement('div');
     s2.className = 'sp';
     var size = (Math.random() * 6 + 4) + 'px';

@@ -233,6 +233,15 @@ button,[role=button]{touch-action:manipulation;-webkit-appearance:none}
   cursor:pointer;touch-action:manipulation;
 }
 #parents-btn:active{opacity:.7}
+#recipes-btn{
+  display:block;width:calc(100% - 32px);margin:10px 16px 0;
+  background:rgba(245,200,66,.14);
+  color:#F5C842;border:2px solid rgba(245,200,66,.55);
+  border-radius:20px;padding:13px;
+  font-size:16px;font-weight:800;font-family:'Assistant',sans-serif;
+  cursor:pointer;touch-action:manipulation;
+}
+#recipes-btn:active{opacity:.7}
 
 /* Success toast */
 #success-toast{
@@ -316,6 +325,7 @@ button,[role=button]{touch-action:manipulation;-webkit-appearance:none}
   <button id="trophy-btn" onclick="window.location.href='completion.html'">
     🏆 סיימתם את הרפתקת איטליה — ראו את ההישג!
   </button>
+  <button id="recipes-btn" onclick="window.location.href='recipes.html'">📖 ספר המתכונים שלי</button>
   <button id="recap-btn" onclick="window.location.href='final_screen.html'">🎉 צפו שוב במסך הסיום</button>
   <button id="parents-btn" onclick="window.location.href='parents.html'">👨‍👩‍👧‍👦 להורים</button>
 </div>

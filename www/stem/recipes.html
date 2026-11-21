@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<script src="../assets/rc-config.js"></script>
+<script src="../assets/stem-config.js"></script>
+<script src="access-guard.js"></script>
+<script src="unlock-logic.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>ספר המתכונים שלי 📖</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<script src="../assets/recipe-book.js"></script>
+<script>
+var IMGS = ['assets/recipes/recipe_page_1_yeast_buns.png', 'assets/recipes/recipe_page_2_jam_apple.png',
+            'assets/recipes/recipe_page_3_purple_cabbage.png', 'assets/recipes/recipe_page_4_ice_cream_bag.png',
+            'assets/recipes/recipe_page_5_volcano.png'];
+var L = window.StemUnlockLogic;
+renderRecipeBook({ back: 'index.html', items: L.STATIONS.map(function (s, i) {
+  return { name: s.name, emoji: s.emoji, done: L.isStationDone(i), img: IMGS[i] };
+})});
+</script>
+</body>
+</html>

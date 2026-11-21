@@ -178,7 +178,7 @@ button,.btn,[role=button]{touch-action:manipulation}
   <div class="ov-title">כל הכבוד!</div>
   <div class="ov-sub" id="done-msg">השלמתם את כל 3 הקאסדיות!</div>
   <div id="stars-row"></div>
-  <button class="ov-btn green" style="margin-top:8px" onclick="window.location.href='game7.html'">המשחק הבא ▶</button>
+  <button class="ov-btn green" style="margin-top:8px" onclick="window.location.href='game7.html'">לשלב הבא ▶</button>
   <button class="ov-btn" onclick="startGame()" style="margin-top:6px">🔄 שוב!</button>
 </div>
 
@@ -237,34 +237,44 @@ function drawPan(shape, toppings){
   ctx.fillStyle=panGrad;ctx.fill();
   ctx.strokeStyle='#5D4037';ctx.lineWidth=4;ctx.stroke();
 
-  // Tortilla shape
+  // Tortilla shape — thin, pale flour tortilla with light toasted spots
+  const shapePath=()=>{
+    if(shape==='star') drawStarShape(CX,CY,70,30,5);
+    else if(shape==='heart') drawHeartShape(CX,CY,68);
+    else {ctx.beginPath();ctx.arc(CX,CY,68,0,Math.PI*2);}
+  };
   ctx.save();
-  const tg=ctx.createRadialGradient(CX-20,CY-20,8,CX,CY,68);
-  tg.addColorStop(0,'#FFF8D0');tg.addColorStop(.45,'#EDD060');
-  tg.addColorStop(.8,'#D4A828');tg.addColorStop(1,'#A07010');
+  ctx.shadowColor='rgba(0,0,0,.35)';ctx.shadowBlur=5;ctx.shadowOffsetY=2;
+  const tg=ctx.createRadialGradient(CX-15,CY-15,6,CX,CY,72);
+  tg.addColorStop(0,'#FCF5E4');tg.addColorStop(.6,'#F4E6C6');tg.addColorStop(1,'#E9D3A6');
   ctx.fillStyle=tg;
-  ctx.shadowColor='rgba(0,0,0,.4)';ctx.shadowBlur=10;ctx.shadowOffsetY=4;
+  shapePath();ctx.fill();
+  ctx.shadowColor='transparent';
 
-  if(shape==='circle'){
-    ctx.beginPath();ctx.arc(CX,CY,68,0,Math.PI*2);ctx.fill();
-    ctx.shadowBlur=0;ctx.strokeStyle='#9C7215';ctx.lineWidth=2;ctx.stroke();
-  } else if(shape==='star'){
-    drawStarShape(CX,CY,70,30,5);ctx.fill();
-    ctx.shadowBlur=0;ctx.strokeStyle='#9C7215';ctx.lineWidth=2;drawStarShape(CX,CY,70,30,5);ctx.stroke();
-  } else if(shape==='heart'){
-    drawHeartShape(CX,CY,68);ctx.fill();
-    ctx.shadowBlur=0;ctx.strokeStyle='#9C7215';ctx.lineWidth=2;drawHeartShape(CX,CY,68);ctx.stroke();
-  }
+  // Toasted spots, clipped to the tortilla
+  shapePath();ctx.clip();
+  const spots=[[-30,-34,9],[22,-40,6],[38,-8,10],[-44,6,7],[-12,-6,5],[10,18,8],[-26,34,6],[30,30,7],
+               [0,-58,5],[52,14,4],[-52,-22,4],[-4,48,5],[16,-14,3],[-36,-48,3],[46,-30,3],[-18,16,3]];
+  spots.forEach(([dx,dy,r],i)=>{
+    const a=.38+((i*37)%10)/40;
+    const g=ctx.createRadialGradient(CX+dx,CY+dy,0,CX+dx,CY+dy,r);
+    g.addColorStop(0,`rgba(150,92,38,${a})`);g.addColorStop(.6,`rgba(184,126,62,${a*.6})`);g.addColorStop(1,'rgba(200,150,80,0)');
+    ctx.fillStyle=g;
+    ctx.beginPath();ctx.ellipse(CX+dx,CY+dy,r*1.25,r*.85,(i*.7)%Math.PI,0,Math.PI*2);ctx.fill();
+  });
+  ctx.fillStyle='rgba(110,64,24,.45)';
+  [[-20,-22],[28,-24],[6,34],[-38,24],[40,4],[-6,-40],[18,6]].forEach(([dx,dy])=>{
+    ctx.beginPath();ctx.arc(CX+dx,CY+dy,1.2,0,Math.PI*2);ctx.fill();
+  });
+  ctx.restore();
 
-  // Texture spots
-  ctx.shadowBlur=0;
-  for(let i=0;i<8;i++){
-    const sx=CX-38+rng(i*7)*76, sy=CY-38+rng(i*13)*76;
-    ctx.fillStyle=`rgba(92,50,0,${.1+rng(i*3)*.18})`;
-    ctx.beginPath();
-    ctx.ellipse(sx,sy,2+rng(i*5)*3,(1.5+rng(i*5)*2)*.6,rng(i*9)*Math.PI,0,Math.PI*2);
-    ctx.fill();
-  }
+  // Thin flexible edge: light rim + soft inner highlight
+  ctx.save();
+  ctx.lineJoin='round';
+  ctx.strokeStyle='#D2B27A';ctx.lineWidth=1.6;shapePath();ctx.stroke();
+  ctx.strokeStyle='rgba(255,252,240,.7)';ctx.lineWidth=1;
+  ctx.translate(CX,CY);ctx.scale(.94,.94);ctx.translate(-CX,-CY);
+  shapePath();ctx.stroke();
   ctx.restore();
 
   // Topping pips — reset state so emoji render in full colour
