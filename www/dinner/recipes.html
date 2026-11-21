@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>ספר המתכונים שלי 📖</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<script src="../assets/recipe-book.js"></script>
+<script>
+// Same completion check as index.html (stationN or the older recipeN key).
+function done(n) {
+  return localStorage.getItem('station' + n + '_completed') === '1' ||
+         localStorage.getItem('recipe' + n + '_completed') === '1';
+}
+renderRecipeBook({ back: 'index.html', items: [
+  { name: 'רובוט טורטייה',      emoji: '🤖', done: done(1), from: 'game3.html' },
+  { name: 'ארנבת ביצה',         emoji: '🐰', done: done(2), from: 'game5.html' },
+  { name: 'קאסדייה בצורות',     emoji: '🫓', done: done(3), from: 'game7.html' },
+  { name: 'שבלולי פיצה פריכים', emoji: '🍕', done: done(4), from: 'game9.html' },
+  { name: 'פסטה ברוטב בזוקה',   emoji: '🍝', done: done(5), from: 'game11.html' }
+]});
+</script>
+</body>
+</html>
