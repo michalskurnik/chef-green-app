@@ -33,6 +33,8 @@ Data
 - projects: create, duplicate symbol rejected, switch, separate numbering and version ids, choice remembered after reload, rename
 
 UI behaviour
+- sync warning: no banner at 30s, banner after 60s of visible time without confirmed data (role=alert, on screen, phone too); hides itself on confirmed data; dead subscription after working -> banner only after a minute; "הבנתי" hides it until a new problem; ten quiet minutes -> nothing; hidden-tab time not counted (use `page.clock.install()` + `clock.runFor()`)
+- phone: versions pane rows packed at the top; every capsule button visible and clickable (`elementFromPoint` at its center)
 - diagnostics: snapshot counts (saved vs confirmed) shown; "send" writes them to the viewer's own `data/users/<id>/diag` and confirms or reports the error
 - versions menu and new-version form survive resize events and data refreshes while the mouse moves over them
 - filter dropdowns: change, highlight, combine, clear resets; open dropdown survives a refresh

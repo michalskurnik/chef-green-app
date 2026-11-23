@@ -119,6 +119,26 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
     ok(a && bFlag && cFlag && dFlag && s1 === s0 + 1, '9 live data: saved copy ignored=' + a + ', stale flagged after 12s=' + bFlag + ', cleared on confirmed data=' + cFlag + ', dead subscription flagged=' + dFlag + ', resubscribed=' + (s1 === s0 + 1));
   }
 
+  // 10. sync warning: banner only after a full minute without confirmed data; nothing during quiet time after a confirmed load
+  {
+    await ctx.close();
+    const cfresh = async () => {
+      const c = await b.newContext({ viewport: { width: 1440, height: 900 } }); await c.addInitScript(init); const q = await c.newPage();
+      q.on('pageerror', e => { console.log('PAGEERROR', e.message); fails++; });
+      await q.clock.install({ time: new Date('2026-01-01T10:00:00Z') }); await q.goto('file://' + page); await q.clock.runFor(1500); return [c, q];
+    };
+    const shown = (q) => q.evaluate(() => { const a = document.getElementById('sync-alert'); return !!a && !a.hidden && a.getAttribute('role') === 'alert'; });
+    let [c1, q1] = await cfresh();
+    await q1.clock.runFor(30000); const at30 = await shown(q1); await q1.clock.runFor(32000); const at62 = await shown(q1);
+    await fire(q1, 'items', {}, false); await fire(q1, 'releases', {}, false); await q1.clock.runFor(2500); const cleared = !(await shown(q1));
+    await c1.close();
+    let [c2, q2] = await cfresh(); await fire(q2, 'items', {}, false); await fire(q2, 'releases', {}, false);
+    let quiet = true; for (let i = 0; i < 10; i++) { await q2.clock.runFor(60000); if (await shown(q2)) quiet = false; }
+    await c2.close();
+    ok(!at30 && at62 && cleared && quiet, '10 sync warning: none at 30s=' + !at30 + ', banner after a minute=' + at62 + ', hides on confirmed data=' + cleared + ', quiet 10 minutes=' + quiet);
+    [ctx, p] = await fresh();
+  }
+
   await ctx.close(); await b.close();
   console.log(fails ? 'FAILURES: ' + fails : 'ALL PASSED');
   process.exit(fails ? 1 : 0);

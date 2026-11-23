@@ -12,7 +12,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument('--live', required=True); ap.add_argument('--build', required=True)
 ap.add_argument('--dump', required=True); ap.add_argument('--prev')
 a = ap.parse_args()
-SEED = re.compile(r'<script type="application/json" id="seed">(.*?)</script>', re.S)
+SEED = re.compile(r'<script type="application/json" id="seed">(\{.*?)</script>', re.S)
 APP = re.compile(r'<script id="app">(.*?)</script>', re.S)
 STY = re.compile(r'<style>(.*?)</style>', re.S)
 rd = lambda p: open(p, encoding='utf-8').read()
@@ -35,8 +35,8 @@ def dump(col):
 
 safe = True
 for col in sorted(set(ls) | set(ms)):
-    if not isinstance(ls.get(col, []), list):
-        continue
+    if not isinstance(ls.get(col, []), list) or not isinstance(ms.get(col, []), list):
+        continue  # 'at', 'atIso' and other scalar fields are not collections
     L = {x['id']: clean(x) for x in ls.get(col, [])}; M = {x['id']: clean(x) for x in ms.get(col, [])}; D = dump(col)
     missing = [k for k in L if k not in M]
     differ = [k for k in L if k in M and L[k] != M[k] and str(L[k].get('updatedAt', L[k].get('at', ''))) > str(M[k].get('updatedAt', M[k].get('at', '')))]

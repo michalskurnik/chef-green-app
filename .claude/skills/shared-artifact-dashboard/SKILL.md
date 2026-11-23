@@ -1,6 +1,6 @@
 ---
 name: shared-artifact-dashboard
-description: Build and run shared, database-backed claude.ai Artifact boards (task, kanban, bug and release trackers). Use for any new board or any change, bug, layout or publish issue on one.
+description: Build and run shared, database-backed claude.ai Artifact boards (task, kanban, bug and release trackers). Use for a new board, any change or publish issue, or updating its tickets.
 ---
 
 # Shared Artifact boards
@@ -8,6 +8,29 @@ description: Build and run shared, database-backed claude.ai Artifact boards (ta
 Distilled from a long real session that built and ran a bilingual (Hebrew RTL) task-and-release board used daily by two people: ~50 iterations, 170 automated tests, several production incidents and their fixes. The point of this skill is to get the next board right the first time and to change existing ones without breaking them.
 
 Two other skills hold the platform contract; load them first when they are listed: `artifact-design` (page contract, theming, size limits) and `artifact-capabilities` (db, artifact.publish, user, downloads, mcp). This skill is the layer above them: how to build and operate a real multi-user board.
+
+## Choose your path
+
+- **Only updating tickets on an existing board** (you fixed bugs elsewhere and report back, attach screenshots, change status or owner, add an item) - any session, including a teammate's: follow "Updating tickets" right below. No template, test suite or build setup is needed.
+- **Building or changing the board itself** (layout, features, data layer): "When starting" and "The build loop".
+
+Both paths need the `Artifact` and `ArtifactData` tools and a shell (Claude Code, or a claude.ai session that has them). Scripts are in this skill's `scripts/` folder.
+
+## Updating tickets (any session, no template needed)
+
+A ticket update is finished only when the database has it AND the board page's embedded copy has it. A viewer whose live connection fails sees only that copy; skipping step 5 made a teammate's updates invisible four times.
+
+1. **Dump** every collection: `ArtifactData list` for `items`, `releases`, `log`, `projects`, each with `query:{limit:1000}` and the same `out_dir` (e.g. `dump1/`).
+2. **Write** following `references/external-writers.md`: real UTC time from `date -u` right before writing (never rounded or in the future), `if_version` from the document you read, `update` only the changed fields, a `log` entry in the same `batch`, the board's own enum values, screenshots uploaded as assets and appended to the item's existing `files` array.
+3. **Verify** the write: `get` each written doc; dump again (`dump2/`); `python3 scripts/validate_data.py <live index.html> dump2` must report 0 errors.
+4. **Read the live page**: `Artifact read url:<board> path:"index.html"` (it is saved to a local file).
+5. **Refresh and publish the page copy**: `python3 scripts/refresh_seed.py <that index.html> dump2 publish.html`, then `Artifact publish url:<board> file_path:publish.html`. Only the data block changes; the page code stays exactly as published.
+   - Refused with "a newer version saved from inside the page": someone's page republished itself. Read the saved file the refusal names (Read tool, a few lines are enough), dump again, rerun `refresh_seed.py` on THAT saved file, publish again; if refused as "identical content", publish the same file once more.
+   - Refused because you may not publish (no edit rights): stop and say so plainly (step 7).
+6. **Confirm**: `Artifact read path:"index.html"` again, then `python3 scripts/check_copy_vs_db.py <live index.html> dump2` must print "page copy matches the database".
+7. **Report**: the keys created and updated, and one line "Board page republished: yes" or "Board page republished: NO - ask the board owner's session to republish". Never say the changes are visible on the board when step 6 did not pass.
+
+The board's tools tab ("ייצוא וגיבוי") shows the same rules for its own project, ready to copy into a session that has not loaded this skill.
 
 ## When starting
 
@@ -90,6 +113,7 @@ Other sessions (Claude Code in a terminal or IDE) may update items directly with
 - `scripts/compare_live.py` - page-saved HTML vs build vs dump: data and code equality per collection.
 - `scripts/verify_live.sh` - live file equals build except the platform wrapper.
 - `scripts/check_copy_vs_db.py` - the page's embedded copy vs a fresh database dump; exit 1 on any difference (run after every publish and every database write).
+- `scripts/refresh_seed.py` - replaces only the data block of a published page (the live `index.html`) with a fresh dump; for sessions that update tickets without the template (see "Updating tickets").
 - `scripts/validate_data.py` - checks a data dump against the template's own enums: valid values, releases and projects exist, unique numbers, log keys, timestamps; lists writes made outside the page.
 - `references/architecture.md` - data layer, merge, tombstones, numbering, self-republish guards, multi-project, Google Docs mirror.
 - `references/publish-protocol.md` - every publish refusal seen and its exact remedy.

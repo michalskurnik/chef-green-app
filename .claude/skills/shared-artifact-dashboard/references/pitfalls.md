@@ -91,3 +91,13 @@ Fix: build options once; only set value and classes on refresh.
 **"This link cannot be opened here".** Screenshot tiles were links with `target=_blank` to `/_blob/<id>`; claude.ai's viewer blocks opening them. Nothing in a local test shows this (the mock page opens links freely), so the rule is structural: no new-tab links or `window.open` on a board; images open in an in-page viewer, other files download through `downloads`. Test 48c/48d assert there are no `<a>` elements in a card's files.
 
 **Fourth time, and a future timestamp.** Another session updated five tickets and uploaded 10 screenshots, reported them as updated, and did not republish; the user saw none of it. It also stamped `updatedAt` 16:20:00 on writes made around 16:14. Fixes: the hand-off text at the end of `external-writers.md`, and a "send diagnostics" button on the board (technical details tab) that writes the viewer's connection log to `data/users/<id>/diag`, readable by Claude as that user with `ArtifactData get collection:"data/users/me" doc_id:"diag"` - the only way to see why one person's view is not receiving live data when no computer is attached (board tests 50a-b).
+
+**Phone: the version capsule hid its four buttons.** After archive and delete were added, the capsule needed 461px on a 316px phone row; with `overflow:hidden` the percentage and the manage, add, archive and delete buttons were cut off, unseen for many versions because the phone tests only checked page scroll. Fix: under 600px the capsule wraps to two rows. Test 53b clicks the center of every capsule button via `elementFromPoint`.
+
+**Phone: tall empty gaps in the versions pane.** A `flex-wrap:wrap` row inside a pane that fills the screen height spreads its lines over the whole height (`align-content` defaults to stretch): 372px gaps between the title, chips and capsule. Fix: `align-content:flex-start`. Test 53a.
+
+**Seed matching trap.** The page's own self-republish code contains the text `<script type="application/json" id="seed">` inside a JS string, so a naive regex finds two blocks and a non-greedy match can swallow the whole script. All scripts match only a block whose content starts with `{`; `refresh_seed.py` refuses unless exactly one matches.
+
+**Copy time shown in UTC.** The seed stamp was formatted in UTC, so Israeli viewers read "copy from 16:26" at 18:26. The seed now carries `atIso` and the page shows it in the viewer's local time (test 52b).
+
+**12-second popup.** The early "not updating" toast fired on slow starts and was then ignored; the real problem went unnoticed. Now: quiet ring at 12s, loud banner only after a full visible minute (section 7e of ui-patterns.md).

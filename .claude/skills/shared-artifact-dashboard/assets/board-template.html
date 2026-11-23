@@ -281,7 +281,7 @@ body{overflow:hidden}
   .frame{height:100%}
   .shell[data-tab="side"] .frame:not([data-frame="side"]),.shell[data-tab="tasks"] .frame:not([data-frame="tasks"]),.shell[data-tab="log"] .frame:not([data-frame="log"]){display:none!important}
 }
-/* v17: arrangement from Roy's sketch - versions top right, log top left, tasks + requests below */
+/* v17: arrangement from the owner's sketch - versions top right, log top left, tasks + requests below */
 .hero-strip{flex:none;height:8px;padding:0!important;margin-top:0;border-bottom-width:4px}
 .ovr-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .ovr-top .brandblk{flex:none}
@@ -888,6 +888,24 @@ body.fl-lock{overflow:hidden}
 
 /* v57: diagnostics - send to the database or copy */
 .diag-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 6px}
+
+/* v58: sync alert banner after a full minute without confirmed data; how-to list */
+.sync-alert{position:fixed;inset-inline:0;bottom:16px;margin:0 auto;z-index:95;box-sizing:border-box;width:min(680px,calc(100% - 32px));display:flex;flex-direction:column;gap:6px;background:#FFF4D6;color:#3D2C00;border:1px solid #E0B341;border-inline-start:5px solid #B57B00;border-radius:10px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:.9rem;line-height:1.45}
+.sync-alert[hidden]{display:none}
+.sync-alert b{font-size:.98rem}
+.sa-act{display:flex;gap:8px;flex-wrap:wrap}
+.sa-act button{box-sizing:border-box;height:30px;padding:0 12px;border-radius:8px;border:1px solid #B57B00;background:#fff;color:#3D2C00;font:inherit;font-weight:600;cursor:pointer}
+.sa-act button:focus-visible{outline:2px solid #3D2C00;outline-offset:2px}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sync-alert{background:#3A2E10;color:#FCEFC7;border-color:#8A6A1E}:root:not([data-theme="light"]) .sa-act button{background:#2A2210;color:#FCEFC7;border-color:#C99A2E}}
+:root[data-theme="dark"] .sync-alert{background:#3A2E10;color:#FCEFC7;border-color:#8A6A1E}:root[data-theme="dark"] .sa-act button{background:#2A2210;color:#FCEFC7;border-color:#C99A2E}
+.howto{margin:0 0 8px;padding-inline-start:20px;display:flex;flex-direction:column;gap:4px}
+
+/* v59: phone - versions pane rows packed at the top (a wrapping row in a tall pane spread its lines over the screen) */
+.pane.side{align-content:flex-start}
+
+/* v60: phone - the version capsule wraps to two rows instead of clipping its % and its four buttons */
+@media (max-width:600px){.pane.side .rel-panel>.verbar{height:auto;flex-wrap:wrap;row-gap:4px;border-radius:16px;padding:3px 4px}
+.verbar>*{line-height:26px}}
 </style>
 
 <div class="food" aria-hidden="true">
@@ -979,6 +997,16 @@ body.fl-lock{overflow:hidden}
         <p class="small muted">הוראות לסוכן שמפעיל את הדפדפן (Claude בכרום): מעתיקים, מצרפים את הפידבק, והוא מכניס את המשימות ללוח.</p>
         <div class="agent" id="agent-text"></div>
         <div class="row"><button type="button" id="copy-agent">העתקת ההוראות</button><span class="saved" id="copy-ok"></span></div>
+        <p class="small muted">הוראות ל-Claude שמעדכן את הלוח ישירות דרך המאגר (Claude Code או צ'אט, בלי דפדפן): מעתיקים ומצרפים לבקשה.</p>
+        <div class="agent" id="agent-db-text"></div>
+        <div class="row"><button type="button" id="copy-agent-db">העתקת ההוראות</button><span class="saved" id="copy-db-ok" role="status"></span></div>
+        <p class="small muted">איך עובדים בלי תקלות:</p>
+        <ul class="howto small">
+          <li>אחרי שמירה מחכים לשורה "נשמר" לפני שסוגרים את הדף.</li>
+          <li>הודעה צהובה בתחתית "הלוח לא מתעדכן מהמאגר" - לא עורכים, מרעננים את הדף. אם היא חוזרת: לשונית "פרטים טכניים" ואז "שליחת הפרטים לבדיקה".</li>
+          <li>טבעת זהובה סביב הלוגו - הנתונים עוד לא אושרו מהמאגר. בדרך כלל נעלמת תוך שניות.</li>
+          <li>עדכון בעזרת Claude: מעתיקים את ההוראות המתאימות למעלה. Claude שעדכן את המאגר ולא פרסם את הדף מחדש - העבודה לא גמורה.</li>
+        </ul>
       </div>
     </div>
     <div id="lp-diag" class="tpanel" role="tabpanel" aria-labelledby="tt-diag"><label class="inline me-pick" for="me">מי משתמש בדף במכשיר הזה<select id="me"></select><span class="muted small">מזוהה אוטומטית. לשנות רק אם הזיהוי שגוי (משפיע על השם בלוג ועל סדר הבקשות בממתין לתשובה)</span></label><div class="diag-act"><button type="button" id="diag-send">שליחת הפרטים לבדיקה</button><button type="button" id="diag-copy">העתקה</button><span class="muted small" id="diag-msg" role="status"></span></div><pre class="diag" id="diag"></pre></div>
@@ -1042,6 +1070,28 @@ body.fl-lock{overflow:hidden}
     '5. אל תמחק ואל תעביר לארכיון. בסוף: כתוב רשימה של המפתחות שנוצרו ושל הפריטים שעודכנו.'
   ].join('\n');
   function agentText(){var P=curP();return AGENT.replace(/הפרוייקט הראשי/g,P.name).replace(/GC-/g,P.symbol+'-')}
+  /* instructions for a Claude session that writes straight to the database (no browser); shown in the tools tab with a copy button */
+  var BOARD_URL=(AGENT.match(/https:\/\/claude\.ai\/artifact\/\S+/)||[''])[0];
+  function keysOf(m){return Object.keys(m).map(function(k){return k+' ('+m[k]+')'}).join(', ')}
+  function agentDbText(){var P=curP();return [
+    'אתה מעדכן את לוח המשימות "'+P.name+'" ישירות במאגר שלו (ArtifactData), בלי לפתוח את הדף.',
+    'הלוח: '+BOARD_URL,
+    'אם הסקיל shared-artifact-dashboard זמין - טען אותו ופעל לפי references/external-writers.md. בכל מקרה, כל הכללים כאן חובה:',
+    '',
+    '1. לפני כל כתיבה: get למסמך, שמור את ה-version, וכתוב עם if_version. update רק לשדות שמשתנים - לא set של כל המסמך.',
+    '2. updatedAt (וגם at ביומן) = השעה האמיתית ב-UTC, מהפקודה date -u ממש לפני הכתיבה. לא שעה מעוגלת ולא שעה עתידית.',
+    '3. ערכים רק מהרשימות של הלוח. status: '+keysOf(ST)+'. owner: '+keysOf(OWN)+'. type: '+keysOf(TYPE)+'.',
+    '4. כל שינוי נרשם ביומן (collection log) באותה batch: at, who:"Claude", col:"items", itemId, key (למשל '+P.symbol+'-5), project, title, action, details.',
+    '5. פריט חדש: project="'+P.id+'", num = המספר הגבוה ביותר בפרויקט +1 (כולל מספרים שמופיעים ב-key ביומן), createdAt ו-updatedAt אמיתיים.',
+    '6. צילומי מסך: העלה כ-asset (Artifact publish עם url, asset:true) והוסף {id, name, type} למערך files הקיים. שלח את כל המערך - הקיים והחדש.',
+    '7. אם נדרשת תשובה של מישהו: שייך אליו (owner) והעבר לסטטוס fixed (לבדיקה) או צור פריט מסוג request. הערה בלבד לא מספיקה.',
+    '8. אחרי הכתיבה: get שוב ובדוק שהשדות נשמרו.',
+    '9. סיום = הדף פורסם מחדש עם הנתונים העדכניים: dump טרי של המאגר, Artifact read path:"index.html", scripts/refresh_seed.py מהסקיל, פרסום עם url, ואז scripts/check_copy_vs_db.py מחזיר התאמה.',
+    '   אם אין לך הרשאה או כלים לפרסם - כתוב במפורש בסיום: "הדף לא פורסם מחדש - צריך לפרסם", ואל תכתוב שהשינויים נראים בלוח.',
+    '10. אל תמחק ואל תעביר לארכיון בלי בקשה מפורשת.',
+    '',
+    'בסוף: רשימת המפתחות שנוצרו ושעודכנו, ושורה אחת: "הדף פורסם מחדש: כן/לא".'
+  ].join('\n')}
 
   var $=function(id){return document.getElementById(id)};
   var SEED={items:[],releases:[],log:[],projects:[],at:''};try{SEED=Object.assign(SEED,JSON.parse(document.getElementById('seed').textContent))}catch(e){}
@@ -1053,8 +1103,8 @@ body.fl-lock{overflow:hidden}
   function updateSyncState(){var fresh=!!(liveFresh.items&&liveFresh.releases);var lg=document.querySelector('.ovr-top .logo');
     if(fresh){if(staleShown){staleShown=false;step('live data confirmed again')}if(lg){lg.classList.remove('stale')}setSync(artifactApi?'מחובר · מסונכרן':'מחובר')}}
   function showStale(why){if(liveFresh.items&&liveFresh.releases&&why!=='dead')return;var lg=document.querySelector('.ovr-top .logo');if(lg)lg.classList.add('stale');
-    setSync('לא מתעדכן מהמאגר כרגע - מוצג עותק שמור. שינויים של אחרים יופיעו כשהחיבור יחזור; השינויים שלכם נשמרים');
-    if(!staleShown){staleShown=true;step('stale view ('+why+')');toast('התצוגה לא מתעדכנת מהמאגר כרגע - מוצג עותק שמור. מנסים להתחבר מחדש',7000)}}
+    setSync('לא מתעדכן מהמאגר כרגע - מוצג עותק שמור. שינויים של אחרים יופיעו כשהחיבור יחזור; עדיף לא לערוך עד אז');
+    if(!staleShown){staleShown=true;step('stale view ('+why+')')}}
   var downloadsApi=null, artifactApi=null, pubTimer=null, pubBusy=false, MICHAL_ID='u_OWNER_ID', ROY_ID='u_PARTNER_ID';
   var items=[], releases=[], logs=[], selRel='', view='board', filter='open', special='', typeFilter='', xf={own:'',sev:'',pkg:'',src:''}, sortBy='urgency', query='', lastNew=null;
   var MIRROR_DOC='', mcpApi=null, mirrorTimer=null, mirrorBusy=false;
@@ -1087,7 +1137,7 @@ body.fl-lock{overflow:hidden}
   function setStatus(title,detail){var s=$('status');if(!title){s.hidden=true;s.textContent='';return}s.hidden=false;s.textContent='';s.appendChild(el('b',null,title));if(detail)s.appendChild(el('span','small muted',detail))}
   var snapN={};
   function diagData(){var newest='';(live.items||[]).forEach(function(d){var u=String(d.updatedAt||'');if(u>newest)newest=u});
-    return {opened:diagState.start,now:new Date().toISOString(),ua:navigator.userAgent.slice(0,160),url:location.href.split('#')[0].slice(0,80),live:{items:!!live.items,releases:!!live.releases,log:!!live.log},fresh:{items:!!liveFresh.items,releases:!!liveFresh.releases,log:!!liveFresh.log,projects:!!liveFresh.projects},snaps:snapN,newestLiveItem:newest,seedAt:SEED.at,canWrite:canWrite,sync:!!artifactApi,steps:diagState.steps.slice(-60)}}
+    return {opened:diagState.start,now:new Date().toISOString(),ua:navigator.userAgent.slice(0,160),url:location.href.split('#')[0].slice(0,80),live:{items:!!live.items,releases:!!live.releases,log:!!live.log},fresh:{items:!!liveFresh.items,releases:!!liveFresh.releases,log:!!liveFresh.log,projects:!!liveFresh.projects},snaps:snapN,newestLiveItem:newest,seedAt:SEED.atIso||SEED.at,canWrite:canWrite,sync:!!artifactApi,steps:diagState.steps.slice(-60)}}
   function step(s){diagState.steps.push(new Date().toISOString().slice(11,19)+' '+s);var d=$('diag');if(d)d.textContent=JSON.stringify(diagData(),null,1)}
   function withTimeout(p,ms){return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej({code:'timeout'})},ms)})])}
   function lsGet(){try{return JSON.parse(localStorage.getItem('gc_local2')||'{}')}catch(e){return {}}}
@@ -1116,7 +1166,7 @@ body.fl-lock{overflow:hidden}
   var SEED_SIG=null;try{SEED_SIG=sigOf(SEED)}catch(e){}
   function buildDoc(){
     var d=new Date(),at=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-    var data={items:allItems.map(strip),releases:allReleases.map(strip),log:allLogs.slice().sort(function(a,b){return String(a.at).localeCompare(String(b.at))}).slice(-600).map(strip),projects:projects.map(strip),at:at};
+    var data={items:allItems.map(strip),releases:allReleases.map(strip),log:allLogs.slice().sort(function(a,b){return String(a.at).localeCompare(String(b.at))}).slice(-600).map(strip),projects:projects.map(strip),at:at,atIso:d.toISOString()};
     buildDoc.sig=sigOf(data);
     var json=JSON.stringify(data).replace(/<\//g,'<\\/');
     var body=PARTS.map(function(h){return /^<script[^>]*id="seed"/.test(h)?'<script type="application/json" id="seed">'+json+'<\/script>':h}).join('\n');
@@ -1338,7 +1388,7 @@ body.fl-lock{overflow:hidden}
     v.appendChild(el('span','vchip pub','גרסה משוחררת: '+(l?l.name:'-')));
     var P=curP(),h1=document.querySelector('.ovr-top h1');if(h1){h1.textContent='המשימות של '+P.name;h1.title=h1.textContent}
     var lg=document.querySelector('.ovr-top .logo');if(lg){var src=iconOf(P);if(lg.getAttribute('src')!==src)lg.setAttribute('src',src);lg.alt=P.name}
-    var at=$('agent-text');if(at)at.textContent=agentText();renderProjPick();
+    var at=$('agent-text');if(at)at.textContent=agentText();var adb=$('agent-db-text');if(adb)adb.textContent=agentDbText();renderProjPick();
   }
   function progressOf(rid){var its=itemsOf(rid).filter(function(i){return !i.archived});var done=its.filter(function(i){return i.status==='closed'||i.status==='wont'}).length;return {done:done,total:its.length}}
   function renderReleases(){
@@ -1629,7 +1679,7 @@ body.fl-lock{overflow:hidden}
   function itemFields(i){return [['סוג',TYPE[i.type]],['חומרה',i.type==='request'?'':SEV[i.sev]],['סטטוס',ST[i.status]],['אחראי',OWN[i.owner]],['חבילה',i.pkg!=='general'?PKG[i.pkg]:''],['תוויות',labelsOf(i).join(', ')],['תאריך יעד',i.due?fmtDate(i.due)+(isOverdue(i)?' (באיחור)':''):''],['מסך',i.screen],['מכשיר',i.device],['קובץ',i.where],['כמה דיווחו',(i.reporters||1)>1?i.reporters:''],['נפתח',fmt(i.createdAt)],['עודכן',fmt(i.updatedAt)]].filter(function(f){return f[1]})}
   function exportSections(){var out=[];relSorted().reverse().forEach(function(r){out.push([r.id,'גרסה '+r.name+' ('+RST[r.status]+(r.targetDate?', יעד '+fmtDate(r.targetDate):'')+')'])});out.push([NOREL,'ללא גרסה']);return out}
   function exportMd(){
-    var L=['# המשימות של '+curP().name,'','יוצא: '+fmt(now())+' · https://claude.ai/artifact/YOUR_ARTIFACT_ID'+(live.items?'':' · (עותק שמור מ-'+(SEED.at||'')+')')];
+    var L=['# המשימות של '+curP().name,'','יוצא: '+fmt(now())+' · https://claude.ai/artifact/YOUR_ARTIFACT_ID'+(live.items?'':' · (עותק שמור מ-'+seedAtText()+')')];
     var a=activeRel(),l=liveRel();L.push('','בפיתוח: '+(a?a.name:'-')+' · גרסה משוחררת: '+(l?l.name:'-'));
     exportSections().forEach(function(s){
       var its=itemsOf(s[0]).filter(function(i){return !i.archived});if(!its.length)return;var p=progressOf(s[0]);
@@ -1688,7 +1738,7 @@ body.fl-lock{overflow:hidden}
   $('tab-side').addEventListener('click',function(){setTab('side')});$('tt-items').addEventListener('click',function(){setTasksTab('items')});$('tt-inbox').addEventListener('click',function(){setTasksTab('inbox')});setTasksTab('items');$('tab-tasks').addEventListener('click',function(){setTab('tasks')});['log','tools','diag'].forEach(function(k){$('tt-'+k).addEventListener('click',function(){setTasksTab(k)})});
 
   (function(){var t='side';try{t=localStorage.getItem('gc_tab')||'side'}catch(e){}setTab(t)})();
-  $('agent-text').textContent=agentText();
+  $('agent-text').textContent=agentText();$('agent-db-text').textContent=agentDbText();
   fillSelect($('f-type'),TYPE,'task');fillSelect($('f-sev'),SEV,3);fillSelect($('f-pkg'),PKG,'general');fillSelect($('f-source'),SRC,'other');fillSelect($('f-owner'),OWN,'none');
   fillSelect($('sort'),{urgency:'דחיפות',sev:'חומרה',due:'תאריך יעד',updated:'עודכן לאחרונה',key:'מספר'},'urgency');fillSelect($('me'),ME,meKey());
   $('me').addEventListener('change',function(){try{localStorage.setItem('gc_me',this.value)}catch(e){}renderInbox()});
@@ -1757,7 +1807,8 @@ body.fl-lock{overflow:hidden}
   $('btn-create').addEventListener('click',function(){var b=$('createbox');b.hidden=!b.hidden;if(!b.hidden){setTab('tasks');setTasksTab('items');var pn=$('pane-tasks');if(pn)pn.scrollTo({top:0});fillSelect($('f-rel'),relMap(),selRel);$('f-result').textContent='';$('f-title').focus()}});
   $('f-cancel').addEventListener('click',function(){$('createbox').hidden=true});
   $('f-type').addEventListener('change',function(){if(this.value==='request'&&$('f-owner').value==='none')$('f-owner').value='partner'});
-  $('copy-agent').addEventListener('click',function(){var ok=$('copy-ok');function sel(){try{var r=document.createRange();r.selectNodeContents($('agent-text'));var s=window.getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}ok.textContent='סמנו והעתיקו ידנית'}try{navigator.clipboard.writeText(AGENT).then(function(){ok.textContent='הועתק'},sel)}catch(e){sel()}});
+  $('copy-agent').addEventListener('click',function(){var ok=$('copy-ok');function sel(){try{var r=document.createRange();r.selectNodeContents($('agent-text'));var s=window.getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}ok.textContent='סמנו והעתיקו ידנית'}try{navigator.clipboard.writeText(agentText()).then(function(){ok.textContent='הועתק'},sel)}catch(e){sel()}});
+  $('copy-agent-db').addEventListener('click',function(){var ok=$('copy-db-ok');function sel(){try{var r=document.createRange();r.selectNodeContents($('agent-db-text'));var s=window.getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}ok.textContent='סמנו והעתיקו ידנית'}try{navigator.clipboard.writeText(agentDbText()).then(function(){ok.textContent='הועתק'},sel)}catch(e){sel()}});
   $('xp-copy').addEventListener('click',copyAll);
   $('xp-md').addEventListener('click',function(){saveFile(symOf(curProj).toLowerCase()+'-board_'+stamp()+'.md',exportMd(),'xp-msg')});
   $('xp-txt').addEventListener('click',function(){saveFile(symOf(curProj).toLowerCase()+'-board_'+stamp()+'.txt',exportTxt(),'xp-msg')});
@@ -1787,6 +1838,21 @@ body.fl-lock{overflow:hidden}
     m.textContent='שולח...';try{var d=diagData();await withTimeout(db.collection('data/users/'+myId).doc('diag').set({at:d.now,json:JSON.stringify(d)}),15000);m.textContent='נשלח - אפשר לומר לקלוד לקרוא את הפרטים';step('diagnostics sent')}
     catch(e){m.textContent='לא נשלח ('+((e&&e.code)||(e&&e.message)||'שגיאה')+') - אפשר ללחוץ על העתקה ולהדביק בצ\'אט';step('diagnostics send failed: '+((e&&e.code)||'error'))}}
   function copyDiag(){var t=JSON.stringify(diagData(),null,1),m=$('diag-msg');try{navigator.clipboard.writeText(t).then(function(){m.textContent='הועתק - הדביקו בצ\'אט'},function(){m.textContent='ההעתקה נחסמה - סמנו את הטקסט למטה והעתיקו ידנית'})}catch(e){m.textContent='ההעתקה נחסמה - סמנו את הטקסט למטה והעתיקו ידנית'}}
+  /* sync alert: a persistent, non-blocking banner (role=alert) when no confirmed data has arrived for a full minute of visible time.
+     Quiet time is not an error: once confirmed, the board stays "fresh" until a subscription actually fails. */
+  var SYNC_ALERT_MS=60000,syncBad=0,syncAlertOff=false,syncTimer=null;
+  function syncOk(){return !!(liveFresh.items&&liveFresh.releases)}
+  function seedAtText(){return SEED.atIso?fmt(SEED.atIso):(SEED.at||'')}
+  function syncTick(){if(syncOk()){if(syncBad>=SYNC_ALERT_MS)step('live data confirmed after '+Math.round(syncBad/1000)+'s');syncBad=0;syncAlertOff=false;hideSyncAlert(true);return}
+    if(document.visibilityState==='hidden')return;syncBad+=2000;if(syncBad>=SYNC_ALERT_MS&&!syncAlertOff)showSyncAlert()}
+  function showSyncAlert(){var a=$('sync-alert');if(!a||!a.hidden)return;a.textContent='';var off=navigator.onLine===false;
+    a.appendChild(el('b',null,off?'אין חיבור לאינטרנט - הלוח לא מתעדכן':'הלוח לא מתעדכן מהמאגר כבר יותר מדקה'));
+    a.appendChild(el('span',null,'מוצג עותק שמור מ-'+(seedAtText()||'-')+'. שינויים של אחרים לא יופיעו, ועדיף לא לערוך עד שהחיבור יחזור. נסו לרענן את הדף; אם ההודעה חוזרת - שלחו פרטים לבדיקה.'));
+    var row=el('div','sa-act'),d=el('button',null,'פרטים טכניים'),c=el('button',null,'הבנתי');d.type=c.type='button';
+    d.addEventListener('click',function(){var t=$('tt-diag');if(t){t.click();var s=$('diag-send');if(s){s.scrollIntoView({block:'center'});s.focus({preventScroll:true})}}});
+    c.addEventListener('click',function(){syncAlertOff=true;hideSyncAlert(false)});row.appendChild(d);row.appendChild(c);a.appendChild(row);a.hidden=false;
+    step('sync alert shown ('+(off?'offline':'no confirmed data for '+Math.round(syncBad/1000)+'s')+')')}
+  function hideSyncAlert(recovered){var a=$('sync-alert');if(!a||a.hidden)return;a.hidden=true;a.textContent='';if(recovered){toast('החיבור למאגר חזר - הלוח מעודכן',4000);step('sync alert cleared')}}
   function applySnap(col,s){
     var fc=!!(s.metadata&&s.metadata.fromCache);var sn=snapN[col]=snapN[col]||{saved:0,confirmed:0,last:''};if(fc)sn.saved++;else{sn.confirmed++;sn.last=new Date().toISOString().slice(11,19)}
     if(fc&&!s.docs.length&&(SEED[col]||[]).length)return;
@@ -1805,12 +1871,14 @@ body.fl-lock{overflow:hidden}
       sub(col,0);
     });
     clearTimeout(staleTimer);staleTimer=setTimeout(function(){if(!(liveFresh.items&&liveFresh.releases))showStale('no confirmed data after 12s')},12000);
+    clearInterval(syncTimer);syncTimer=setInterval(syncTick,2000);
   }
   function sub(col,n){try{db.collection(col).onSnapshot(function(s){applySnap(col,s)},function(e){var c=(e&&e.code)||'error';step('live '+col+' error: '+c);liveFresh[col]=false;showStale('dead');
       if(c==='unavailable'||c==='error'){var d=Math.min(300000,3000*Math.pow(2,n))+Math.floor(Math.random()*1000);setTimeout(function(){step('live '+col+' resubscribe #'+(n+1));sub(col,n+1)},d)}})}catch(e){step('live '+col+' throw: '+e.message)}}
+  (function(){var a=el('div','sync-alert');a.id='sync-alert';a.setAttribute('role','alert');a.hidden=true;document.body.appendChild(a)})();
   $('diag-send').addEventListener('click',sendDiag);$('diag-copy').addEventListener('click',copyDiag);
   async function start(){
-    if(SEED.items.length){seedShown=true;refresh();setSync('עותק מ-'+(SEED.at||''))}
+    if(SEED.items.length){seedShown=true;refresh();setSync('עותק מ-'+seedAtText())}
     step('seed '+SEED.items.length+' items, at '+SEED.at);
     if(!window.claude||!window.claude.use){step('no window.claude');if(!seedShown)setStatus('הלוח לא מחובר לנתונים בתצוגה הזאת','פתחו את הקישור ב-claude.ai, מחוברים לחשבון.');return}
     canWrite=true;

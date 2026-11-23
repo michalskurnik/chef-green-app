@@ -19,7 +19,7 @@ ap.add_argument('page'); ap.add_argument('dump')
 ap.add_argument('--collections', default='items,releases,log,projects')
 a = ap.parse_args()
 s = open(a.page, encoding='utf-8').read()
-m = re.search(r'<script type="application/json" id="seed">(.*?)</script>', s, re.S)
+m = re.search(r'<script type="application/json" id="seed">(\{.*?)</script>', s, re.S)
 if not m:
     sys.exit('no seed script found in ' + a.page)
 seed = json.loads(m.group(1).replace('<\\/', '</'))

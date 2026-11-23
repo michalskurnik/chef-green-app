@@ -31,6 +31,7 @@ def load(col):
 now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=a.tz_hours)
 seed = {c: load(c) for c in a.collections.split(',')}
 seed['at'] = now.strftime('%d/%m %H:%M')
+seed['atIso'] = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')  # the page shows this in the viewer's local time
 js = json.dumps(seed, ensure_ascii=False).replace('</', '<\\/')
 with open(a.template, encoding='utf-8') as fh:
     s = fh.read()

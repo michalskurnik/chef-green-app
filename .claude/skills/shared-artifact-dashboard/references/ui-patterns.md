@@ -101,6 +101,14 @@ Images in an expanded card or the floating window: previews 240px tall (200px un
 
 In-page image viewer (lightbox), per the W3C APG modal dialog pattern: `role=dialog`, `aria-modal`, `aria-label` = image name; everything else `inert`; focus on the close button when it opens and back on the tile when it closes (re-found by file id if the card re-rendered); Escape, the close button, or a click outside the image close it (only if the press also started outside, so a drag from the image does not); arrow keys and "→ הקודמת" / "הבאה ←" buttons move between the card's images and wrap; "1 מתוך 2" counter; a download button. The close button has its own row above the image so it never covers it; the image is limited to `100dvh - 176px`. The Escape listener is on `window` in the capture phase and stops propagation, so when the viewer was opened from the floating window, the first Escape closes only the viewer. Tests 48d-48j.
 
+## 7e. Sync warning (connection to the database)
+
+Two levels, so nobody misses a real problem and nobody gets a false alarm:
+- **Quiet:** a gold ring on the logo and a status line once no confirmed data arrived within 12 seconds (slow start). No popup.
+- **Loud:** after a full minute of *visible* time without confirmed data (tab hidden time does not count), a persistent banner fixed at the bottom center, `role="alert"` on a container that exists from page load, yellow with a dark text and a strong start border, dark-mode colors. Text: what is wrong in one line ("הלוח לא מתעדכן מהמאגר כבר יותר מדקה"), the time of the copy shown (viewer's local time), what to do (do not edit, refresh, send diagnostics if it returns). Buttons: "פרטים טכניים" (opens the diagnostics tab with the send button focused) and "הבנתי" (hides it until the problem ends and a new one starts). It hides itself on the first confirmed snapshot and a toast says the connection is back.
+
+Not a modal: the board stays readable and usable while waiting (web.dev offline UX guidelines; SAP Fiori offline banner). Quiet time is not an error: once confirmed, the board is "fresh" until a subscription actually fails, so ten minutes with nobody editing never shows anything (board tests 51a-h). Limit: a listener that silently stops without an error cannot be detected by the page.
+
 ## 8. Archive, restore, delete (general rule)
 
 Any action that hides data needs a visible way back, and any action that removes data needs a confirmation that says what happens to dependent data. Archive is one click and reversible; delete is two steps.
