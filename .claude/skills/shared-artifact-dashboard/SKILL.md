@@ -1,5 +1,5 @@
 ---
-name: shared-artifact-boards
+name: shared-artifact-dashboard
 description: Build and run shared, database-backed claude.ai Artifact boards (task, kanban, bug and release trackers). Use for any new board or any change, bug, layout or publish issue on one.
 ---
 
