@@ -26,8 +26,10 @@
  * dinner's) should simply omit title/subline/ring so those draw calls
  * are skipped entirely.
  */
-window.shareCertificate = async function () {
-  var btn = document.getElementById('btn-wa');
+window.shareCertificate = async function (triggerBtn) {
+  // The button that was tapped shows the loading state (the print button
+  // passes itself in); default is the WhatsApp button as before.
+  var btn = (triggerBtn && triggerBtn.nodeType === 1) ? triggerBtn : document.getElementById('btn-wa');
   var originalHTML = btn.innerHTML;
   btn.innerHTML = '⏳ מכין תמונה...';
   btn.disabled = true;
@@ -185,5 +187,21 @@ window.shareCertificate = async function () {
   } finally {
     btn.innerHTML = originalHTML;
     btn.disabled = false;
+  }
+};
+
+/**
+ * "Print" button on the completion pages (GC-5).
+ * window.print() does nothing in the iOS app's web view, so inside the app
+ * the button opens the same share sheet as the WhatsApp button (it offers
+ * Print, Save Image, Save to Files, WhatsApp...). In a normal browser the
+ * regular print dialog still works.
+ */
+window.printCertificate = function (btn) {
+  var C = window.Capacitor;
+  if (C && C.isNativePlatform && C.isNativePlatform()) {
+    window.shareCertificate(btn);
+  } else {
+    window.print();
   }
 };
