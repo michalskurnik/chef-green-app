@@ -1,0 +1,23 @@
+{
+ "num": 1,
+ "type": "bug",
+ "status": "new",
+ "sev": 2,
+ "owner": "owner",
+ "pkg": "general",
+ "source": "self",
+ "release": "1.0",
+ "title": "Login button does nothing on slow networks",
+ "desc": "Repro: throttle to 3G, tap login.",
+ "labels": [],
+ "files": [],
+ "archived": false,
+ "reporters": 1,
+ "note": "",
+ "screen": "",
+ "device": "",
+ "due": "",
+ "createdAt": "2026-01-10T09:00:00Z",
+ "updatedAt": "2026-01-10T09:00:00Z",
+ "createdBy": "בעלים"
+}

@@ -1,0 +1,23 @@
+{
+ "num": 5,
+ "type": "improvement",
+ "status": "closed",
+ "sev": 4,
+ "owner": "owner",
+ "pkg": "general",
+ "source": "self",
+ "release": "",
+ "title": "Faster start screen",
+ "desc": "",
+ "labels": [],
+ "files": [],
+ "archived": false,
+ "reporters": 1,
+ "note": "",
+ "screen": "",
+ "device": "",
+ "due": "",
+ "createdAt": "2026-01-10T09:00:00Z",
+ "updatedAt": "2026-01-10T09:00:00Z",
+ "createdBy": "בעלים"
+}

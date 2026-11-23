@@ -1,0 +1,23 @@
+{
+ "num": 2,
+ "type": "feedback",
+ "status": "doing",
+ "sev": 3,
+ "owner": "partner",
+ "pkg": "general",
+ "source": "email",
+ "release": "1.0",
+ "title": "Users want a dark mode toggle",
+ "desc": "",
+ "labels": [],
+ "files": [],
+ "archived": false,
+ "reporters": 1,
+ "note": "",
+ "screen": "",
+ "device": "",
+ "due": "",
+ "createdAt": "2026-01-10T09:00:00Z",
+ "updatedAt": "2026-01-10T09:00:00Z",
+ "createdBy": "בעלים"
+}

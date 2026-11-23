@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: spacing-tweak-with-measurements
+expected_outcome: |
+  The gap between filter dropdowns grows by a small amount (about 1-4px), the filter row stays on one line at 1280 and wider, before/after measurements per width are reported, the change is made with a scripted patch plus a test, and nothing else changes.
+context:
+  scaffold_script: place-files.sh

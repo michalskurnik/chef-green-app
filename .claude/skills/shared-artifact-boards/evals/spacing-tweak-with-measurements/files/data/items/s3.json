@@ -1,0 +1,23 @@
+{
+ "num": 3,
+ "type": "task",
+ "status": "fixed",
+ "sev": 3,
+ "owner": "owner",
+ "pkg": "general",
+ "source": "other",
+ "release": "1.0",
+ "title": "Update store screenshots",
+ "desc": "",
+ "labels": [],
+ "files": [],
+ "archived": false,
+ "reporters": 1,
+ "note": "",
+ "screen": "",
+ "device": "",
+ "due": "",
+ "createdAt": "2026-01-10T09:00:00Z",
+ "updatedAt": "2026-01-10T09:00:00Z",
+ "createdBy": "בעלים"
+}

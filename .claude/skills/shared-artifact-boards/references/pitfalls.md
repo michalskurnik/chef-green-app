@@ -1,0 +1,71 @@
+# Pitfalls: incidents and root causes
+
+Read before changing the data layer, menus, forms or layout. Each entry: symptom, cause, fix, the test that guards it.
+
+## Data and publishing
+
+**Republish loop (240 page versions in an afternoon).**
+Symptom: version number climbs nonstop while tabs are open; your publishes are refused again and again.
+Cause: a release tombstone hid a re-created release, so `localAhead()` was always true and every tab republished on load.
+Fix: tombstones expire when a doc with newer `createdAt` appears; creation clears the tombstone; auto-republish at most every 2 minutes; skip publishing when the canonical signature equals the seed's.
+Test: re-create a deleted version, reload, expect no publish.
+
+**Publish copy built from a filtered view.**
+Cause risk: switching projects would change the signature and republish.
+Fix: `buildDoc` and `sigOf` use `allItems/allReleases/allLogs/projects`.
+
+**Reused task numbers.**
+Cause: next number computed only from current items; deleted items' numbers came back.
+Fix: max over items, unsynced local items and log keys (`^SYM-(\d+)`), per project, plus a floor that only grows.
+
+**Partial multi-step writes reported as success.**
+Fix: count successes; toast "only 7 of 9 saved"; retry with backoff; disable the button during the operation.
+
+**Identity shown as "unknown" in the log.**
+Fix: map user ids to names; the owner is detected with `isOwner()`.
+
+**Archived data unreachable or missing from backups.**
+Fix: an "Archived" section in the versions menu with restore; exports iterate all versions.
+
+## Menus, forms, focus
+
+**Dropdown or new-version card vanishes when the mouse moves over it.**
+Cause: closed on `window.resize`; inside the claude.ai iframe, resize fires as host toolbars show and hide.
+Fix: reposition on resize; keep it open across redraws; do not steal focus when re-opening.
+Test: iframe repro that dispatches resize on every mouse move (testing.md).
+
+**Form text erased while typing.**
+Cause: a data snapshot re-rendered the panel.
+Fix: keep form state in a variable and re-render from it; `editingIn(panel)` defers panel redraws while focus is inside; publishing waits while anyone types.
+
+**Open native select closes on refresh.**
+Cause: options rebuilt on every render.
+Fix: build options once; only set value and classes on refresh.
+
+## Layout
+
+**Controls 2px taller than their neighbours.** Missing `box-sizing:border-box` on some controls. Test: all controls in a row share height, radius, font size and family.
+
+**Dropdowns squeezed on the phone** (shipped for three versions). Cause: a global `flex-wrap:nowrap` on the filter row; the phone test only checked "on screen". Fix: wrap on the phone, `flex:none` on controls. Test: `select.scrollWidth <= select.clientWidth` for every dropdown at 390px.
+
+**Row wraps at 1280 after a "small" spacing change.** The row had 20px of slack. Fix: smaller variant for 961-1340px. Test: one-line check at 1280 in every layout test.
+
+**Huge gaps after spreading a row.** `justify-content:space-between` or auto margins distribute everything. Fix: capped spacers.
+
+**Title wraps to two lines.** Add `white-space:nowrap` and a smaller size at narrow widths; hide secondary chips below 1320px before the title wraps.
+
+## Process
+
+**A requested change "was not done".** It was built but a publish was blocked, and the report did not say so. Rule: the first line of a report says what is live and what is not.
+
+**Patch half-applied.** A suite assertion failed after the template was already written. Rule: all assertions first, all writes last; back up before every patch.
+
+**Tests that cannot fail.** Checking for an op name the mock never records (`delete` vs `del`), or "on screen" instead of "readable". Rule: before trusting a new test, break the feature once and see it fail, or reason about which broken state it would catch.
+
+**Shell heredocs blocked by a classifier.** Write scripts with the Write tool and run the file.
+
+**Misreading the request.** "Make the buttons uniform" meant the buttons too, not only the filters. Re-read the user's message against your change list before reporting; when unsure, quote back what you changed.
+
+## Found while packaging this skill
+
+**Long project names clip the version capsule.** The measurement script caught the capsule cut off at 1440px once the title was "Tasks of <long name>", and the status chips wrapped onto two lines. Fix: in the top line only the title may shrink (`min-width:0; max-width:clamp(150px,17vw,340px); text-overflow:ellipsis`, full name in `title`); the capsule and chips get `flex-shrink:0` and the chips `flex-wrap:nowrap`. Test with the longest realistic name, not the current one.

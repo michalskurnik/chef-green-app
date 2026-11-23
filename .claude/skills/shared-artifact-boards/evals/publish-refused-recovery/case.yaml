@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: publish-refused-recovery
+expected_outcome: |
+  Explains that a user's page republished itself with their edits; prescribes: compare the saved copy with the build and a fresh database dump (compare_live.py), Read the saved file, rebuild from a fresh dump if data differs, publish again as a separate step, then verify the live file equals the build.

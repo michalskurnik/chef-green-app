@@ -1,0 +1,1634 @@
+<title>לוח משימות וגרסאות</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Fredoka:wght@500;600;700&display=swap">
+<style>
+/* Layout: Green Chef kitchen - warm yolk-to-teal table with game food stickers scattered behind, gingham hero with the chef, then index-card sections: requests, issue board (Jira-style keys, create, search) */
+:root{
+  --cloth:#4fa3a5; --cloth-soft:#d6eeec; --chef:#5baa3c; --chef-deep:#2f6b2a;
+  --tomato:#e4472e; --yolk:#ffc23d; --ink:#1d3b36; --ink-soft:#4b625d;
+  --paper:#ffffff; --paper-warm:#fffaf0; --rule:#b9d8f0;
+  --bg1:#fff1c9; --bg2:#e3f4ee; --food-op:.9;
+  --chip:#eaf4f2; --line:#cfe3df; --on-chef:#ffffff; --on-yolk:#3b2a00; --orange:#f08a24;
+  --display:"Fredoka","Assistant",system-ui,sans-serif; --text:"Assistant",Arial,system-ui,sans-serif;
+  --r:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --cloth:#2f6f71; --cloth-soft:#1c3536; --chef:#79c95a; --chef-deep:#a6e08c;
+  --tomato:#ff7a62; --yolk:#ffcf5c; --ink:#e4efec; --ink-soft:#a9bfba;
+  --paper:#16201f; --paper-warm:#1b2524; --rule:#2c4a5c; --bg1:#1e1a10; --bg2:#0f1a18; --food-op:.45;
+  --chip:#20302e; --line:#2a3d3a; --on-chef:#0f1716; --on-yolk:#2a1d00; --orange:#ffa95a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --cloth:#2f6f71; --cloth-soft:#1c3536; --chef:#79c95a; --chef-deep:#a6e08c;
+  --tomato:#ff7a62; --yolk:#ffcf5c; --ink:#e4efec; --ink-soft:#a9bfba;
+  --paper:#16201f; --paper-warm:#1b2524; --rule:#2c4a5c; --bg1:#1e1a10; --bg2:#0f1a18; --food-op:.45;
+  --chip:#20302e; --line:#2a3d3a; --on-chef:#0f1716; --on-yolk:#2a1d00; --orange:#ffa95a; color-scheme:dark}
+body{background:var(--bg2);background-image:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 70%);background-attachment:fixed;color:var(--ink);font-family:var(--text);font-size:17px;line-height:1.6;direction:rtl;-webkit-font-smoothing:antialiased;min-height:100%}
+/* scattered food from the game, behind everything */
+.food{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.food img{position:absolute;width:96px;height:auto;opacity:var(--food-op);filter:drop-shadow(0 4px 6px rgba(0,0,0,.12))}
+.page{position:relative;z-index:1}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.15}
+h1{font-size:clamp(1.7rem,5vw,2.3rem);font-weight:700}
+h2{font-size:1.35rem;font-weight:600;color:var(--chef-deep)}
+h3{font-size:1.06rem;font-weight:500}
+p{margin:0}
+.muted{color:var(--ink-soft)} .small{font-size:.9rem}
+.inner{max-width:800px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hero{margin-top:calc(-1 * env(safe-area-inset-top,0px));padding-top:calc(env(safe-area-inset-top,0px) + 18px);padding-bottom:22px;
+  background-color:var(--cloth-soft);
+  background-image:linear-gradient(90deg,color-mix(in srgb,var(--cloth) 40%,transparent) 50%,transparent 50%),linear-gradient(color-mix(in srgb,var(--cloth) 40%,transparent) 50%,transparent 50%);
+  background-size:36px 36px;border-bottom:6px solid var(--yolk)}
+.hero .inner{display:flex;flex-direction:column;gap:14px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600}
+.brand img.logo{width:46px;height:46px;background:var(--paper);border-radius:50%;padding:2px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.brand .name{font-size:1.25rem;color:var(--chef-deep);display:block;line-height:1.1}
+.brand .by{display:flex;align-items:center;gap:5px;font-size:.8rem;color:var(--ink-soft);font-family:var(--text);font-weight:600}
+.brand .by img{width:16px;height:16px}
+.hero-card{background:var(--paper);border-radius:var(--r);padding:16px 18px;display:flex;gap:16px;align-items:center;box-shadow:0 3px 0 var(--line)}
+.hero-card .big{width:96px;height:96px;flex:none}
+.hero-card .txt{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ver{display:inline-block;align-self:flex-start;background:var(--yolk);color:var(--on-yolk);font-family:var(--display);font-weight:600;font-size:.8rem;border-radius:999px;padding:2px 12px}
+.stats{display:flex;flex-wrap:wrap;gap:8px}
+.stat{background:var(--paper);border-radius:999px;padding:4px 12px;font-size:.92rem;font-variant-numeric:tabular-nums;border:1px solid var(--line)}
+.stat b{font-family:var(--display);font-weight:600}
+.stat.hot b{color:var(--tomato)}
+main{display:flex;flex-direction:column;gap:30px;padding-block:24px 56px}
+.banner{border:2px solid var(--tomato);background:var(--paper);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.banner.info{border-color:var(--line)}
+section{display:flex;flex-direction:column;gap:12px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sec-head h2{background:var(--paper);border-radius:999px;padding:2px 14px}
+.list{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:0 2px 0 var(--line)}
+.card.ruled{background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,color-mix(in srgb,var(--rule) 40%,transparent) 31px,color-mix(in srgb,var(--rule) 40%,transparent) 32px);background-position:0 46px}
+.card.is-done{opacity:.72}
+.item{border-inline-start:6px solid var(--chef)}
+.item[data-sev="1"]{border-inline-start-color:var(--tomato)}
+.item[data-sev="2"]{border-inline-start-color:var(--orange)}
+.item[data-sev="3"]{border-inline-start-color:var(--yolk)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.key{font-family:var(--display);font-weight:600;font-size:.85rem;color:var(--cloth);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{font-size:.8rem;border-radius:999px;padding:2px 10px;background:var(--chip);color:var(--ink);white-space:nowrap;font-weight:600}
+.pill.sev1{background:var(--tomato);color:#fff}
+.pill.sev2{background:var(--orange);color:#2a1300}
+.pill.sev3{background:var(--yolk);color:var(--on-yolk)}
+.pill.st-fixed,.pill.st-closed{background:var(--chef);color:var(--on-chef)}
+.title-row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.title-row .t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.desc{white-space:pre-wrap;overflow-wrap:anywhere}
+label{font-size:.88rem;color:var(--ink-soft);display:flex;flex-direction:column;gap:4px;min-width:0;font-weight:600}
+input[type=text],input[type=number],input[type=search],select,textarea{font:inherit;font-weight:400;color:var(--ink);background:var(--paper-warm);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:84px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+button,.btn{font:inherit;font-family:var(--display);font-weight:500;border-radius:999px;border:2px solid var(--chef);background:var(--paper);color:var(--chef-deep);padding:6px 16px;cursor:pointer}
+button.primary{background:var(--chef);color:var(--on-chef)}
+button.create{background:var(--tomato);border-color:var(--tomato);color:#fff;font-size:1.05rem;padding:8px 20px}
+button.opt[aria-pressed="true"]{background:var(--chef);color:var(--on-chef)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--yolk);outline-offset:2px}
+.files{display:flex;flex-wrap:wrap;gap:8px}
+.files a{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--ink);background:var(--chip);border-radius:10px;padding:4px 8px;text-decoration:none;max-width:100%;overflow-wrap:anywhere}
+.files img{width:64px;height:64px;object-fit:cover;border-radius:8px;display:block}
+.upl{position:relative;overflow:hidden;display:inline-block}
+.upl input{position:absolute;inset:0;opacity:0;cursor:pointer}
+details>summary{cursor:pointer;font-family:var(--display);font-weight:500;color:var(--chef-deep);list-style:none}
+details>summary::-webkit-details-marker{display:none}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.toolbar input[type=search]{flex:1 1 200px;width:auto}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 18px;border-radius:999px;font-size:.92rem;z-index:20}
+.empty{border:2px dashed var(--line);border-radius:var(--r);padding:18px;text-align:center;color:var(--ink-soft);background:var(--paper)}
+.saved{font-size:.9rem;color:var(--chef-deep);font-weight:700}
+.card.flash{outline:3px solid var(--yolk);outline-offset:2px}
+label.inline{flex-direction:row;align-items:center;gap:6px}
+label.inline select{width:auto}
+.pill.late{background:var(--tomato);color:#fff}
+button.danger{border-color:var(--tomato);color:var(--tomato)}
+button.danger.solid{background:var(--tomato);color:#fff}
+.confirm{gap:6px}
+.dates{font-variant-numeric:tabular-nums}
+.hist{display:flex;flex-direction:column;gap:2px;margin-top:10px;border-top:1px dashed var(--line);padding-top:8px}
+.log-row{display:flex;gap:10px;align-items:baseline;padding-block:6px;border-bottom:1px dashed var(--line);flex-wrap:wrap}
+.log-row:last-child{border-bottom:0}
+.log-at{font-variant-numeric:tabular-nums;color:var(--ink-soft);font-size:.85rem;white-space:nowrap;direction:ltr}
+.log-txt{min-width:0;overflow-wrap:anywhere}
+.pill.waiting{background:var(--yolk);color:var(--on-yolk)}
+.ask.answered{border-inline-start:6px solid var(--chef)}
+.answer{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--paper-warm);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:.95rem}
+.answer.clamp{max-height:9.5em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent)}
+.xp-host{position:fixed;left:-10000px;top:0;width:794px;background:#fff;color:#1d3b36;direction:rtl;font-family:"Assistant",Arial,sans-serif;font-size:14px;line-height:1.5;padding:28px;box-sizing:border-box}
+.xp-host h1{font-family:"Fredoka","Assistant",sans-serif;font-size:24px;margin:0 0 4px;color:#2f6b2a}
+.xp-host h2{font-family:"Fredoka","Assistant",sans-serif;font-size:18px;margin:18px 0 6px;color:#2f6b2a;border-bottom:2px solid #ffc23d;padding-bottom:2px}
+.xp-meta{color:#4b625d;margin:0 0 8px}
+.xp-item{border-right:5px solid #5baa3c;padding:4px 10px;margin:6px 0;background:#f6faf8;border-radius:6px}
+.xp-item.sev1{border-right-color:#e4472e}.xp-item.sev2{border-right-color:#f08a24}.xp-item.sev3{border-right-color:#ffc23d}
+.xp-t{font-size:15px}.xp-f{color:#4b625d;font-size:12px}.xp-d{white-space:pre-wrap;font-size:13px;margin-top:2px}
+.xp-log{font-size:12px;color:#4b625d;border-bottom:1px dashed #cfe3df;padding:2px 0}
+.agent{white-space:pre-wrap;background:var(--paper-warm);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:.88rem}
+@media (max-width:480px){.hero-card .big{width:70px;height:70px}.food img{width:64px}}
+@media (prefers-reduced-motion:no-preference){.card{transition:opacity .2s}}
+
+/* v11: releases, unified tasks, board */
+.hero{padding-bottom:14px}
+.hero-row{display:flex;align-items:center;gap:12px;background:var(--paper);border-radius:var(--r);padding:12px 14px;box-shadow:0 3px 0 var(--line)}
+.hero-row .logo{width:56px;height:56px;flex:none}
+.hero-txt{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hero-txt h1{font-size:clamp(1.3rem,4vw,1.7rem)}
+.vline{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.vchip{font-family:var(--display);font-weight:600;font-size:.88rem;border-radius:999px;padding:2px 12px}
+.vchip.dev{background:var(--yolk);color:var(--on-yolk)}
+.vchip.pub{background:var(--chip);color:var(--chef-deep);border:1px solid var(--line)}
+.hero-txt .by{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--ink-soft)}
+.releases{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.rel{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:118px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink);padding:6px 12px;text-align:start}
+.rel b{font-family:var(--display);font-size:1.05rem}
+.rel .rs{font-size:.75rem;color:var(--ink-soft);font-family:var(--text)}
+.rel .rbar{display:block;width:100%;height:4px;background:var(--chip);border-radius:4px;overflow:hidden}
+.rel .rbar i{display:block;height:100%;background:var(--chef)}
+.rel.on{border-color:var(--chef);box-shadow:0 0 0 2px color-mix(in srgb,var(--chef) 30%,transparent)}
+.rel.active b{color:var(--chef-deep)}
+.rel.released{opacity:.85}
+.rel.add{justify-content:center;align-items:center;min-width:80px;border-style:dashed;color:var(--chef-deep)}
+.rel-panel{gap:8px}
+.pbar{height:8px;background:var(--chip);border-radius:8px;overflow:hidden}.pbar i{display:block;height:100%;background:var(--chef)}
+.pill.big{font-family:var(--display);font-size:1rem;background:var(--chef);color:var(--on-chef)}
+.pill.t-bug{background:#fde3df;color:#9a2a1c}.pill.t-feedback{background:#e2f0fb;color:#1f5a85}.pill.t-task{background:#e6f4e1;color:#2f6b2a}.pill.t-improvement{background:#efe6fb;color:#5b3592}.pill.t-request{background:#fff1c9;color:#6b4d00}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pill[class*=" t-"]{filter:brightness(.85) saturate(1.2)}}
+.pill.lbl{background:transparent;border:1px solid var(--line)}
+.pill.waiting{background:var(--yolk);color:var(--on-yolk)}
+.row.tight{gap:5px}
+.seg{display:flex;gap:4px}
+.grp-h{display:flex;align-items:baseline;gap:6px;margin:14px 2px 6px;font-family:var(--display);color:var(--chef-deep)}
+.board{display:grid;grid-template-columns:repeat(4,minmax(220px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px}
+.col{background:color-mix(in srgb,var(--paper) 70%,transparent);border:1px solid var(--line);border-radius:var(--r);padding:8px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.col-h{display:flex;justify-content:space-between;font-family:var(--display);color:var(--chef-deep);padding:0 4px}
+.col-b{display:flex;flex-direction:column;gap:8px;min-height:60px}
+.card.mini{padding:10px 12px;gap:6px}.card.mini .title-row{cursor:grab}
+.empty-col{text-align:center;padding:10px 0}
+.sortable-ghost{opacity:.4}
+button.link{border:0;background:none;padding:0;color:var(--chef-deep);text-decoration:underline;font-family:var(--text);font-size:.85rem;align-self:flex-start}
+.diag{white-space:pre-wrap;font-size:.75rem;direction:ltr;text-align:left;max-height:240px;overflow:auto;background:var(--paper-warm);padding:8px;border-radius:8px}
+.wrap{overflow-wrap:anywhere}
+.ask{border-inline-start:6px solid var(--yolk)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px}
+.scard{display:flex;flex-direction:column;align-items:flex-start;gap:0;border-radius:12px;border:0;border-top:5px solid var(--chef);background:var(--chip);color:var(--ink);padding:8px 12px;text-align:start;font-family:var(--text)}
+.scard b{font-family:var(--display);font-size:1.6rem;line-height:1.1}
+.scard span{font-size:.85rem;color:var(--ink-soft)}
+.scard.c-hot{border-top-color:var(--tomato)}.scard.c-hot:not(.zero) b{color:var(--tomato)}
+.scard.c-review{border-top-color:var(--cloth)}.scard.c-wait{border-top-color:var(--yolk)}.scard.c-done{border-top-color:var(--chef-deep)}
+.scard.zero{opacity:.6}
+.scard.on{outline:3px solid var(--chef);outline-offset:1px;background:var(--paper)}
+button.pill{border:0;cursor:pointer;font-family:var(--text)}button.pill.on{outline:2px solid var(--ink)}
+.xp-host h3{font-size:15px;margin:10px 0 4px;color:#4b625d}
+
+/* v12: one-screen app shell with inner scrolling panes */
+html,body{height:100%}
+body{overflow:hidden}
+.page{height:100%;display:flex;flex-direction:column;min-height:0}
+.hero{flex:none;padding-top:calc(env(safe-area-inset-top,0px) + 8px);padding-bottom:8px}
+.hero .inner,.shell{max-width:1400px;margin:0 auto;width:100%;box-sizing:border-box}
+.hero .inner{gap:8px}
+.hero-row{padding:8px 12px}
+.hero-row .logo{width:44px;height:44px}
+.shell{flex:1;min-height:0;display:grid;grid-template-columns:minmax(300px,400px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:12px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.shell>.banner{grid-column:1/-1}
+.shell>.tabs{display:none}
+.pane{min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:14px;padding:2px 4px 16px;scrollbar-width:thin}
+.pane.side{grid-row:2;grid-column:1}
+.pane.tasks{grid-row:2;grid-column:2;gap:0;padding-top:0}
+.tasks-head{position:sticky;top:0;z-index:3;background:color-mix(in srgb,var(--bg2) 92%,transparent);backdrop-filter:blur(6px);display:flex;flex-direction:column;gap:8px;padding:6px 0 10px}
+.pane.tasks #items{display:flex;flex-direction:column;gap:10px}
+.board{grid-template-columns:repeat(4,minmax(200px,1fr))}
+@media (max-width:960px){
+  .shell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr)}
+  .shell>.tabs{display:flex;gap:6px}
+  .shell>.tabs .opt{flex:1}
+  .pane.side,.pane.tasks{grid-column:1;grid-row:3}
+  .shell[data-tab="tasks"] .pane.side{display:none}
+  .shell[data-tab="side"] .pane.tasks{display:none}
+  .releases{flex-wrap:nowrap}
+  .rel{min-width:96px;padding:4px 10px}
+  .hero-row .by{display:none}
+  .food{display:none}
+}
+
+.tasks-head .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:100%}
+.tasks-head .filters::-webkit-scrollbar{display:none}
+.tasks-head .opt{padding:3px 12px;font-size:.9rem;white-space:nowrap;flex:none}
+.tasks-head .toolbar{flex-wrap:nowrap;min-width:0}
+.tasks-head .toolbar>*{min-width:0}
+@media (max-width:960px){.tasks-head{position:static;background:none;backdrop-filter:none}}
+
+/* v13: header holds versions, search and create; framed panes */
+.hero-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brandblk{display:flex;align-items:center;gap:10px;flex:none}
+.hero-row .releases{flex:1 1 360px;min-width:0;padding-bottom:2px}
+.hero-actions{display:flex;gap:8px;align-items:center;flex:0 1 420px;min-width:260px}
+.hero-actions input[type=search]{flex:1;min-width:0;width:auto}
+.hero-actions .create{white-space:nowrap;flex:none}
+.rel{min-width:104px;padding:5px 10px}
+.pane{border:2px solid var(--line);border-radius:var(--r);background:color-mix(in srgb,var(--paper) 55%,transparent);padding:10px 12px 18px;box-shadow:inset 0 -14px 12px -12px color-mix(in srgb,var(--ink) 25%,transparent)}
+.pane.tasks{border-color:color-mix(in srgb,var(--chef) 55%,var(--line));padding-top:0}
+.tasks-head{margin:0 -12px;padding:8px 12px 10px;border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--paper) 92%,transparent)}
+.tasks-head .sec-head{flex-wrap:nowrap}
+@media (max-width:960px){
+  .hero-row{gap:8px}
+  .brandblk{flex:1 1 100%}
+  .hero-row .releases{flex:1 1 100%}
+  .hero-actions{flex:1 1 100%;min-width:0}
+  .pane{padding:8px 8px 14px}
+  .tasks-head{margin:0 -8px;padding:6px 8px 8px}
+}
+
+/* v14: change log frame top-left, always open */
+.leftcol{grid-row:2;grid-column:2;min-height:0;display:flex;flex-direction:column;gap:12px}
+.leftcol .pane.tasks{flex:1;min-height:0}
+.pane.logpane{flex:0 0 clamp(150px,27vh,250px);gap:6px;padding-top:0;border-color:color-mix(in srgb,var(--cloth) 55%,var(--line))}
+.log-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 -12px;padding:6px 12px;background:color-mix(in srgb,var(--paper) 94%,transparent);border-bottom:1px solid var(--line)}
+.log-head h2{font-size:1.05rem}
+.log-head .filters{flex-wrap:nowrap;overflow-x:auto}
+.log-head .opt{padding:2px 10px;font-size:.82rem;white-space:nowrap}
+.log-row{padding-block:4px;cursor:default}
+.log-row.link{cursor:pointer}.log-row.link:hover{background:var(--chip)}
+/* v15: tabs in the top-left frame (log default, export, technical) */
+.ltabs{display:flex;gap:2px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;min-width:0}
+.ltab{border:0;border-radius:0;background:none;padding:2px 8px;font-family:var(--display);font-weight:600;font-size:.95rem;color:var(--ink-soft);border-bottom:3px solid transparent;white-space:nowrap}
+.ltab[aria-selected="true"]{color:var(--chef-deep);border-bottom-color:var(--yolk)}
+.logpane:not([data-lt="log"]) #logwho{display:none}
+.logpane .diag{max-height:none}
+#lp-tools .list{gap:8px}
+#lp-tools .row button{padding:4px 12px;font-size:.9rem}
+@media (max-width:960px){
+  .leftcol{grid-column:1;grid-row:3;display:contents}
+  .pane.logpane,.pane.tasks,.pane.side{grid-column:1;grid-row:3}
+  .pane.logpane{flex:none}
+  .shell[data-tab="side"] .pane.logpane,.shell[data-tab="tasks"] .pane.logpane{display:none}
+  .shell[data-tab="log"] .pane.side,.shell[data-tab="log"] .pane.tasks{display:none}
+}
+
+/* v16: fixed frames grid (sketch): versions top-right, log top-left, tasks full width below */
+.frames-wrap{grid-column:1/-1;grid-row:2;min-height:0;position:relative}
+#frames{height:100%;min-height:0;display:grid;grid-template-columns:minmax(0,62fr) minmax(0,38fr);grid-template-rows:minmax(0,36fr) minmax(0,64fr);gap:12px}
+#frames>[data-frame="side"]{grid-column:1;grid-row:1}
+#frames>[data-frame="log"]{grid-column:2;grid-row:1}
+#frames>[data-frame="tasks"]{grid-column:1/-1;grid-row:2}
+.frame{display:flex;flex-direction:column;min-width:0;min-height:0}
+.frame>.pane{flex:1 1 auto!important;min-height:0}
+@media (max-width:960px){
+  .frames-wrap{grid-column:1;grid-row:3}
+  #frames{display:block;height:100%}
+  .frame{height:100%}
+  .shell[data-tab="side"] .frame:not([data-frame="side"]),.shell[data-tab="tasks"] .frame:not([data-frame="tasks"]),.shell[data-tab="log"] .frame:not([data-frame="log"]){display:none!important}
+}
+/* v17: arrangement from Roy's sketch - versions top right, log top left, tasks + requests below */
+.hero-strip{flex:none;height:8px;padding:0!important;margin-top:0;border-bottom-width:4px}
+.ovr-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ovr-top .brandblk{flex:none}
+.ovr-top .brandblk .logo{width:44px;height:44px}
+.ovr-top .hero-txt h1{font-size:clamp(1.2rem,2.2vw,1.55rem)}
+.ovr-top .releases{flex:1 1 300px;min-width:0;padding-bottom:2px}
+.pane.side{gap:10px}
+.pane.side .rel-panel{padding:10px 12px}
+.thead{flex-wrap:wrap!important;gap:8px}
+.thead .ltabs{flex:none}
+.tasks-actions{display:flex;gap:8px;align-items:center;flex:1 1 320px;min-width:0;max-width:560px;margin-inline-start:auto}
+.tasks-actions input[type=search]{flex:1;min-width:0;width:auto}
+.tasks-actions .create{white-space:nowrap;flex:none;padding:5px 16px;font-size:1rem}
+#pane-tasks:not([data-tt="inbox"]) #inbox-sec{display:none}
+#pane-tasks[data-tt="inbox"] #items,#pane-tasks[data-tt="inbox"] .tasks-head .toolbar,#pane-tasks[data-tt="inbox"] #f-result{display:none}
+.inbox-panel{padding-top:10px}
+.inbox-panel .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.log-head{flex-wrap:wrap}
+.log-head .filters{flex:1 1 auto;justify-content:flex-end}
+.inbox-panel>.sec-head{display:none}
+.shell>.tabs .opt{white-space:nowrap;padding-inline:8px}
+@media (max-width:960px){.ovr-top .releases{flex:1 1 100%}.tasks-actions{flex:1 1 100%;max-width:none}}
+
+/* v18: compact top frames - top row sized to content, tasks get the rest */
+@media (min-width:961px){
+  #frames{grid-template-rows:auto minmax(0,1fr);gap:10px}
+  #frames>[data-frame="side"]{max-height:46vh}
+  #frames>[data-frame="log"]{position:relative;min-height:120px}
+  #frames>[data-frame="log"]>.pane{position:absolute;inset:0}
+  .hero-strip{height:6px}
+  .shell{padding-block:8px}
+}
+.pane.side{gap:6px;padding:6px 10px 8px}
+.ovr-top{gap:6px 12px}
+.ovr-top .brandblk{gap:8px}
+.ovr-top .brandblk .logo{width:30px;height:30px;padding:1px}
+.ovr-top .hero-txt{flex-direction:row;flex-wrap:wrap;align-items:center;gap:2px 8px}
+.ovr-top .hero-txt h1{font-size:1.08rem;line-height:1.2}
+.ovr-top .vchip{font-size:.74rem;padding:0 8px;line-height:1.6}
+.ovr-top .vline{gap:4px}
+.ovr-top .hero-txt .by{font-size:.68rem;line-height:1.3}
+.ovr-top .hero-txt .by img{width:11px;height:11px}
+.ovr-top .releases{gap:5px;padding-bottom:0;align-items:center}
+.ovr-top .rel{min-width:0;flex-direction:row;align-items:center;gap:6px;padding:1px 10px;border-radius:999px;border-width:1.5px;line-height:1.5}
+.ovr-top .rel b{font-size:.86rem}
+.ovr-top .rel .rs{font-size:.7rem;white-space:nowrap}
+.ovr-top .rel .rbar{width:28px;height:4px;flex:none}
+.ovr-top .rel.add{min-width:0;padding:1px 10px;font-size:.8rem}
+.pane.side .rel-panel{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:5px 10px;padding:6px 10px;box-shadow:none}
+.pane.side .rel-panel>.title-row{flex:0 0 auto;align-items:center;gap:8px}
+.pane.side .rel-panel>.title-row .t{flex-direction:row;align-items:baseline;gap:8px}
+.pane.side .rel-panel h3{font-size:.95rem}
+.pane.side .rel-panel .title-row .small{font-size:.74rem}
+.pane.side .rel-panel .pill.big{font-size:.78rem;padding:0 8px;line-height:1.6}
+.pane.side .rel-panel>.pbar{flex:1 1 120px;height:6px}
+.pane.side .rel-panel>.stats-grid{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:5px}
+.pane.side .scard{flex:1 1 auto;flex-direction:row;align-items:baseline;gap:5px;padding:2px 8px;border-top-width:3px;border-radius:8px;line-height:1.3}
+.pane.side .scard b{font-size:1.02rem;line-height:1.2}
+.pane.side .scard span{font-size:.72rem;white-space:nowrap}
+.pane.side .scard.on{outline-width:2px}
+.pane.side .rel-panel>.row.tight{flex:0 1 auto;gap:4px}
+.pane.side .rel-panel>.row.tight .pill{font-size:.7rem;padding:0 7px;line-height:1.6}
+.pane.side .rel-panel>details{flex:0 0 auto;margin-inline-start:auto}
+.pane.side .rel-panel>details>summary{font-size:.74rem}
+.pane.side .rel-panel>details[open]{flex-basis:100%}
+.pane.side .rel-panel>p{flex:1 1 100%;margin:0;font-size:.8rem}
+.logpane .log-head{padding:4px 12px}
+.logpane .ltab{font-size:.86rem;padding:1px 6px}
+.logpane .log-head .opt{font-size:.74rem;padding:0 8px}
+.logpane .log-row{padding-block:2px;font-size:.84rem;gap:6px;line-height:1.35}
+.logpane .log-at{font-size:.72rem}
+
+/* v18b: fewer lines in the top-right frame */
+.ovr-top .brandblk,.ovr-top .hero-txt{display:contents}
+.ovr-top .brandblk .logo{order:1}
+.ovr-top .hero-txt h1{order:2}
+.ovr-top .vline{order:3}
+.ovr-top .releases{order:4;flex:0 1 auto}
+.ovr-top .hero-txt .by{order:5;margin-inline-start:auto}
+.ovr-top .rel .rbar{width:22px}
+.pane.side .rel-panel{border:0;background:none;padding:0;box-shadow:none;border-radius:0}
+.pane.side .rel-panel>.title-row{order:1}
+.pane.side .rel-panel>.pbar{order:2;flex:1 1 60px}
+.pane.side .rel-panel>.row.tight{order:3}
+.pane.side .rel-panel>details{order:4;margin-inline-start:0}
+.pane.side .rel-panel>.stats-grid{order:5}
+.pane.side .rel-panel>details[open]{order:6}
+.pane.side .scard{flex:1 1 0;min-width:max-content}
+
+/* v19: game look - colorful kitchen background, darker colors, see-through frames */
+:root{--bgA:#ffd04f;--bgB:#ff9f43;--bgC:#62c7a8;--bgD:#2f8f91;--glass:38%;--glass-head:72%;--card-op:76%}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --ink:#0f2a24;--ink-soft:#2b443e;--chef:#3d8f28;--chef-deep:#1d5419;--cloth:#26777a;--tomato:#cf3519;--orange:#dc6f0e;--yolk:#f5b316;--line:#9fc6be;--chip:#d9eee8;--rule:#8fbfe0}}
+:root[data-theme="light"]{--ink:#0f2a24;--ink-soft:#2b443e;--chef:#3d8f28;--chef-deep:#1d5419;--cloth:#26777a;--tomato:#cf3519;--orange:#dc6f0e;--yolk:#f5b316;--line:#9fc6be;--chip:#d9eee8;--rule:#8fbfe0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bgA:#3a2a08;--bgB:#40220a;--bgC:#0f3a31;--bgD:#0b2a2b;--glass:55%;--glass-head:85%;--card-op:92%}}
+:root[data-theme="dark"]{--bgA:#3a2a08;--bgB:#40220a;--bgC:#0f3a31;--bgD:#0b2a2b;--glass:55%;--glass-head:85%;--card-op:92%}
+body{background-color:var(--bgC);
+  background-image:linear-gradient(90deg,rgba(255,255,255,.10) 50%,transparent 50%),linear-gradient(rgba(255,255,255,.10) 50%,transparent 50%),linear-gradient(135deg,var(--bgA) 0%,var(--bgB) 32%,var(--bgC) 68%,var(--bgD) 100%);
+  background-size:48px 48px,48px 48px,100% 100%;background-attachment:fixed}
+.food img{width:128px;opacity:1;filter:drop-shadow(0 6px 8px rgba(0,0,0,.25))}
+.food img:nth-child(1){top:12vh!important;right:33vw!important;left:auto!important}
+.food img:nth-child(2){top:56vh!important;left:5vw!important;right:auto!important}
+.food img:nth-child(3){top:30vh!important;left:44vw!important;right:auto!important}
+.food img:nth-child(4){top:76vh!important;right:14vw!important;left:auto!important}
+.food img:nth-child(5){top:44vh!important;right:2vw!important;left:auto!important}
+.food img:nth-child(6){top:84vh!important;left:40vw!important;right:auto!important}
+.food img:nth-child(7){top:6vh!important;left:16vw!important;right:auto!important}
+.hero-strip{background-color:var(--cloth);border-bottom-color:var(--yolk)}
+.pane{background:color-mix(in srgb,var(--paper) var(--glass),transparent);border:2px solid color-mix(in srgb,var(--chef-deep) 55%,transparent);-webkit-backdrop-filter:blur(2px) saturate(1.15);backdrop-filter:blur(2px) saturate(1.15);box-shadow:0 8px 22px rgba(0,0,0,.16)}
+.pane.tasks{border-color:color-mix(in srgb,var(--chef-deep) 75%,transparent)}
+.pane.logpane{border-color:color-mix(in srgb,var(--cloth) 80%,transparent)}
+.tasks-head,.logpane .log-head{background:color-mix(in srgb,var(--paper) var(--glass-head),transparent)}
+.card{background-color:color-mix(in srgb,var(--paper) var(--card-op),transparent);border-color:color-mix(in srgb,var(--chef-deep) 22%,var(--line))}
+.pane.side .scard{background:color-mix(in srgb,var(--paper) 80%,transparent)}
+.pane.side .scard b{color:var(--chef-deep)}
+.scard.c-hot:not(.zero) b{color:var(--tomato)}
+.ovr-top .hero-txt h1{color:var(--chef-deep)}
+.ovr-top .rel{background:color-mix(in srgb,var(--paper) 85%,transparent)}
+.ovr-top .rel.on{background:var(--paper);border-color:var(--chef-deep)}
+.ltab{color:var(--ink-soft)}.ltab[aria-selected="true"]{color:var(--chef-deep);border-bottom-color:var(--orange)}
+button.opt[aria-pressed="true"]{background:var(--chef-deep);border-color:var(--chef-deep)}
+button,.btn{border-color:var(--chef-deep);color:var(--chef-deep)}
+button.primary{background:var(--chef-deep);color:#fff}
+button.create{background:var(--tomato);border-color:var(--tomato);color:#fff}
+button.danger{border-color:var(--tomato);color:var(--tomato)}
+.inbox-panel .card.ask{background-color:color-mix(in srgb,var(--paper) 92%,transparent)}
+
+/* v20: one full-width version frame on top, all tabs in the tasks frame */
+#frames{grid-template-columns:minmax(0,1fr)!important}
+#frames>[data-frame="side"]{grid-column:1!important;grid-row:1}
+#frames>[data-frame="tasks"]{grid-column:1!important;grid-row:2}
+.ovr-top .hero-txt .by{order:4;margin-inline-start:auto}
+.ovr-top .releases{order:5;flex:1 1 100%}
+#pane-tasks .tpanel{display:none;padding-top:8px}
+#pane-tasks[data-tt="log"] #lp-log,#pane-tasks[data-tt="tools"] #lp-tools,#pane-tasks[data-tt="diag"] #lp-diag{display:block}
+#pane-tasks:not([data-tt="items"]) #items,#pane-tasks:not([data-tt="items"]) .tasks-head .toolbar,#pane-tasks:not([data-tt="items"]) #f-result,#pane-tasks:not([data-tt="items"]) #view{display:none}
+#pane-tasks[data-tt="log"] .tasks-actions,#pane-tasks[data-tt="tools"] .tasks-actions,#pane-tasks[data-tt="diag"] .tasks-actions{display:none}
+#lp-log #logwho{margin-bottom:6px;flex-wrap:wrap}
+#lp-log .log-row{padding-block:3px;font-size:.9rem}
+#lp-diag .diag{max-height:none}
+#lp-tools{max-width:900px}
+.thead .ltabs{overflow-x:auto;scrollbar-width:none;max-width:100%}
+details.mgr>summary.mgr-btn{display:inline-flex;align-items:center;gap:4px;font-family:var(--display);font-weight:600;font-size:.8rem;color:var(--chef-deep);border:1.5px solid var(--chef-deep);border-radius:999px;padding:1px 10px;background:color-mix(in srgb,var(--paper) 85%,transparent);white-space:nowrap}
+details.mgr>summary.mgr-btn:hover{background:var(--chef-deep);color:#fff}
+details.mgr[open]>summary.mgr-btn{background:var(--chef-deep);color:#fff}
+.pane.side .rel-panel>details.mgr{order:1;margin-inline-start:0}
+.pane.side .rel-panel>.title-row{order:0}
+.pane.side .rel-panel>details.mgr[open]{flex-basis:100%;order:1;background:color-mix(in srgb,var(--paper) 88%,transparent);border:1.5px solid var(--chef-deep);border-radius:12px;padding:6px 10px}
+@media (max-width:960px){.ovr-top .hero-txt .by{margin-inline-start:0}}
+
+/* v21: compact task cards and task header, use wide screens */
+.hero .inner,.shell{max-width:1840px}
+.pane.tasks .card.item{padding:6px 10px;gap:3px;border-radius:10px;box-shadow:none;border-inline-start-width:4px;position:relative}
+.pane.tasks .card.item .title-row{gap:6px}
+.pane.tasks .card.item .title-row .t{gap:0}
+.pane.tasks .card.item h3{font-size:.9rem;line-height:1.3;font-weight:600}
+.pane.tasks .card.item .key{font-size:.7rem}
+.pane.tasks .card.item .pill{font-size:.66rem;padding:0 6px;line-height:1.55}
+.pane.tasks .card.item .row.tight{gap:3px}
+.pane.tasks .card.item>.row.tight.small{min-height:17px;padding-inline-end:78px}
+.pane.tasks .card.item>details>summary{font-size:.7rem}
+.pane.tasks .card.item>details:not([open])>summary{position:absolute;inset-inline-end:10px;bottom:5px}
+.pane.tasks .card.item>details[open]{border-top:1px dashed var(--line);padding-top:4px;font-size:.9rem}
+.pane.tasks .card.item .answer{font-size:.74rem;padding:3px 7px;line-height:1.4}
+.pane.tasks .card.item .answer.clamp{max-height:4.3em}
+.pane.tasks .card.mini .answer{max-height:2.9em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 55%,transparent)}
+.pane.tasks .card.mini>button.link{display:none}
+.pane.tasks .card.item>button.link{font-size:.7rem}
+.pane.tasks .card.is-done{opacity:.8}
+.board{gap:8px;grid-template-columns:repeat(4,minmax(190px,1fr))}
+.col{padding:6px;gap:6px;border-radius:12px}
+.col-h{font-size:.92rem}
+.col-b{gap:6px;min-height:40px}
+.pane.tasks #items{gap:6px}
+.pane.tasks #items>.list{gap:6px}
+.tasks-head{flex-direction:row!important;flex-wrap:wrap;align-items:center;gap:5px 10px;padding:6px 12px 7px!important}
+.tasks-head>.thead,.tasks-head>#createbox,.tasks-head>#f-result{flex:1 1 100%}
+.tasks-head>#f-result:empty{display:none}
+.tasks-head>.toolbar{flex:0 1 auto;gap:5px}
+.tasks-head .opt{font-size:.78rem;padding:1px 10px}
+.tasks-head .toolbar select{padding:2px 6px;font-size:.8rem}
+.tasks-head .toolbar label.inline{font-size:.8rem}
+.thead .ltab{font-size:.9rem}
+.tasks-actions input[type=search]{padding:5px 10px;font-size:.9rem}
+.tasks-actions .create{padding:4px 14px;font-size:.92rem}
+#view .opt{padding:2px 12px;font-size:.85rem}
+
+/* v21b: no overlap with the answer preview; list view in two columns on wide screens */
+.pane.tasks .card.item>.answer{margin-bottom:15px}
+.pane.tasks #items>.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,560px),1fr));gap:6px;align-items:start}
+
+/* v21c: no long progress bar in the version panel (the % pill stays) */
+.pane.side .rel-panel>.pbar{display:none}
+.pane.side .rel-panel>.row.tight{margin-inline-start:auto}
+
+/* v22: card titles on one line, "..." when too long (full title on hover) */
+.pane.tasks .card.item .title-row .t{flex:1 1 auto;min-width:0}
+.pane.tasks .card.item h3.ttl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+/* v23: top frame in 3 lines - title | versions + version details | status cards + type counts */
+.pane.side{flex-direction:row!important;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.pane.side>.ovr-top,.pane.side>.rel-panel{display:contents}
+.pane.side::before,.pane.side::after{content:"";flex:0 0 100%;height:0;margin:-3px 0}
+.ovr-top .brandblk .logo{order:1}
+.ovr-top .hero-txt h1{order:2}
+.ovr-top .vline{order:3}
+.ovr-top .hero-txt .by{order:4;margin-inline-start:auto}
+.pane.side::before{order:5}
+.ovr-top .releases{order:6;flex:0 1 auto!important}
+.pane.side .rel-panel>*{order:7}
+.pane.side .rel-panel>.title-row{order:7;margin-inline-start:auto;flex:0 0 auto}
+.pane.side .rel-panel>h3{order:7;margin-inline-start:auto}
+.pane.side .rel-panel>details.mgr{order:8}
+.pane.side .rel-panel>div.row:not(.tight){order:8}
+.pane.side::after{order:9}
+.pane.side .rel-panel>.stats-grid{order:10;flex:1 1 auto!important}
+.pane.side .rel-panel>.row.tight{order:11;flex:0 0 auto;margin-inline-start:0}
+.pane.side .rel-panel>p{order:10;flex:1 1 auto}
+.pane.side .rel-panel>details.mgr[open]{order:12;flex:1 1 100%}
+.pane.side .rel-panel>.row.tight .pill{font-size:.74rem;padding:1px 9px}
+@media (max-width:960px){.pane.side .rel-panel>.title-row{margin-inline-start:0}.ovr-top .releases{flex:1 1 100%!important}}
+
+/* v24: one elongated version capsule - name, status, dates, build, progress fill and % */
+.pane.side .rel-panel>.verbar{display:flex;align-items:center;justify-content:flex-start;gap:0;flex:0 1 auto;min-width:340px;height:30px;padding:0 4px 0 4px;border-radius:999px;border:2px solid var(--chef-deep);
+  background:linear-gradient(to left,color-mix(in srgb,var(--chef) 42%,var(--paper)) 0,color-mix(in srgb,var(--chef) 42%,var(--paper)) var(--p),color-mix(in srgb,var(--paper) 92%,transparent) var(--p));box-shadow:0 2px 6px rgba(0,0,0,.12);overflow:hidden;white-space:nowrap}
+.verbar>*{padding:0 9px;line-height:26px;border-inline-start:1px solid color-mix(in srgb,var(--chef-deep) 25%,transparent)}
+.verbar>*:first-child{border-inline-start:0}
+.verbar .vb-name{font-family:var(--display);font-size:1rem;color:var(--chef-deep)}
+.verbar .vb-st{font-size:.74rem;font-weight:700;border-radius:999px;line-height:20px;margin:0 6px;padding:0 9px;border:0;background:var(--yolk);color:var(--on-yolk)}
+.verbar.st-planned .vb-st{background:var(--chip);color:var(--ink)}
+.verbar.st-released .vb-st,.verbar.st-archived .vb-st{background:var(--chef-deep);color:#fff}
+.verbar .vb-st+*{border-inline-start:0}
+.verbar .vb-f{font-size:.78rem;color:var(--ink)}
+.verbar .vb-prog{font-weight:600}
+.verbar .vb-pct{margin-inline-start:auto;font-family:var(--display);font-size:.95rem;color:#fff;background:var(--chef-deep);border-radius:999px;line-height:22px;padding:0 10px;border:0}
+@media (max-width:960px){.pane.side .rel-panel>.verbar{min-width:0;flex:1 1 100%}.verbar .vb-prog{display:none}}
+
+/* v25: versions dropdown, manage and add inside the version capsule; no separate version row */
+.ovr-top .releases{display:none!important}
+.pane.side::after{display:none}
+.pane.side .rel-panel>.verbar{margin-inline-start:0!important;padding:0 2px}
+.verbar button{font:inherit;border:0;border-radius:0;background:none;cursor:pointer;color:var(--chef-deep)}
+.verbar .vb-pick{font-family:var(--display);font-weight:700;font-size:1rem;padding:0 10px;line-height:26px;border-radius:999px 0 0 999px}
+.verbar .vb-pick:hover,.verbar .vb-pick[aria-expanded="true"]{background:color-mix(in srgb,var(--chef) 25%,transparent)}
+.verbar .vb-ico{font-size:1.05rem;font-weight:700;padding:0 9px;line-height:26px;border-inline-start:1px solid color-mix(in srgb,var(--chef-deep) 25%,transparent)}
+.verbar .vb-ico:hover,.verbar .vb-ico[aria-expanded="true"]{background:var(--chef-deep);color:#fff}
+.verbar .vb-pct+.vb-ico{border-inline-start:0;margin-inline-start:4px}
+.verbar.st-none .vb-f{color:var(--ink-soft)}
+.verbar.st-none .vb-add{margin-inline-start:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pane.side .rel-panel>details.mgr:not([open]){display:none}
+details.mgr>summary.mgr-sum{display:none}
+.mgr-h{display:block;font-family:var(--display);color:var(--chef-deep);margin-bottom:4px}
+.vb-menu{position:fixed;z-index:90;display:flex;flex-direction:column;gap:4px;padding:6px;min-width:240px;background:var(--paper);border:2px solid var(--chef-deep);border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.28);direction:rtl;font-family:var(--text)}
+.vb-menu .rel{flex-direction:row;align-items:center;gap:8px;width:100%;min-width:0;padding:6px 10px;border-radius:9px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);text-align:start}
+.vb-menu .rel b{font-family:var(--display);font-size:1rem;min-width:4.5em}
+.vb-menu .rel .rs{font-size:.78rem;color:var(--ink-soft)}
+.vb-menu .rel .rbar{width:46px;height:5px;margin-inline-start:auto;flex:none}
+.vb-menu .rel.on{border-color:var(--chef-deep);background:color-mix(in srgb,var(--chef) 18%,var(--paper))}
+.vb-menu .rel:hover,.vb-menu .rel:focus-visible{border-color:var(--chef-deep)}
+.vb-menu .rel.add{justify-content:center;border-style:dashed;color:var(--chef-deep);font-family:var(--display);font-weight:600}
+
+/* v26: no "by" line; title + capsule + cards in one line, as the top panel of one full-window frame */
+.ovr-top .hero-txt .by{display:none!important}
+.pane.side::before{display:none}
+.ovr-top .vline .vchip{font-size:.72rem}
+.pane.side .rel-panel>.stats-grid{flex:1 1 520px!important}
+.pane.side .scard{padding:2px 7px}
+@media (min-width:961px){
+  .hero .inner,.shell{max-width:none}
+  .shell{padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px));padding-block:6px}
+  #frames{gap:0!important}
+  #frames>[data-frame="side"]>.pane{border-bottom:0;border-radius:var(--r) var(--r) 0 0;box-shadow:none;border-color:color-mix(in srgb,var(--chef-deep) 75%,transparent);background:color-mix(in srgb,var(--paper) 62%,transparent);padding:6px 12px}
+  #frames>[data-frame="tasks"]>.pane{border-top:1px solid color-mix(in srgb,var(--chef-deep) 30%,transparent);border-radius:0 0 var(--r) var(--r)}
+}
+
+/* v26b: the tasks header never gets wider than the frame (phone: tabs scroll sideways) */
+.tasks-head>.thead{min-width:0;max-width:100%}
+@media (max-width:960px){.thead .ltabs{flex:1 1 100%!important;min-width:0}.tasks-actions{min-width:0}}
+
+/* v27: columns fill the frame height; each column scrolls inside; cards keep their size */
+#pane-tasks[data-tt="items"]:has(#items.is-board):not(:has(#createbox:not([hidden]))){overflow:hidden}
+#pane-tasks[data-tt="items"] #items.is-board{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding-bottom:2px}
+#items.is-board>.board{flex:1 1 auto;min-height:0;align-items:stretch;grid-template-rows:minmax(0,1fr);padding-bottom:0;overflow-y:hidden}
+#items.is-board .col{min-height:0;overflow:hidden}
+#items.is-board .col-b{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:1px 2px 4px}
+#items.is-board .col-b>.card{flex:none}
+
+/* v28: type and status are two clearly separate, labeled groups */
+.tasks-head .toolbar{gap:10px!important}
+.tasks-head #types,.tasks-head #filters{display:inline-flex;flex-wrap:nowrap;align-items:center;gap:2px;padding:2px 4px 2px 3px;border:1.5px solid color-mix(in srgb,var(--chef-deep) 40%,transparent);border-radius:999px;background:color-mix(in srgb,var(--paper) 78%,transparent)}
+.tasks-head #filters{border-color:color-mix(in srgb,var(--cloth) 60%,transparent)}
+.tasks-head #types .opt,.tasks-head #filters .opt{border:0;padding:1px 9px;background:none}
+.tasks-head #types .opt[aria-pressed="true"]{background:var(--chef-deep);color:#fff}
+.tasks-head #filters .opt[aria-pressed="true"]{background:var(--cloth);color:#fff}
+.tasks-head #types .opt:hover,.tasks-head #filters .opt:hover{background:color-mix(in srgb,var(--chef) 18%,transparent)}
+.tasks-head #types .opt[aria-pressed="true"]:hover{background:var(--chef-deep)}
+.tasks-head #filters .opt[aria-pressed="true"]:hover{background:var(--cloth)}
+.fgl{font-size:.74rem;font-weight:700;color:var(--ink-soft);padding:0 7px 0 4px;white-space:nowrap}
+#types .fgl{color:var(--chef-deep)}#filters .fgl{color:var(--cloth)}
+
+/* v29: filters clearly marked - "סינון לפי:" caption + colored group tags */
+.fcap{font-family:var(--display);font-weight:700;font-size:.8rem;color:var(--ink);white-space:nowrap;align-self:center}
+.fcap::before{content:"";display:inline-block;width:11px;height:11px;margin-inline-end:5px;vertical-align:-1px;background:currentColor;clip-path:polygon(0 0,100% 0,62% 48%,62% 100%,38% 86%,38% 48%)}
+.tasks-head #types .fgl,.tasks-head #filters .fgl{font-family:var(--display);font-size:.72rem;font-weight:700;color:#fff;background:var(--chef-deep);border-radius:999px;padding:1px 9px;margin-inline-end:4px;line-height:1.6}
+.tasks-head #filters .fgl{background:var(--cloth)}
+.tasks-head #types{border-color:var(--chef-deep)}
+.tasks-head #filters{border-color:var(--cloth)}
+
+/* v29b: group tags read as labels, not as buttons */
+.tasks-head #types .fgl,.tasks-head #filters .fgl{background:none;color:var(--chef-deep);border-radius:0;border-inline-end:1.5px solid currentColor;padding:0 8px 0 6px;margin-inline-end:5px;font-size:.76rem;letter-spacing:.2px}
+.tasks-head #filters .fgl{background:none;color:var(--cloth)}
+
+/* v30: calm neutral background (research: off-white app bg + white surfaces, dark text not pure black, color only for meaning) */
+:root{--app-bg:#F3F4F1;--col-bg:#ECEEEA}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--paper:#FFFFFF;--paper-warm:#FAFBF9;--line:#DCE1DB;--chip:#EEF1EC;--ink:#1E2A25;--ink-soft:#56635D}}
+:root[data-theme="light"]{--paper:#FFFFFF;--paper-warm:#FAFBF9;--line:#DCE1DB;--chip:#EEF1EC;--ink:#1E2A25;--ink-soft:#56635D}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--app-bg:#121513;--col-bg:#171B19;--paper:#1C211E;--paper-warm:#202622;--line:#2E3732;--chip:#252C28;--ink:#E2E8E4;--ink-soft:#9AA8A1}}
+:root[data-theme="dark"]{--app-bg:#121513;--col-bg:#171B19;--paper:#1C211E;--paper-warm:#202622;--line:#2E3732;--chip:#252C28;--ink:#E2E8E4;--ink-soft:#9AA8A1}
+body{background:var(--app-bg)!important;background-image:none!important}
+.food{display:none!important}
+.hero-strip{height:3px!important;background:var(--chef)!important;border:0!important}
+.pane{background:var(--paper)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border:1px solid var(--line)!important;box-shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.04)!important}
+@media (min-width:961px){#frames>[data-frame="side"]>.pane{border-bottom:0!important;box-shadow:none!important}#frames>[data-frame="tasks"]>.pane{border-top:1px solid var(--line)!important}}
+.tasks-head,.logpane .log-head{background:var(--paper)!important;backdrop-filter:none!important}
+.card{background-color:var(--paper)!important;border-color:var(--line)!important}
+.pane.tasks .card.item{box-shadow:0 1px 2px rgba(0,0,0,.06)!important}
+.col{background:var(--col-bg)!important;border-color:var(--line)!important}
+.pane.side .scard{background:var(--chip)!important}
+.ovr-top .rel,.verbar .vb-st{box-shadow:none}
+.tasks-head #types,.tasks-head #filters{background:var(--paper)!important}
+.inbox-panel .card.ask{background-color:var(--paper)!important}
+
+/* v31: subtle geometric pattern (circles, rounded squares, triangles, plus, waves) - light and dark variants */
+:root{--geo:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22360%22%20height%3D%22360%22%20viewBox%3D%220%200%20360%20360%22%20fill%3D%22none%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2270%22%20r%3D%2230%22%20stroke%3D%22%233d8f28%22%20stroke-opacity%3D%22.10%22%2F%3E%3Crect%20x%3D%22214%22%20y%3D%2244%22%20width%3D%2250%22%20height%3D%2250%22%20rx%3D%2211%22%20transform%3D%22rotate%2818%20239%2069%29%22%20stroke%3D%22%23e0a40f%22%20stroke-opacity%3D%22.13%22%2F%3E%3Cpath%20d%3D%22M120%20246%20L166%20322%20L74%20322%20Z%22%20stroke%3D%22%2326777a%22%20stroke-opacity%3D%22.10%22%2F%3E%3Cpath%20d%3D%22M286%20286%20v28%20M272%20300%20h28%22%20stroke%3D%22%23cf3519%22%20stroke-opacity%3D%22.08%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22200%22%20r%3D%224%22%20fill%3D%22%233d8f28%22%20fill-opacity%3D%22.10%22%20stroke%3D%22none%22%2F%3E%3Ccircle%20cx%3D%2234%22%20cy%3D%22196%22%20r%3D%223%22%20fill%3D%22%2326777a%22%20fill-opacity%3D%22.10%22%20stroke%3D%22none%22%2F%3E%3Cpath%20d%3D%22M184%20150%20q18%20-18%2036%200%20t36%200%22%20stroke%3D%22%23e0a40f%22%20stroke-opacity%3D%22.13%22%2F%3E%3C%2Fsvg%3E")}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--geo:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22360%22%20height%3D%22360%22%20viewBox%3D%220%200%20360%20360%22%20fill%3D%22none%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2270%22%20r%3D%2230%22%20stroke%3D%22%2379c95a%22%20stroke-opacity%3D%22.10%22%2F%3E%3Crect%20x%3D%22214%22%20y%3D%2244%22%20width%3D%2250%22%20height%3D%2250%22%20rx%3D%2211%22%20transform%3D%22rotate%2818%20239%2069%29%22%20stroke%3D%22%23ffcf5c%22%20stroke-opacity%3D%22.11%22%2F%3E%3Cpath%20d%3D%22M120%20246%20L166%20322%20L74%20322%20Z%22%20stroke%3D%22%234fb3b5%22%20stroke-opacity%3D%22.10%22%2F%3E%3Cpath%20d%3D%22M286%20286%20v28%20M272%20300%20h28%22%20stroke%3D%22%23ff7a62%22%20stroke-opacity%3D%22.09%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22200%22%20r%3D%224%22%20fill%3D%22%2379c95a%22%20fill-opacity%3D%22.10%22%20stroke%3D%22none%22%2F%3E%3Ccircle%20cx%3D%2234%22%20cy%3D%22196%22%20r%3D%223%22%20fill%3D%22%234fb3b5%22%20fill-opacity%3D%22.10%22%20stroke%3D%22none%22%2F%3E%3Cpath%20d%3D%22M184%20150%20q18%20-18%2036%200%20t36%200%22%20stroke%3D%22%23ffcf5c%22%20stroke-opacity%3D%22.11%22%2F%3E%3C%2Fsvg%3E")}}
+:root[data-theme="dark"]{--geo:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22360%22%20height%3D%22360%22%20viewBox%3D%220%200%20360%20360%22%20fill%3D%22none%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2262%22%20cy%3D%2270%22%20r%3D%2230%22%20stroke%3D%22%2379c95a%22%20stroke-opacity%3D%22.10%22%2F%3E%3Crect%20x%3D%22214%22%20y%3D%2244%22%20width%3D%2250%22%20height%3D%2250%22%20rx%3D%2211%22%20transform%3D%22rotate%2818%20239%2069%29%22%20stroke%3D%22%23ffcf5c%22%20stroke-opacity%3D%22.11%22%2F%3E%3Cpath%20d%3D%22M120%20246%20L166%20322%20L74%20322%20Z%22%20stroke%3D%22%234fb3b5%22%20stroke-opacity%3D%22.10%22%2F%3E%3Cpath%20d%3D%22M286%20286%20v28%20M272%20300%20h28%22%20stroke%3D%22%23ff7a62%22%20stroke-opacity%3D%22.09%22%2F%3E%3Ccircle%20cx%3D%22300%22%20cy%3D%22200%22%20r%3D%224%22%20fill%3D%22%2379c95a%22%20fill-opacity%3D%22.10%22%20stroke%3D%22none%22%2F%3E%3Ccircle%20cx%3D%2234%22%20cy%3D%22196%22%20r%3D%223%22%20fill%3D%22%234fb3b5%22%20fill-opacity%3D%22.10%22%20stroke%3D%22none%22%2F%3E%3Cpath%20d%3D%22M184%20150%20q18%20-18%2036%200%20t36%200%22%20stroke%3D%22%23ffcf5c%22%20stroke-opacity%3D%22.11%22%2F%3E%3C%2Fsvg%3E")}
+body{background-image:var(--geo)!important;background-size:360px 360px!important;background-attachment:fixed!important}
+.col{background-image:var(--geo)!important;background-size:300px 300px!important;background-position:center top!important}
+#pane-tasks #items:not(.is-board){background-image:var(--geo);background-size:360px 360px;border-radius:10px}
+
+/* v32: no status cards; type tags sit right after the version capsule, compact, all on one line */
+.pane.side .rel-panel>.row.tight{order:8!important;flex:0 0 auto!important;flex-wrap:nowrap;gap:3px!important;margin-inline-start:0!important;align-items:center}
+.pane.side .rel-panel>.row.tight .pill{font-size:.7rem!important;padding:0 7px!important;line-height:1.75!important}
+.pane.side .rel-panel>details.mgr{order:9}
+@media (min-width:961px){#frames>[data-frame="side"]>.pane{flex-wrap:nowrap;padding-block:5px}}
+@media (min-width:961px) and (max-width:1300px){.ovr-top .vline .vchip{font-size:.68rem;padding:0 6px}.verbar .vb-prog{display:none}}
+@media (max-width:960px){.pane.side .rel-panel>.row.tight{flex-wrap:wrap}}
+
+/* v33: one-line tasks toolbar - tabs, uniform filter dropdowns, search (~27 chars), new task, view toggle */
+.tasks-head>.thead{display:flex!important;flex-wrap:nowrap!important;align-items:center;gap:10px;row-gap:6px}
+.thead .ltabs{flex:0 1 auto!important;min-width:0}
+.thead .ltab{padding:2px 6px}
+.fbar{display:flex;align-items:center;gap:6px;flex:0 0 auto;margin-inline-start:4px;padding-inline-start:10px;border-inline-start:1px solid var(--line)}
+.ficon{flex:none;width:12px;height:12px;background:var(--ink-soft);clip-path:polygon(0 0,100% 0,62% 48%,62% 100%,38% 86%,38% 48%)}
+.fdd{position:relative;display:inline-flex;flex-direction:row;align-items:center;height:30px;margin:0;border:1px solid var(--line);border-radius:8px;background:var(--paper);font-size:.8rem;font-weight:400;cursor:pointer;white-space:nowrap;transition:border-color .12s,background-color .12s}
+.fdd-k{color:var(--ink-soft);padding-inline-start:9px;padding-inline-end:4px}
+.fdd select{-webkit-appearance:none;appearance:none;border:0!important;box-shadow:none!important;background:transparent!important;height:28px;margin:0;padding:0 0 0 24px!important;font:inherit;font-weight:700;color:var(--ink);cursor:pointer;width:auto;min-width:0}
+.fdd::after{content:"";position:absolute;left:9px;top:50%;width:8px;height:5px;margin-top:-2px;background:var(--ink-soft);clip-path:polygon(0 0,100% 0,50% 100%);pointer-events:none}
+.fdd:hover{border-color:var(--ink-soft)}
+.fdd:focus-within{outline:2px solid var(--chef);outline-offset:1px}
+.fdd select:focus{outline:none}
+.fdd.on{border-color:var(--chef-deep);background:color-mix(in srgb,var(--chef) 16%,var(--paper))}
+.fdd.on .fdd-k{color:var(--chef-deep)}.fdd.on select{color:var(--chef-deep)}.fdd.on::after{background:var(--chef-deep)}
+.fclear{flex:none;height:30px;border:0;background:none;padding:0 6px;font-size:.78rem;font-weight:700;color:var(--tomato);cursor:pointer;white-space:nowrap}
+.fclear:hover{text-decoration:underline}
+.tasks-actions{flex:1 1 auto!important;max-width:none!important;margin-inline-start:0!important;justify-content:flex-end;gap:8px}
+.tasks-actions input[type=search]{flex:0 1 250px!important;width:250px;min-width:130px!important;height:30px;padding:0 10px!important;font-size:.86rem!important;border-radius:8px}
+.tasks-actions .create{height:30px;display:inline-flex;align-items:center}
+#view{flex:none}
+#view .opt{height:30px;display:inline-flex;align-items:center}
+#pane-tasks:not([data-tt="items"]) .fbar{display:none}
+.me-pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}
+@media (min-width:961px) and (max-width:1380px){.thead .ltab{font-size:.84rem;padding:2px 4px}.tasks-actions input[type=search]{flex-basis:190px!important}.fbar{gap:4px;padding-inline-start:8px}.fdd-k{padding-inline-start:7px}}
+@media (max-width:960px){.tasks-head>.thead{flex-wrap:wrap!important}.thead .ltabs{flex:1 1 100%!important}.fbar{flex:1 1 100%;margin:0;padding:0;border:0;overflow-x:auto}.tasks-actions{flex:1 1 auto!important}.tasks-actions input[type=search]{flex:1 1 auto!important;width:auto}}
+
+/* v34: dropdowns size to the chosen value (no empty gap); tabs never squeeze, the search gives way first */
+.fdd select{field-sizing:content;max-width:9.5em}
+.thead .ltabs{flex:0 0 auto!important;overflow:visible}
+.tasks-actions input[type=search]{min-width:150px!important}
+@media (max-width:960px){.thead .ltabs{flex:1 1 100%!important;overflow-x:auto}.fbar{flex-wrap:nowrap}}
+
+/* v35: uniform toolbar controls - dropdowns, search, new task and view toggle share height, corners and font */
+.tasks-actions input[type=search]{flex:0 1 150px!important;width:150px;min-width:110px!important;font-size:.8rem!important;padding:0 10px 0 28px!important;
+ background:var(--paper) no-repeat left 9px center/12px 12px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23889590' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='M11 11l3.5 3.5'/%3E%3C/svg%3E")!important;border:1px solid var(--line)!important}
+.tasks-actions .create,#view{height:30px!important;border-radius:8px!important;font-family:var(--text)!important;font-size:.8rem!important;font-weight:700!important;line-height:1!important;box-shadow:none!important}
+.tasks-actions .create{padding:0 12px!important;background:var(--chef-deep)!important;border:1px solid var(--chef-deep)!important;color:#fff!important}
+.tasks-actions .create:hover{filter:brightness(1.08)}
+#view{display:inline-flex;gap:0!important;padding:0!important;border:1px solid var(--line);background:var(--paper);overflow:hidden}
+#view .opt{height:28px!important;border:0!important;border-radius:0!important;margin:0!important;padding:0 11px!important;font:inherit!important;background:transparent!important;color:var(--ink-soft)!important}
+#view .opt+.opt{border-inline-start:1px solid var(--line)!important}
+#view .opt[aria-pressed="true"]{background:color-mix(in srgb,var(--chef) 16%,var(--paper))!important;color:var(--chef-deep)!important}
+#view .opt:hover:not([aria-pressed="true"]){background:var(--chip)!important;color:var(--ink)!important}
+.fdd,.fclear{font-family:var(--text)}
+@media (max-width:960px){.tasks-actions input[type=search]{flex:1 1 auto!important}}
+
+/* v35b: borders count inside the 30px height for every toolbar control */
+.fdd,#view,.tasks-actions .create,.tasks-actions input[type=search]{box-sizing:border-box!important}
+.fdd{height:30px!important}
+
+/* v36: borders inside the 30px height everywhere; "עוד סינון" opens one row of extra dropdowns */
+.fdd,#view,.tasks-actions .create,.tasks-actions input[type=search]{box-sizing:border-box!important}
+.fdd{height:30px!important}
+.fbar{position:relative}
+.fmore{font:inherit;font-size:.8rem;padding:0 22px 0 0;color:var(--ink)}
+.fmore .fdd-k{color:var(--ink);font-weight:700;padding-inline-end:6px}
+.fmore-n{min-width:16px;height:16px;border-radius:999px;background:var(--chef-deep);color:#fff;font-size:.68rem;line-height:16px;text-align:center;margin-inline-end:6px;padding:0 4px;box-sizing:border-box}
+.fmore-n:empty{display:none}
+.fmore[aria-expanded="true"]::after{transform:rotate(180deg)}
+.fpop{position:absolute;top:calc(100% + 6px);right:0;z-index:20;display:flex;gap:6px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--paper);box-shadow:0 6px 22px rgba(0,0,0,.14)}
+.fpop[hidden]{display:none!important}
+@media (max-width:960px){.fbar{flex-wrap:wrap}.fpop{position:static;flex:1 1 100%;flex-wrap:wrap;box-shadow:none;padding:6px}}
+
+/* v37: search, new task and view toggle sit in the top line (desktop); visible labels "הצג:" and "סינון:" */
+.glbl{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:.76rem;font-weight:700;color:var(--ink-soft);white-space:nowrap}
+.glbl .ficon{width:11px;height:11px}
+.thead>.glbl{margin-inline-end:-4px}
+.topacts{order:30;flex:0 0 auto;display:flex;align-items:center;gap:8px;margin-inline-start:auto}
+.topacts .tasks-actions{flex:0 0 auto!important;display:flex}
+.topacts .tasks-actions input[type=search]{flex:0 0 160px!important;width:160px}
+@media (min-width:961px) and (max-width:1400px){.ovr-top .vline .vchip.dev{display:none}.topacts .tasks-actions input[type=search]{flex-basis:130px!important;width:130px}}
+
+/* v38: second row packed from the start (label, tabs, filters); "עוד סינון" arrow + tight padding; contrast-safe primary button */
+.tasks-head>.thead{justify-content:flex-start!important}
+.fbar{margin-inline-start:6px!important}
+.fmore{padding:0 0 0 24px!important;min-width:0}
+.fmore .fdd-k{padding-inline-start:10px}
+.fmore::after{display:block}
+.tasks-actions .create{color:var(--paper)!important}
+@media (max-width:960px){.thead .ltabs{flex:1 1 0!important;min-width:0}.tasks-head>.thead>.glbl{margin:0}}
+
+/* v39: all seven dropdowns in the filter row */
+.fbar{gap:5px!important;flex-wrap:nowrap}
+.fdd-k{padding-inline-start:8px;padding-inline-end:3px}
+.fdd select{padding-left:21px!important}
+.fdd::after{left:8px}
+@media (min-width:961px) and (max-width:1500px){.tasks-head>.thead{flex-wrap:wrap!important}.fbar{flex-wrap:wrap}}
+
+/* v40: archive and delete buttons in the version capsule; archived section in the versions menu */
+.verbar .vb-arc,.verbar .vb-del{display:inline-flex;align-items:center;justify-content:center;padding:0 8px;height:26px}
+.verbar .vb-del{border-radius:0 999px 999px 0}
+[dir="rtl"] .verbar .vb-del,.verbar .vb-del:dir(rtl){border-radius:999px 0 0 999px}
+.verbar .vb-del:hover{background:var(--tomato)!important;color:#fff!important}
+.verbar .vb-arc.on{background:color-mix(in srgb,var(--chef) 25%,transparent)}
+.vb-menu .vb-sec{font-size:.72rem;font-weight:700;color:var(--ink-soft);padding:6px 10px 2px;border-top:1px solid var(--line);margin-top:4px}
+.vb-menu .rel.archived{opacity:.75}
+
+/* v41: second row spreads across the width - spare room goes evenly into the gaps (controls keep their size) */
+@media (min-width:961px){
+  .tasks-head>.thead{gap:clamp(12px,1vw,20px)!important}
+  .thead .ltabs{gap:clamp(4px,.5vw,10px)}
+  .fbar{flex:0 1 auto!important;justify-content:flex-start;gap:clamp(8px,.75vw,14px)!important}
+}
+
+/* v42: projects - picker in the top line, menu, new/edit form */
+.projpick{order:25;flex:none;display:flex;align-items:center}
+.pp-btn{display:inline-flex;align-items:center;gap:6px;height:30px;box-sizing:border-box;padding:0 9px 0 8px;border:1px solid var(--line)!important;border-radius:8px!important;background:var(--paper)!important;color:var(--ink)!important;font-family:var(--text)!important;font-size:.8rem;font-weight:400;cursor:pointer;white-space:nowrap}
+.pp-btn img{width:18px;height:18px;border-radius:5px;object-fit:cover;flex:none}
+.pp-btn .pp-k{color:var(--ink-soft)}.pp-btn .pp-sym{font-weight:700;color:var(--chef-deep)}
+.pp-btn::after{content:"";width:8px;height:5px;background:var(--ink-soft);clip-path:polygon(0 0,100% 0,50% 100%)}
+.pp-btn:hover,.pp-btn[aria-expanded="true"]{border-color:var(--ink-soft)!important}
+.pp-menu .pp-it{align-items:center;gap:8px}
+.pp-menu .pp-it img{width:22px;height:22px;border-radius:6px;object-fit:cover;flex:none}
+.pp-menu .pp-it b{min-width:0}
+.pp-menu .pp-edit{justify-content:center;font-size:.8rem;color:var(--ink-soft)}
+.pp-back{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.35);display:flex;align-items:flex-start;justify-content:center;padding:8vh 16px 16px;overflow:auto}
+.pp-form{width:min(440px,100%);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.pp-form h3{margin:0;font-family:var(--display);font-size:1.1rem}
+.pp-form label{display:flex;flex-direction:column;gap:5px;font-size:.84rem;font-weight:600}
+.pp-form input[type=text]{height:34px;border:1px solid var(--line);border-radius:8px;padding:0 10px;font:inherit;font-weight:400;background:var(--paper);color:var(--ink)}
+.pp-form input[type=text]:disabled{opacity:.6}
+.pp-icrow{align-items:center;gap:10px;flex-wrap:wrap}
+.pp-prev{width:44px;height:44px;border-radius:10px;object-fit:cover;border:1px solid var(--line)}
+.pp-msg{margin:0;color:var(--tomato);min-height:1em}
+
+/* v43: phone - filter dropdowns wrap at full size (were squeezed); 1280-1400 - top line keeps everything on one line */
+@media (max-width:960px){.fbar{flex-wrap:wrap!important;gap:6px!important}.fbar>.fdd{flex:none}}
+.ovr-top .hero-txt h1{white-space:nowrap}
+.ovr-top .vline .vchip{white-space:nowrap}
+@media (min-width:961px) and (max-width:1440px){
+  .pp-btn .pp-k{display:none}
+  .topacts .tasks-actions input[type=search]{flex-basis:112px!important;width:112px;min-width:96px!important}
+  .ovr-top .hero-txt h1{font-size:1rem}
+  .verbar .vb-f:not(.vb-prog){font-size:.72rem}
+}
+@media (min-width:961px) and (max-width:1320px){.ovr-top .vline .vchip.pub{display:none}}
+
+/* v44: gentle spacing - top line shares its spare room evenly (each gap 10-36px); second row: a bit more room after the separator and the filter label, +2px between dropdowns */
+.tsp{display:none}
+@media (min-width:961px){
+  #frames>[data-frame="side"]>.pane{column-gap:10px!important}
+  .tsp{display:block;flex:1 1 0;min-width:0;max-width:26px;height:1px;margin-inline:-5px}
+  .ovr-top .vline{order:4!important}
+  .tsp-a{order:3}.tsp-b{order:5}.tsp-c{order:20}.tsp-d{order:27}
+  .fbar{padding-inline-start:16px!important;gap:clamp(10px,.85vw,16px)!important}
+  .fbar>.glbl{margin-inline-end:4px}
+}
+@media (min-width:1700px){.topacts .tasks-actions input[type=search]{flex-basis:210px!important;width:210px}}
+@media (min-width:961px) and (max-width:1340px){.fbar{padding-inline-start:12px!important;gap:9px!important}.fbar>.glbl{margin-inline-end:1px}.tasks-head>.thead{gap:10px!important}}
+
+/* v45: long project titles truncate (full name in the tooltip) instead of clipping the version capsule */
+@media (min-width:961px){.ovr-top .hero-txt h1{min-width:0;max-width:clamp(150px,17vw,340px);overflow:hidden;text-overflow:ellipsis}}
+
+/* v46: in the top line only the title gives way; the version capsule and chips never shrink or wrap */
+@media (min-width:961px){.pane.side .rel-panel>.verbar{flex-shrink:0!important}.ovr-top .vline{flex-wrap:nowrap!important;flex-shrink:0}.ovr-top .hero-txt h1{flex:0 1 auto}}
+</style>
+
+<div class="food" aria-hidden="true">
+  <img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%233d8f28%27/%3E%3Cpath d=%27M18 34l9 9 19-21%27 fill=%27none%27 stroke=%27%23fff%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E" alt="" style="top:330px;right:2%;transform:rotate(-12deg)">
+  <img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%233d8f28%27/%3E%3Cpath d=%27M18 34l9 9 19-21%27 fill=%27none%27 stroke=%27%23fff%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E" alt="" style="top:520px;left:3%;transform:rotate(14deg)">
+  <img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%233d8f28%27/%3E%3Cpath d=%27M18 34l9 9 19-21%27 fill=%27none%27 stroke=%27%23fff%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E" alt="" style="top:760px;right:4%;transform:rotate(8deg)">
+  <img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%233d8f28%27/%3E%3Cpath d=%27M18 34l9 9 19-21%27 fill=%27none%27 stroke=%27%23fff%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E" alt="" style="top:980px;left:2%;transform:rotate(-8deg)">
+  <img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%233d8f28%27/%3E%3Cpath d=%27M18 34l9 9 19-21%27 fill=%27none%27 stroke=%27%23fff%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E" alt="" style="top:1210px;right:3%;transform:rotate(-14deg)">
+  <img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%233d8f28%27/%3E%3Cpath d=%27M18 34l9 9 19-21%27 fill=%27none%27 stroke=%27%23fff%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E" alt="" style="top:1440px;left:4%;transform:rotate(10deg)">
+  <img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%233d8f28%27/%3E%3Cpath d=%27M18 34l9 9 19-21%27 fill=%27none%27 stroke=%27%23fff%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E" alt="" style="top:1680px;right:2%;transform:rotate(6deg)">
+</div>
+
+<div class="page">
+<div class="hero hero-strip" aria-hidden="true"></div>
+
+<main class="shell" id="shell" data-tab="tasks">
+  <div class="banner" id="status" role="status" hidden></div>
+  <nav class="tabs" role="tablist" aria-label="אזורים"><button type="button" class="opt" id="tab-side" role="tab">גרסאות <span id="tab-side-n"></span></button><button type="button" class="opt" id="tab-tasks" role="tab">משימות <span id="tab-tasks-n"></span></button></nav>
+  <div class="frames-wrap" id="frames-wrap"><div id="frames">
+<div class="frame" data-frame="side" aria-label="גרסאות">
+  <aside class="pane side" id="pane-side" aria-label="סקירת הגרסה">
+  <div class="ovr-top">
+      <div class="brandblk">
+        <img class="logo" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%233d8f28%27/%3E%3Cpath d=%27M18 34l9 9 19-21%27 fill=%27none%27 stroke=%27%23fff%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E" alt="הפרוייקט הראשי" width="56" height="56">
+        <div class="hero-txt">
+          <h1>המשימות של הפרוייקט הראשי</h1>
+          <p class="vline" id="vline"></p>
+          <span class="by"><img src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%233d8f28%27/%3E%3Cpath d=%27M18 34l9 9 19-21%27 fill=%27none%27 stroke=%27%23fff%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E" alt="" width="14" height="14">מבית הצוות · <span id="sync" role="status"></span></span>
+        </div>
+      </div>
+      <div class="releases" id="releases" role="tablist" aria-label="גרסאות"></div>
+  </div>
+  <section class="card rel-panel" id="relpanel" aria-label="פרטי הגרסה"></section>
+
+
+
+  </aside>
+</div>
+<div class="frame" data-frame="tasks" aria-label="משימות">
+  <section class="pane tasks" id="pane-tasks" aria-labelledby="h-items">
+   <div class="tasks-head">
+    <div class="sec-head thead"><span class="glbl" aria-hidden="true">הצג:</span><div class="ltabs" role="tablist" aria-label="משימות ובקשות"><button type="button" class="ltab" id="tt-items" role="tab" aria-selected="true">משימות <span class="muted small" id="tt-items-n"></span></button><button type="button" class="ltab" id="tt-inbox" role="tab" aria-selected="false">ממתין לתשובה <span class="muted small" id="tt-inbox-n"></span></button><button type="button" class="ltab" id="tt-log" role="tab" aria-selected="false">לוג שינויים <span class="muted small" id="log-count"></span></button><button type="button" class="ltab" id="tt-tools" role="tab" aria-selected="false">ייצוא וגיבוי</button><button type="button" class="ltab" id="tt-diag" role="tab" aria-selected="false">פרטים טכניים</button></div><div class="fbar" id="fbar" role="group" aria-label="סינון ומיון"><span class="glbl" aria-hidden="true"><span class="ficon"></span>סינון:</span><label class="fdd" for="flt-type" title="סינון לפי סוג משימה"><span class="fdd-k">סוג</span><select id="flt-type"></select></label><label class="fdd" for="flt-st" title="סינון לפי סטטוס"><span class="fdd-k">סטטוס</span><select id="flt-st"></select></label><label class="fdd" for="sort" title="סדר התצוגה"><span class="fdd-k">מיון</span><select id="sort"></select></label><label class="fdd" for="flt-own"><span class="fdd-k">אחראי</span><select id="flt-own"></select></label><label class="fdd" for="flt-sev"><span class="fdd-k">חומרה</span><select id="flt-sev"></select></label><label class="fdd" for="flt-pkg"><span class="fdd-k">חבילה</span><select id="flt-pkg"></select></label><label class="fdd" for="flt-src"><span class="fdd-k">מקור</span><select id="flt-src"></select></label><button type="button" class="fclear" id="flt-clear" title="איפוס הסינון והמיון לברירת המחדל" hidden>✕ נקה</button></div><div class="tasks-actions"><input type="search" id="q" placeholder="חיפוש" aria-label="חיפוש" title="חיפוש לפי מילה, מסך או מספר משימה (למשל GC-3)"><button type="button" class="create" id="btn-create" aria-controls="createbox">+ משימה חדשה</button></div><div class="seg" id="view" role="group" aria-label="תצוגה"></div></div>
+
+    <div class="card ruled" id="createbox" hidden>
+      <form id="addform" class="list" aria-label="משימה חדשה">
+        <div class="grid">
+          <label for="f-type">סוג<select id="f-type" name="type"></select></label>
+          <label for="f-rel">גרסה<select id="f-rel" name="release"></select></label>
+          <label for="f-sev">חומרה<select id="f-sev" name="sev"></select></label>
+          <label for="f-owner">אחראי<select id="f-owner" name="owner"></select></label>
+        </div>
+        <label for="f-title">כותרת (שורה אחת)<input type="text" id="f-title" name="title" required maxlength="200" placeholder="למשל: הסרטון אחרי ההיכרות נשאר שחור"></label>
+        <label for="f-desc">תיאור<textarea id="f-desc" name="desc" placeholder="מה קרה / מה צריך לעשות / מה השאלה"></textarea></label>
+        <details><summary class="small">שדות נוספים</summary>
+          <div class="grid" style="margin-top:8px">
+            <label for="f-pkg">חבילה<select id="f-pkg" name="pkg"></select></label>
+            <label for="f-screen">מסך<input type="text" id="f-screen" name="screen"></label>
+            <label for="f-device">מכשיר וגרסת iOS<input type="text" id="f-device" name="device" placeholder="iPhone 15, iOS 27"></label>
+            <label for="f-source">מקור<select id="f-source" name="source"></select></label>
+            <label for="f-rep">כמה דיווחו<input type="number" id="f-rep" name="reporters" min="1" value="1"></label>
+            <label for="f-due">תאריך יעד<input type="date" id="f-due" name="due"></label>
+            <label for="f-labels">תוויות (מופרדות בפסיק)<input type="text" id="f-labels" name="labels" placeholder="קידום בחנויות"></label>
+          </div>
+        </details>
+        <div class="row">
+          <span class="btn upl">צירוף קבצים<input type="file" id="f-files" multiple accept="image/*,video/*,.txt,.pdf"></span>
+          <span class="muted small" id="f-files-n"></span>
+        </div>
+        <div class="row"><button class="primary" type="submit" id="f-submit">שמירה</button><button type="button" id="f-cancel">סגירה</button></div>
+      </form>
+    </div>
+
+    <p class="saved" id="f-result" role="status" aria-live="polite"></p>
+
+   </div>
+    <div id="items"><div class="empty">טוען...</div></div>
+  <section aria-labelledby="h-inbox" id="inbox-sec" class="inbox-panel">
+    <div class="sec-head"><h2 id="h-inbox">ממתין לתשובה</h2><span class="muted small" id="inbox-count"></span></div>
+    <div class="list" id="inbox"></div>
+  </section>
+    <div id="lp-log" class="tpanel" role="tabpanel" aria-labelledby="tt-log"><div class="filters" id="logwho" role="group" aria-label="סינון לפי מי שינה"></div><div id="log" class="log-list"></div></div>
+    <div id="lp-tools" class="tpanel" role="tabpanel" aria-labelledby="tt-tools">
+      <div class="list">
+        <p class="small muted">ייצוא של כל הלוח במסמך אחד (כל הגרסאות, המשימות, הבקשות והלוג). ההעתקה מוכנה להדבקה ב-Claude Code.</p>
+        <div class="row"><button type="button" class="primary" id="xp-copy">העתקת הכל (Markdown)</button><button type="button" id="xp-md">קובץ Markdown</button><button type="button" id="xp-txt">קובץ טקסט</button><button type="button" id="xp-pdf">PDF</button><span class="saved" id="xp-msg" role="status"></span></div>
+        <textarea id="xp-box" hidden readonly aria-label="טקסט הייצוא" style="min-height:160px"></textarea>
+        <p class="small muted">גיבוי מלא למחשב: כל הנתונים, כולל ארכיון ולוג.</p>
+        <div class="row"><button type="button" id="bk-json">גיבוי מלא (JSON)</button><button type="button" id="bk-csv">טבלה לאקסל (CSV)</button><span class="saved" id="bk-msg" role="status"></span></div>
+        <p class="small muted">הוראות לסוכן שמפעיל את הדפדפן (Claude בכרום): מעתיקים, מצרפים את הפידבק, והוא מכניס את המשימות ללוח.</p>
+        <div class="agent" id="agent-text"></div>
+        <div class="row"><button type="button" id="copy-agent">העתקת ההוראות</button><span class="saved" id="copy-ok"></span></div>
+      </div>
+    </div>
+    <div id="lp-diag" class="tpanel" role="tabpanel" aria-labelledby="tt-diag"><label class="inline me-pick" for="me">מי משתמש בדף במכשיר הזה<select id="me"></select><span class="muted small">מזוהה אוטומטית. לשנות רק אם הזיהוי שגוי (משפיע על השם בלוג ועל סדר הבקשות בממתין לתשובה)</span></label><pre class="diag" id="diag"></pre></div>
+
+  </section>
+</div>
+  </div></div>
+</main>
+</div>
+
+<script type="application/json" id="seed">{"items": [{"num": 1, "type": "bug", "status": "new", "sev": 2, "owner": "owner", "pkg": "general", "source": "self", "release": "1.0", "title": "Login button does nothing on slow networks", "desc": "Repro: throttle to 3G, tap login.", "labels": [], "files": [], "archived": false, "reporters": 1, "note": "", "screen": "", "device": "", "due": "", "createdAt": "2026-01-10T09:00:00Z", "updatedAt": "2026-01-10T09:00:00Z", "createdBy": "בעלים", "id": "s1"}, {"num": 2, "type": "feedback", "status": "doing", "sev": 3, "owner": "partner", "pkg": "general", "source": "email", "release": "1.0", "title": "Users want a dark mode toggle", "desc": "", "labels": [], "files": [], "archived": false, "reporters": 1, "note": "", "screen": "", "device": "", "due": "", "createdAt": "2026-01-10T09:00:00Z", "updatedAt": "2026-01-10T09:00:00Z", "createdBy": "בעלים", "id": "s2"}, {"num": 3, "type": "task", "status": "fixed", "sev": 3, "owner": "owner", "pkg": "general", "source": "other", "release": "1.0", "title": "Update store screenshots", "desc": "", "labels": [], "files": [], "archived": false, "reporters": 1, "note": "", "screen": "", "device": "", "due": "", "createdAt": "2026-01-10T09:00:00Z", "updatedAt": "2026-01-10T09:00:00Z", "createdBy": "בעלים", "id": "s3"}, {"num": 4, "type": "request", "status": "new", "sev": 3, "owner": "partner", "pkg": "general", "source": "other", "release": "1.0", "title": "Decide the scope of version 1.1", "desc": "", "labels": [], "files": [], "archived": false, "reporters": 1, "note": "", "screen": "", "device": "", "due": "", "createdAt": "2026-01-10T09:00:00Z", "updatedAt": "2026-01-10T09:00:00Z", "createdBy": "בעלים", "id": "s4"}, {"num": 5, "type": "improvement", "status": "closed", "sev": 4, "owner": "owner", "pkg": "general", "source": "self", "release": "", "title": "Faster start screen", "desc": "", "labels": [], "files": [], "archived": false, "reporters": 1, "note": "", "screen": "", "device": "", "due": "", "createdAt": "2026-01-10T09:00:00Z", "updatedAt": "2026-01-10T09:00:00Z", "createdBy": "בעלים", "id": "s5"}], "releases": [{"name": "0.9", "status": "released", "order": 1, "releasedAt": "2025-12-20", "targetDate": "", "build": "5", "notes": "", "createdAt": "2026-01-10T09:00:00Z", "updatedAt": "2026-01-10T09:00:00Z", "id": "0.9"}, {"name": "1.0", "status": "active", "order": 2, "releasedAt": "", "targetDate": "2026-02-01", "build": "8", "notes": "", "createdAt": "2026-01-10T09:00:00Z", "updatedAt": "2026-01-10T09:00:00Z", "id": "1.0"}], "log": [{"at": "2026-01-10T09:00:00Z", "who": "בעלים", "by": "", "col": "items", "itemId": "s1", "key": "PRJ-1", "title": "Login button does nothing on slow networks", "action": "נוצר", "details": "באג · גרסה 1.0", "id": "l1"}], "projects": [], "at": "23/11 06:48"}</script>
+<script id="app">
+(function(){
+  'use strict';
+  /* the page as published, captured before anything renders, so it can republish itself with fresh data */
+  var RESET=':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}';
+  var PARTS=(function(){var me=document.currentScript,out=[];
+    Array.prototype.forEach.call(document.body.childNodes,function(n){
+      if(n.nodeType!==1)return;var t=n.tagName;
+      if(t==='TITLE'||t==='META'||t==='LINK'||t==='STYLE'||(t==='DIV'&&(n.classList.contains('food')||n.classList.contains('page')))||(t==='SCRIPT'&&n.id==='seed'))out.push(n.outerHTML);
+    });
+    out.push(me?me.outerHTML:'');return out})();
+
+  var TYPE={bug:'באג',feedback:'פידבק',task:'משימה',improvement:'שיפור',request:'בקשה'};
+  var SEV={1:'חוסם',2:'גבוה',3:'בינוני',4:'נמוך'};
+  var PKG={general:'כללי',app:'כניסה וחבילות',free:'חינמי',dinner:'ארוחת ערב',italy:'איטליה',protein:'חלבונים',stem:'ניסויים'};
+  var SRC={whatsapp:'וואטסאפ',facebook:'פייסבוק',instagram:'אינסטגרם',email:'מייל',store:'ביקורת בחנות',self:'מצאנו בעצמנו',other:'אחר'};
+  var ST={new:'לטיפול',approved:'מאושר',doing:'בעבודה',fixed:'לבדיקה',closed:'הושלם',wont:'לא נבצע'};
+  var COLS=[['todo','לטיפול',['new','approved']],['doing','בעבודה',['doing']],['review','לבדיקה',['fixed']],['done','הושלם',['closed','wont']]];
+  var OWN={none:'לא שויך',owner:'בעלים',partner:'שותף'};
+  var RST={planned:'מתוכננת',active:'בפיתוח',released:'שוחררה',archived:'בארכיון'};
+  var ME={'':'בחרו',owner:'בעלים',partner:'שותף',other:'אחר'};
+  var OPEN={new:1,approved:1,doing:1,fixed:1};
+  var NOREL='none';
+  /* projects: every task, version and log entry belongs to one project; entries with no project field belong to the first project (gc) */
+  var LOGO0=(function(){var e=document.querySelector('.ovr-top .logo');return e?e.getAttribute('src'):''})();
+  var PROJ0={id:'gc',name:'הפרוייקט הראשי',symbol:'PRJ',icon:''};
+  var curProj='gc';try{curProj=localStorage.getItem('gc_proj')||'gc'}catch(e){}
+  var projects=[],allItems=[],allReleases=[],allLogs=[],noDb=false;
+  function projOf(x){return (x&&x.project)||'gc'}
+  function projList(){var map={gc:Object.assign({},PROJ0)};projects.forEach(function(q){map[q.id]=Object.assign({},map[q.id]||{},q)});
+    return Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return a.id==='gc'?-1:b.id==='gc'?1:String(a.createdAt||'').localeCompare(String(b.createdAt||''))})}
+  function projById(id){return projList().filter(function(q){return q.id===id})[0]||Object.assign({},PROJ0)}
+  function curP(){return projById(curProj)}
+  function symOf(pid){return projById(pid).symbol||'GC'}
+  function genIcon(q){var cols=['#3d8f28','#26777a','#cf3519','#b07d00','#5b3592','#1f5a85'],t=String(q.symbol||q.id||'?'),h=0;for(var k=0;k<t.length;k++)h=(h*31+t.charCodeAt(k))>>>0;
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="'+cols[h%cols.length]+'"/><text x="32" y="'+(t.length>2?39:42)+'" font-family="Arial,Helvetica,sans-serif" font-size="'+(t.length>3?17:t.length>2?21:26)+'" font-weight="700" fill="#fff" text-anchor="middle">'+esc(t.slice(0,5))+'</text></svg>';
+    return 'data:image/svg+xml,'+encodeURIComponent(svg)}
+  function iconOf(q){return q.icon||(q.id==='gc'&&LOGO0?LOGO0:genIcon(q))}
+  var FIELD={status:['סטטוס',ST],sev:['חומרה',SEV],owner:['אחראי',OWN],type:['סוג',TYPE],release:['גרסה'],reporters:['כמה דיווחו'],note:['הערה'],due:['תאריך יעד'],archived:['ארכיון'],answer:['תשובה'],files:['קבצים'],title:['כותרת'],desc:['תיאור'],labels:['תוויות'],targetDate:['תאריך יעד לגרסה'],name:['שם']};
+  var AGENT=[
+    'אתה מכניס פידבק ומשימות ללוח המשימות של "הפרוייקט הראשי".',
+    'הלוח: https://claude.ai/artifact/YOUR_ARTIFACT_ID (צריך להיות מחובר לחשבון Claude שהוזמן ללוח).',
+    '',
+    'לפני שמתחילים: בשדה "אני" בחר את השם של מי שמפעיל אותך, ובחר למעלה את הגרסה שבפיתוח.',
+    'לכל בעיה, הצעה או משימה - פריט אחד:',
+    '1. בדוק כפילות: הקלד מילת מפתח בתיבת "חיפוש" ובחר בסינון "הכל".',
+    '2. אם כבר יש פריט כזה: פתח "פרטים ועריכה", הגדל את "כמה דיווחו" וכתוב "הערה" מה נוסף.',
+    '3. אחרת: לחץ "+ משימה חדשה", בחר סוג (באג / פידבק / משימה / שיפור / בקשה), חומרה, אחראי, כתוב כותרת קצרה ותיאור (בלי שמות ומספרי טלפון של הורים וילדים), ולחץ "שמירה".',
+    '4. חכה לשורה "נשמר: GC-..." לפני הפריט הבא. אם הדף נטען מחדש אחרי כמה שניות - זה הסנכרון, ממשיכים.',
+    '5. אל תמחק ואל תעביר לארכיון. בסוף: כתוב רשימה של המפתחות שנוצרו ושל הפריטים שעודכנו.'
+  ].join('\n');
+  function agentText(){var P=curP();return AGENT.replace(/הפרוייקט הראשי/g,P.name).replace(/GC-/g,P.symbol+'-')}
+
+  var $=function(id){return document.getElementById(id)};
+  var SEED={items:[],releases:[],log:[],projects:[],at:''};try{SEED=Object.assign(SEED,JSON.parse(document.getElementById('seed').textContent))}catch(e){}
+  var db=null, assets=null, perms=null, myId=null, canWrite=false, seedShown=false;
+  var live={items:null,releases:null,log:null};
+  var downloadsApi=null, artifactApi=null, pubTimer=null, pubBusy=false, MICHAL_ID='u_OWNER_ID', ROY_ID='u_PARTNER_ID';
+  var items=[], releases=[], logs=[], selRel='', view='board', filter='open', special='', typeFilter='', xf={own:'',sev:'',pkg:'',src:''}, sortBy='urgency', query='', lastNew=null;
+  var MIRROR_DOC='', mcpApi=null, mirrorTimer=null, mirrorBusy=false;
+  var diagState={start:new Date().toISOString(),steps:[]};
+  var openDetails={}, sticky={}, pendingRender=false, logWho='';
+  function viewKey(){return [filter,special,typeFilter,xf.own,xf.sev,xf.pkg,xf.src,selRel,query,view].join('|')}
+  function xfVal(i,k){return k==='own'?(i.owner||'none'):k==='sev'?String(i.sev||3):k==='pkg'?(i.pkg||'general'):(i.source||'other')}
+  function xfCount(){return ['own','sev','pkg','src'].filter(function(k){return !!xf[k]}).length}
+  function editingIn(id){var ae=document.activeElement,box=$(id);return !!(ae&&box&&box.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName))}
+  function editing(){return editingIn('items')}
+  function anyEditing(){var ae=document.activeElement;if(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)&&ae.id!=='q'&&ae.id!=='me'&&ae.id!=='sort')return true;var cb=$('createbox');return !!(cb&&!cb.hidden&&($('f-title').value||$('f-desc').value))}
+  var pendingPanel={inbox:false,relpanel:false};
+  var drafts=(function(){try{return JSON.parse(localStorage.getItem('gc_drafts')||'{}')}catch(e){return {}}})();
+  function saveDraft(k,v){if(v)drafts[k]=v;else delete drafts[k];try{localStorage.setItem('gc_drafts',JSON.stringify(drafts))}catch(e){}}
+  function dateField(id,value,onSave){var inp=document.createElement('input');inp.type='date';inp.id=id;inp.value=value||'';var t=null,last=value||'';
+    function plausible(v){if(v==='')return true;var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v);return !!m&&+m[1]>=2024&&+m[1]<=2100}
+    function commit(final){clearTimeout(t);t=null;if(inp.value===last)return;if(!plausible(inp.value)){if(final){toast('תאריך לא תקין - לא נשמר');inp.value=last}return}last=inp.value;onSave(inp.value)}
+    inp.addEventListener('change',function(){clearTimeout(t);if(plausible(inp.value))t=setTimeout(function(){commit(false)},2500)});inp.addEventListener('blur',function(){commit(true)});
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();commit(true)}});return inp}
+
+  /* ---------- helpers ---------- */
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+  function now(){return new Date().toISOString()}
+  function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+  function fmt(iso){if(!iso)return '';var d=new Date(iso);if(isNaN(d))return '';return d.toLocaleString('he-IL',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}
+  function fmtDate(ymd){if(!ymd)return '';var p=String(ymd).split('-');return p.length===3?(p[2]+'/'+p[1]+'/'+p[0].slice(2)):ymd}
+  function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+  function fillSelect(el,map,def){el.textContent='';Object.keys(map).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=map[k];if(k===String(def))o.selected=true;el.appendChild(o)})}
+  var toastT;function toast(msg,ms){var t=$('toast');if(!t){t=el('div','toast');t.id='toast';t.setAttribute('role','status');document.body.appendChild(t)}t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true},ms||2600)}
+  function setStatus(title,detail){var s=$('status');if(!title){s.hidden=true;s.textContent='';return}s.hidden=false;s.textContent='';s.appendChild(el('b',null,title));if(detail)s.appendChild(el('span','small muted',detail))}
+  function step(s){diagState.steps.push(new Date().toISOString().slice(11,19)+' '+s);var d=$('diag');if(d)d.textContent=JSON.stringify({opened:diagState.start,url:location.href.split('#')[0].slice(0,80),live:{items:!!live.items,releases:!!live.releases,log:!!live.log},seedAt:SEED.at,canWrite:canWrite,sync:!!artifactApi,steps:diagState.steps},null,1)}
+  function withTimeout(p,ms){return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej({code:'timeout'})},ms)})])}
+  function lsGet(){try{return JSON.parse(localStorage.getItem('gc_local2')||'{}')}catch(e){return {}}}
+  function lsSet(v){try{localStorage.setItem('gc_local2',JSON.stringify(v))}catch(e){}}
+  function meKey(){try{return localStorage.getItem('gc_me')||''}catch(e){return ''}}
+  function idName(id){return id===MICHAL_ID?'שותף':id===ROY_ID?'בעלים':''}
+  function meName(){var k=meKey();return k?ME[k]:(idName(myId)||'לא צוין')}
+  function whoOf(e){var w=e&&e.who;if(w&&w!=='לא צוין')return w;return idName(e&&e.by)||w||'לא צוין'}
+  function setSync(t){var e=$('sync');if(e)e.textContent=t;var lg=document.querySelector('.ovr-top .logo');if(lg)lg.title='סטטוס סנכרון: '+t}
+  function strip(o){var c=Object.assign({},o);delete c._n;delete c._dup;delete c._base;return c}
+  function labelsOf(i){return Array.isArray(i.labels)?i.labels:[]}
+
+  /* ---------- releases ---------- */
+  function relSorted(){return releases.slice().sort(function(a,b){return (a.order||0)-(b.order||0)})}
+  function activeRel(){var a=relSorted().filter(function(r){return r.status==='active'});return a[a.length-1]||null}
+  function liveRel(){var a=relSorted().filter(function(r){return r.status==='released'});return a[a.length-1]||null}
+  function relName(id){if(!id||id===NOREL)return 'ללא גרסה';var r=releases.filter(function(x){return x.id===id})[0];return r?('גרסה '+r.name):id}
+  function relMap(){var m={};relSorted().filter(function(r){return r.status!=='archived'}).forEach(function(r){m[r.id]='גרסה '+r.name+' ('+RST[r.status]+')'});m[NOREL]='ללא גרסה';return m}
+  function itemsOf(rid){return items.filter(function(i){return (i.release||NOREL)===rid})}
+  function nextName(n){var p=String(n||'1.0').split('.').map(Number);if(p.length<2)p.push(0);p[1]=(p[1]||0)+1;return p[0]+'.'+p[1]}
+
+  /* ---------- publish (self-sync) ---------- */
+  function canon(v){if(Array.isArray(v))return '['+v.map(canon).join(',')+']';if(v&&typeof v==='object')return '{'+Object.keys(v).filter(function(k){return k!=='_n'&&k!=='_base'&&v[k]!==undefined}).sort().map(function(k){return JSON.stringify(k)+':'+canon(v[k])}).join(',')+'}';return JSON.stringify(v===undefined?null:v)}
+  function byId(a,b){return String(a.id).localeCompare(String(b.id))}
+  function sigOf(d){return canon([(d.items||[]).slice().sort(byId),(d.releases||[]).slice().sort(byId),(d.log||[]).slice().sort(function(a,b){return String(a.at).localeCompare(String(b.at))||byId(a,b)}).slice(-600),(d.projects||[]).slice().sort(byId)])}
+  var SEED_SIG=null;try{SEED_SIG=sigOf(SEED)}catch(e){}
+  function buildDoc(){
+    var d=new Date(),at=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    var data={items:allItems.map(strip),releases:allReleases.map(strip),log:allLogs.slice().sort(function(a,b){return String(a.at).localeCompare(String(b.at))}).slice(-600).map(strip),projects:projects.map(strip),at:at};
+    buildDoc.sig=sigOf(data);
+    var json=JSON.stringify(data).replace(/<\//g,'<\\/');
+    var body=PARTS.map(function(h){return /^<script[^>]*id="seed"/.test(h)?'<script type="application/json" id="seed">'+json+'<\/script>':h}).join('\n');
+    return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+RESET+'</style></head><body>'+body+'</body></html>';
+  }
+  function schedulePublish(){scheduleMirror();if(!artifactApi||!canWrite)return;clearTimeout(pubTimer);setSync('שינויים ממתינים לסנכרון...');pubTimer=setTimeout(doPublish,4000)}
+  async function doPublish(){
+    if(pubBusy){schedulePublish();return}
+    if(anyEditing()){clearTimeout(pubTimer);pubTimer=setTimeout(doPublish,3000);setSync('שינויים ממתינים לסנכרון (ממתין לסיום הקלדה)...');return}
+    pubBusy=true;setSync('מסנכרן...');
+    var doc=buildDoc();if(SEED_SIG&&buildDoc.sig===SEED_SIG){pubBusy=false;setSync('מסונכרן');step('publish skipped - data same as the page copy');scheduleMirror();return}
+    try{await artifactApi.publish(doc);SEED_SIG=buildDoc.sig;setSync('מסונכרן');step('publish ok');scheduleMirror()}
+    catch(e){var c=e&&e.code;step('publish '+(c||'error'));setSync(c==='conflict'?'עודכן במקביל - נטען מחדש':(c==='not_writer'||c==='not_granted')?'צפייה בלבד':'הסנכרון נכשל ('+(c||'שגיאה')+')')}
+    pubBusy=false;
+  }
+
+  /* ---------- live copy outside the artifact (Google Doc) ---------- */
+  function signature(){var m='';items.concat(releases).forEach(function(x){if(String(x.updatedAt||'')>m)m=String(x.updatedAt||'')});return m+'|'+items.length+'|'+logs.length}
+  function docEnd(p){if(typeof p==='string'){try{p=JSON.parse(p)}catch(e){return 0}}var c=p&&(p.content||p);var tabs=c&&c.tabs;var body=(tabs&&tabs[0]&&tabs[0].documentTab&&tabs[0].documentTab.body)||(c&&c.body);var arr=body&&body.content;return arr&&arr.length?arr[arr.length-1].endIndex:0}
+  function scheduleMirror(){if(!MIRROR_DOC||!mcpApi||curProj!=='gc')return;clearTimeout(mirrorTimer);mirrorTimer=setTimeout(mirrorNow,6000)}
+  async function mirrorNow(){
+    if(!mcpApi||mirrorBusy)return;mirrorBusy=true;
+    try{
+      var text=exportMd();var r=await mcpApi.callTool('Google Docs','read_doc',{documentId:MIRROR_DOC});var end=docEnd(r&&('payload' in r)?r.payload:r);
+      var reqs=[];if(end>2)reqs.push({deleteContentRange:{range:{startIndex:1,endIndex:end-1}}});
+      reqs.push({insertText:{location:{index:1},text:text}});
+      reqs.push({updateParagraphStyle:{range:{startIndex:1,endIndex:1+text.length},paragraphStyle:{direction:'RIGHT_TO_LEFT',alignment:'START'},fields:'direction,alignment'}});
+      await mcpApi.callTool('Google Docs','update_doc',{documentId:MIRROR_DOC,requests:reqs});
+      try{localStorage.setItem('gc_mirror_sig',signature())}catch(e){}
+      step('mirror ok ('+text.length+' chars)');setSync((live.items?'מחובר':'עותק')+' · מסונכרן · גובה ל-Google Docs');
+    }catch(e){step('mirror '+((e&&e.code)||'error')+(e&&e.message?': '+String(e.message).slice(0,80):''))}
+    mirrorBusy=false;
+  }
+
+  /* ---------- local copy + live merge ---------- */
+  function remember(col,doc,base){var l=lsGet();l[col]=l[col]||{};var c=strip(doc);c._base=base==null?'':String(base);l[col][doc.id]=c;lsSet(l)}
+  function tombstoneRel(id){var l=lsGet();l.deletedRel=l.deletedRel||{};l.deletedRel[id]=now();if(l.releases)delete l.releases[id];lsSet(l)}
+  function tombstone(id){var l=lsGet();l.deleted=l.deleted||{};l.deleted[id]=now();if(l.items)delete l.items[id];lsSet(l)}
+  function merged(col){
+    var map={},base=live[col]||SEED[col]||[],all=lsGet(),dead=all.deleted||{};
+    base.forEach(function(d){map[d.id]=Object.assign({},d)});
+    var l=all[col]||{},changed=false;
+    Object.keys(l).forEach(function(id){var mine=l[id],cur=map[id];
+      var cu=cur?String(cur.updatedAt||cur.at||''):'',mu=String(mine.updatedAt||mine.at||''),mb=String(mine._base||'');
+      if(live[col]&&cur&&(cu===mu||(cu!==mb&&cu>=mu))){delete l[id];changed=true;return}
+      if(!cur||cu===mb||mu>cu){var o=Object.assign({},cur||{},mine);delete o._base;map[id]=o}});
+    if(col==='items')Object.keys(dead).forEach(function(id){if(live.items&&!map[id]){delete dead[id];changed=true}else delete map[id]});
+    var deadR=all.deletedRel||{};if(col==='releases')Object.keys(deadR).forEach(function(id){var cur=map[id];if((live.releases&&!cur)||(cur&&String(cur.createdAt||'')>String(deadR[id]||''))){delete deadR[id];changed=true}else delete map[id]});
+    if(changed){all[col]=l;all.deleted=dead;all.deletedRel=deadR;lsSet(all)}
+    return Object.keys(map).map(function(k){return map[k]});
+  }
+  function localAhead(){var l=lsGet(),seedMap={};(SEED.items||[]).forEach(function(x){seedMap[x.id]=x});
+    var ahead=Object.keys(l.items||{}).some(function(id){var m=l.items[id],c=seedMap[id];return !c||String(m.updatedAt||'')>String(c.updatedAt||'')});
+    var rmap={};(SEED.releases||[]).forEach(function(x){rmap[x.id]=x});ahead=ahead||Object.keys(l.releases||{}).some(function(id){var m=l.releases[id],c=rmap[id];return !c||String(m.updatedAt||'')>String(c.updatedAt||'')});
+    ahead=ahead||Object.keys(l.deleted||{}).some(function(id){return !!seedMap[id]});return ahead}
+  function refresh(){allItems=merged('items').filter(function(i){return !i.migrated});allReleases=merged('releases');allLogs=merged('log');projects=merged('projects');
+    if(!projList().some(function(q){return q.id===curProj})&&(live.projects||noDb)){curProj='gc';selRel=''}
+    var inP=function(x){return projOf(x)===curProj};items=allItems.filter(inP);releases=allReleases.filter(inP);logs=allLogs.filter(inP);
+    if(!selRel||(selRel!==NOREL&&!releases.some(function(r){return r.id===selRel}))){var a=activeRel();selRel=a?a.id:NOREL}
+    renderAll()}
+
+  /* ---------- writes ---------- */
+  function describe(before,data){
+    return Object.keys(data).filter(function(k){return k!=='updatedAt'&&FIELD[k]}).map(function(k){
+      var f=FIELD[k],map=f[1],a=before?before[k]:undefined,b=data[k];
+      function show(v){if(k==='archived')return v?'כן':'לא';if(k==='due'||k==='targetDate')return v?fmtDate(v):'ללא';if(k==='release')return relName(v);if(k==='labels')return (v||[]).join(', ')||'-';if(k==='files')return (v||[]).length+' קבצים';if(map)return map[v]||v||'-';var t=String(v==null?'':v);return t.length>60?t.slice(0,60)+'...':(t||'-')}
+      return f[0]+': '+show(a)+' ← '+show(b);
+    }).join(' · ');
+  }
+  function logEvent(action,col,doc,details){
+    var e={id:'l'+uid(),project:(doc&&col!=='projects'&&doc.project)||curProj,at:now(),who:meName(),by:myId||'',col:col,itemId:doc?doc.id:'',key:(col==='items'&&doc&&doc.id)?keyOf(doc):(col==='releases'&&doc?('גרסה '+doc.name):''),title:(doc&&col==='items')?(doc.title||''):'',action:action,details:details||''};
+    remember('log',e);
+    if(db&&canWrite){var o=Object.assign({},e);delete o.id;retry(function(){return db.collection('log').doc(e.id).set(o)}).catch(function(){step('log write failed')})}
+  }
+  async function patch(col,id,data,action){
+    if(!canWrite||!db){toast('אין חיבור למאגר או הרשאת עריכה');return false}
+    data.updatedAt=now();
+    var list=col==='items'?items:releases,cur=list.filter(function(x){return x.id===id})[0];
+    var details=describe(cur,data);
+    if(cur)remember(col,Object.assign({},cur,data),cur.updatedAt);
+    if(col==='items'&&!('archived' in data))sticky[id]=viewKey();
+    logEvent(action||'עודכן',col,cur||{id:id},details);
+    refresh();schedulePublish();
+    try{await db.collection(col).doc(id).update(data);return true}catch(e){toast('השמירה במאגר נכשלה: '+((e&&e.message)||'שגיאה'));step('update '+col+' '+((e&&e.code)||'err'));return false}
+  }
+  var numFloors={};
+  async function createItem(doc,action){
+    var maxNum=numFloors[curProj]||0,loc=(lsGet().items)||{},rx=new RegExp('^'+symOf(curProj).replace(/[^A-Za-z0-9]/g,'')+'-(\\d+)');items.forEach(function(x){var n=x.num||0;if(n>maxNum)maxNum=n});Object.keys(loc).forEach(function(k){if(projOf(loc[k])!==curProj)return;var n=loc[k].num||0;if(n>maxNum)maxNum=n});logs.forEach(function(e){var m=rx.exec(e.key||'');if(m&&+m[1]>maxNum)maxNum=+m[1]});numFloors[curProj]=maxNum+1;
+    doc=Object.assign({project:curProj,num:maxNum+1,type:'task',sev:3,pkg:'general',status:'new',owner:'none',release:selRel===NOREL?'':selRel,labels:[],reporters:1,archived:false,files:[],note:'',screen:'',device:'',source:'other',due:'',desc:'',by:myId||'',createdBy:meName(),createdAt:now(),updatedAt:now()},doc);
+    var ref=await retry(function(){return db.collection('items').add(doc)});doc.id=ref.id;remember('items',doc);
+    logEvent(action||'נוצר','items',doc,TYPE[doc.type]+' · '+relName(doc.release||NOREL));
+    return doc;
+  }
+  function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+  async function retry(fn,tries){var last;for(var k=0;k<(tries||3);k++){try{return await fn()}catch(e){last=e;await sleep(700*(k+1))}}throw last}
+  async function createRelease(name,withTemplate){
+    var nm=String(name).trim().replace(/[^0-9A-Za-z._-]/g,'');if(!nm){toast('שם גרסה לא תקין');return}var id=curProj==='gc'?nm:curProj+'~'+nm;
+    if(releases.some(function(r){return r.id===id||r.name===nm})){toast('גרסה בשם הזה כבר קיימת');return}
+    var maxO=0;releases.forEach(function(r){if((r.order||0)>maxO)maxO=r.order});
+    var r={id:id,name:nm,project:curProj,status:'planned',order:maxO+1,targetDate:'',releasedAt:'',notes:'',createdAt:now(),updatedAt:now()};
+    (function(){var l=lsGet();if(l.deletedRel&&l.deletedRel[id]){delete l.deletedRel[id];lsSet(l)}})();
+    remember('releases',r);logEvent('נוצרה גרסה','releases',r,'');
+    try{var o=Object.assign({},r);delete o.id;await retry(function(){return db.collection('releases').doc(id).set(o)})}catch(e){toast('יצירת הגרסה במאגר נכשלה - נסו שוב',9000);step('release set failed '+((e&&e.code)||''));return}
+    selRel=id;
+    if(withTemplate){
+      var tpl=[['request','פידבק מהמשתמשים מאז הגרסה הקודמת','להכניס כאן או כמשימות נפרדות את כל מה שהגיע מההורים.','partner'],
+        ['request','נתוני החנות מאז הגרסה הקודמת','הורדות, המרה, ביקורות ורכישות לפי חבילה.','partner'],
+        ['request','מה נכנס לגרסה '+nm,'החלטה על היקף הגרסה.','partner'],
+        ['task','העלאת מספר הגרסה והבילד','גרסה '+nm+' ובילד חדש ב-Xcode, ובאנדרואיד בהתאם.','owner'],
+        ['task','בדיקה במכשיר אמיתי לפני הגשה','אייפון עם Dynamic Island ואייפד, דרך TestFlight.','owner'],
+        ['task','טקסט "מה חדש" וצילומי מסך לחנות','מתוך המשימות שהושלמו בגרסה.','partner'],
+        ['task','הגשה לבדיקה של אפל','לצרף את הבילד לגרסה ולהגיש.','partner']];
+      var made=0;for(var k=0;k<tpl.length;k++){try{await createItem({type:tpl[k][0],title:tpl[k][1],desc:tpl[k][2],owner:tpl[k][3],release:id,sev:3},'נוצר מתבנית');made++}catch(e){step('template item failed '+((e&&e.code)||''))}}
+      if(made<tpl.length){refresh();schedulePublish();toast('נוצרה גרסה '+id+', אבל רק '+made+' מתוך '+tpl.length+' משימות התבנית נשמרו. אפשר להוסיף את החסרות ידנית.',9000);return}
+    }
+    refresh();schedulePublish();toast('נוצרה גרסה '+id);
+  }
+  async function releaseVersion(r,moveTo){
+    var open=itemsOf(r.id).filter(function(i){return OPEN[i.status]&&!i.archived});
+    await patch('releases',r.id,{status:'released',releasedAt:today()},'גרסה שוחררה');
+    if(moveTo){for(var k=0;k<open.length;k++){await patch('items',open[k].id,{release:moveTo},'הועבר לגרסה הבאה')}
+      var nx=releases.filter(function(x){return x.id===moveTo})[0];if(nx&&nx.status==='planned')await patch('releases',nx.id,{status:'active'},'גרסה עברה לפיתוח')}
+  }
+  var ICON_DEL='<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4M6.6 6.8v4.4M9.4 6.8v4.4"/></svg>';
+  var ICON_ARC='<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="3.5" rx="1"/><path d="M2.8 6v7.5h10.4V6M6.3 8.8h3.4"/></svg>';
+  async function archiveRelease(r,on){
+    if(!canWrite||!db){toast('אין הרשאת עריכה');return}
+    if(on){if(selRel===r.id){var a=activeRel(),nx=relSorted().filter(function(x){return x.status!=='archived'&&x.id!==r.id});selRel=(a&&a.id!==r.id)?a.id:(nx.length?nx[nx.length-1].id:NOREL)}
+      var ok1=await patch('releases',r.id,{status:'archived',prevStatus:r.status},'גרסה הועברה לארכיון');if(ok1!==false)toast('גרסה '+r.name+' הועברה לארכיון. להחזרה: תפריט הגרסאות, בחלק "בארכיון"',8000)}
+    else{var back=(r.prevStatus&&r.prevStatus!=='archived')?r.prevStatus:'released';var ok2=await patch('releases',r.id,{status:back},'גרסה הוחזרה מהארכיון');if(ok2!==false)toast('גרסה '+r.name+' הוחזרה מהארכיון ('+RST[back]+')')}
+  }
+  async function deleteRelease(r,withItems){
+    if(!canWrite||!db){toast('אין הרשאת עריכה');return}
+    var its=items.filter(function(i){return i.release===r.id}),n=its.length;
+    if(withItems){its.forEach(function(i){logEvent('נמחק','items',i,'עם מחיקת גרסה '+r.name);tombstone(i.id)})}
+    logEvent('נמחקה גרסה','releases',r,n?(withItems?n+' משימות נמחקו איתה':n+' משימות הועברו ל"ללא גרסה"'):'');tombstoneRel(r.id);
+    var a=activeRel();selRel=(a&&a.id!==r.id)?a.id:NOREL;
+    if(!withItems){for(var k=0;k<its.length;k++){await patch('items',its[k].id,{release:''},'הועבר ל"ללא גרסה"')}}
+    refresh();schedulePublish();toast('נמחקה גרסה '+r.name);
+    try{if(withItems){for(var j=0;j<its.length;j++){await db.collection('items').doc(its[j].id).delete()}}await db.collection('releases').doc(r.id).delete()}catch(e){toast('המחיקה במאגר נכשלה: '+((e&&e.message)||'שגיאה'))}
+  }
+  async function removeItem(i){
+    if(!canWrite||!db){toast('אין הרשאת עריכה');return}
+    logEvent('נמחק','items',i,'');tombstone(i.id);refresh();schedulePublish();toast('נמחק: '+keyOf(i));
+    try{await db.collection('items').doc(i.id).delete()}catch(e){toast('המחיקה במאגר נכשלה')}
+  }
+
+  /* ---------- files ---------- */
+  function fileType(f){
+    if(f.type&&!/;/.test(f.type)&&f.type!=='application/octet-stream')return f.type;
+    var n=(f.name||'').toLowerCase();
+    if(/\.txt$/.test(n))return 'text/plain'; if(/\.pdf$/.test(n))return 'application/pdf';
+    if(/\.(jpe?g)$/.test(n))return 'image/jpeg'; if(/\.png$/.test(n))return 'image/png'; if(/\.heic$/.test(n))return 'image/heic';
+    if(/\.mp4$/.test(n))return 'video/mp4'; if(/\.mov$/.test(n))return 'video/quicktime';
+    return f.type||'application/octet-stream';
+  }
+  async function uploadAll(fileList){
+    var out=[];if(!assets){toast('אין הרשאה להעלות קבצים');return out}
+    for(var i=0;i<fileList.length;i++){var f=fileList[i];
+      if(/\.zip$/i.test(f.name)){toast('קובץ zip לא נתמך. ייצאו צ\'אט בלי מדיה (txt).');continue}
+      try{var r=await assets.upload(f,{type:fileType(f)});out.push({id:r.id,name:f.name,type:r.contentType})}catch(e){toast('העלאת '+f.name+' נכשלה')}}
+    return out;
+  }
+  function renderFiles(files){
+    var box=el('div','files');(files||[]).forEach(function(f){
+      var a=document.createElement('a');a.href='/_blob/'+f.id;a.target='_blank';a.rel='noopener';
+      if(/^image\//.test(f.type||'')){var im=document.createElement('img');im.src='/_blob/'+f.id;im.alt=f.name||'צילום מסך';a.appendChild(im)}else a.textContent='קובץ: '+(f.name||'ללא שם');
+      box.appendChild(a)});return box;
+  }
+  function uploadButton(label,onFiles){
+    var w=el('span','btn upl',label);var inp=document.createElement('input');inp.type='file';inp.multiple=true;inp.accept='image/*,video/*,.txt,.pdf';
+    inp.addEventListener('change',async function(){if(!inp.files.length)return;w.firstChild.textContent='מעלה...';var up=await uploadAll(inp.files);inp.value='';w.firstChild.textContent=label;if(up.length)onFiles(up)});
+    w.appendChild(inp);return w;
+  }
+
+  /* ---------- rendering ---------- */
+  function numberItems(){var max=0;items.forEach(function(i){if(i.num>max)max=i.num});items.filter(function(i){return !i.num}).sort(function(a,b){return String(a.createdAt).localeCompare(String(b.createdAt))}).forEach(function(i){i._n=++max});
+    var seen={};items.slice().sort(function(a,b){return String(a.createdAt).localeCompare(String(b.createdAt))||String(a.id).localeCompare(String(b.id))}).forEach(function(i){var n=i.num||i._n;seen[n]=(seen[n]||0)+1;i._dup=seen[n]>1?seen[n]:0})}
+  function keyOf(i){return symOf(projOf(i))+'-'+(i.num||i._n||'?')+(i._dup?'-'+i._dup:'')}
+  function isOverdue(i){return i.due&&OPEN[i.status]&&!i.archived&&i.due<today()}
+  function isWaiting(i){return i.type==='request'&&!(i.answer&&String(i.answer).trim())&&!i.archived&&i.status!=='closed'&&i.status!=='wont'}
+
+  function renderHeader(){
+    var a=activeRel(),l=liveRel(),v=$('vline');v.textContent='';
+    v.appendChild(el('span','vchip dev','בפיתוח: '+(a?a.name:'-')));
+    v.appendChild(el('span','vchip pub','גרסה משוחררת: '+(l?l.name:'-')));
+    var P=curP(),h1=document.querySelector('.ovr-top h1');if(h1){h1.textContent='המשימות של '+P.name;h1.title=h1.textContent}
+    var lg=document.querySelector('.ovr-top .logo');if(lg){var src=iconOf(P);if(lg.getAttribute('src')!==src)lg.setAttribute('src',src);lg.alt=P.name}
+    var at=$('agent-text');if(at)at.textContent=agentText();renderProjPick();
+  }
+  function progressOf(rid){var its=itemsOf(rid).filter(function(i){return !i.archived});var done=its.filter(function(i){return i.status==='closed'||i.status==='wont'}).length;return {done:done,total:its.length}}
+  function renderReleases(){
+    var box=$('releases');box.textContent='';
+    relSorted().filter(function(r){return r.status!=='archived'}).concat([{id:NOREL,name:'ללא גרסה',status:''}]).forEach(function(r){
+      var p=progressOf(r.id),b=el('button','rel'+(selRel===r.id?' on':'')+(r.status?' '+r.status:''));b.type='button';b.setAttribute('role','tab');b.setAttribute('aria-selected',selRel===r.id?'true':'false');
+      b.appendChild(el('b',null,r.id===NOREL?'ללא גרסה':r.name));
+      b.appendChild(el('span','rs',r.id===NOREL?(p.total+' פריטים'):(RST[r.status]+' · '+p.done+'/'+p.total)));
+      var bar=el('span','rbar');var fill=el('i');fill.style.width=(p.total?Math.round(100*p.done/p.total):0)+'%';bar.appendChild(fill);b.appendChild(bar);
+      b.addEventListener('click',function(){selRel=r.id;renderAll()});box.appendChild(b);
+    });
+    var add=el('button','rel add','+ גרסה');add.type='button';add.addEventListener('click',function(){showNewRelease()});box.appendChild(add);
+  }
+  var newRel=null;
+  function showNewRelease(){
+    var p=$('relpanel');p.textContent='';
+    var last=relSorted().slice(-1)[0];if(!newRel)newRel={name:nextName(last&&last.name),tpl:true};
+    p.appendChild(el('h3',null,'גרסה חדשה'));
+    var g=el('div','row');var l1=document.createElement('label');l1.htmlFor='nr-name';l1.textContent='שם';var nm=document.createElement('input');nm.type='text';nm.id='nr-name';nm.value=newRel.name;nm.style.width='8em';nm.addEventListener('input',function(){if(newRel)newRel.name=nm.value});l1.appendChild(nm);g.appendChild(l1);
+    var l2=document.createElement('label');l2.className='inline';var cb=document.createElement('input');cb.type='checkbox';cb.id='nr-tpl';cb.checked=newRel.tpl;cb.addEventListener('change',function(){if(newRel)newRel.tpl=cb.checked});l2.htmlFor='nr-tpl';l2.appendChild(cb);l2.appendChild(document.createTextNode('להוסיף בקשות וצ\'קליסט שחרור קבועים'));g.appendChild(l2);p.appendChild(g);
+    var r=el('div','row');var ok=el('button','primary','יצירה');ok.type='button';ok.addEventListener('click',async function(){if(!canWrite||!db){toast('אין הרשאת עריכה');return}if(ok.disabled)return;ok.disabled=true;ok.textContent='יוצר...';var nmv=nm.value,tpv=cb.checked;newRel=null;try{await createRelease(nmv,tpv)}finally{ok.disabled=false;ok.textContent='יצירה'}});
+    var cn=el('button',null,'ביטול');cn.type='button';cn.addEventListener('click',function(){newRel=null;renderRelPanel()});r.appendChild(ok);r.appendChild(cn);p.appendChild(r);
+  }
+  function verPick(label){var b=el('button','vb-name vb-pick',label+' ▾');b.type='button';b.title='החלפת גרסה או יצירת גרסה חדשה';b.setAttribute('aria-haspopup','menu');b.setAttribute('aria-expanded','false');b.addEventListener('click',function(e){e.stopPropagation();toggleVerMenu(b)});return b}
+  function verAdd(){var b=el('button','vb-ico vb-add','+');b.type='button';b.title='גרסה חדשה';b.setAttribute('aria-label','גרסה חדשה');b.addEventListener('click',function(){closeVerMenu();showNewRelease()});return b}
+  function closeVerMenu(){var m=$('vb-menu');if(m)m.remove();Array.prototype.forEach.call(document.querySelectorAll('.vb-pick'),function(b){b.setAttribute('aria-expanded','false')})}
+  function toggleVerMenu(btn,keepFocus){if($('vb-menu')){closeVerMenu();return}
+    var m=el('div','vb-menu');m.id='vb-menu';m.setAttribute('role','menu');m.setAttribute('aria-label','גרסאות');
+    relSorted().filter(function(r){return r.status!=='archived'}).concat([{id:NOREL,name:'ללא גרסה',status:''}]).forEach(function(r){var pr=progressOf(r.id);
+      var b=el('button','rel'+(selRel===r.id?' on':'')+(r.status?' '+r.status:''));b.type='button';b.setAttribute('role','menuitemradio');b.setAttribute('aria-checked',selRel===r.id?'true':'false');
+      b.appendChild(el('b',null,r.id===NOREL?'ללא גרסה':r.name));b.appendChild(el('span','rs',r.id===NOREL?(pr.total+' פריטים'):(RST[r.status]+' · '+pr.done+'/'+pr.total)));
+      var bar=el('span','rbar');var f=el('i');f.style.width=(pr.total?Math.round(100*pr.done/pr.total):0)+'%';bar.appendChild(f);b.appendChild(bar);
+      b.addEventListener('click',function(){closeVerMenu();newRel=null;selRel=r.id;renderAll()});m.appendChild(b)});
+    var arcs=relSorted().filter(function(r){return r.status==='archived'});
+    if(arcs.length){m.appendChild(el('div','vb-sec','בארכיון'));arcs.forEach(function(r){var pr=progressOf(r.id);var b=el('button','rel archived'+(selRel===r.id?' on':''));b.type='button';b.setAttribute('role','menuitemradio');b.setAttribute('aria-checked',selRel===r.id?'true':'false');
+      b.appendChild(el('b',null,r.name));b.appendChild(el('span','rs','בארכיון · '+pr.done+'/'+pr.total));b.addEventListener('click',function(){closeVerMenu();newRel=null;selRel=r.id;renderAll()});m.appendChild(b)})}
+    var ad=el('button','rel add','+ גרסה חדשה');ad.type='button';ad.setAttribute('role','menuitem');ad.addEventListener('click',function(){closeVerMenu();showNewRelease()});m.appendChild(ad);
+    document.body.appendChild(m);var rc=btn.getBoundingClientRect();m.style.top=Math.round(rc.bottom+4)+'px';m.style.right=Math.max(8,Math.round(innerWidth-rc.right))+'px';btn.setAttribute('aria-expanded','true');
+    if(!keepFocus){var first=m.querySelector('.rel.on')||m.firstChild;if(first)first.focus()}}
+  document.addEventListener('click',function(e){var m=$('vb-menu');if(m&&!m.contains(e.target)&&!(e.target.closest&&e.target.closest('.vb-pick')))closeVerMenu()});
+  document.addEventListener('keydown',function(e){var m=$('vb-menu');if(!m)return;if(e.key==='Escape'){closeVerMenu();var pk=document.querySelector('.vb-pick');if(pk)pk.focus();return}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();var bs=Array.prototype.slice.call(m.querySelectorAll('button')),k=bs.indexOf(document.activeElement);k=(k+(e.key==='ArrowDown'?1:-1)+bs.length)%bs.length;bs[k].focus()}});
+  function placeVerMenu(){var m=$('vb-menu'),pk=document.querySelector('#relpanel .vb-pick');if(!m)return;if(!pk){closeVerMenu();return}var rc=pk.getBoundingClientRect();m.style.top=Math.round(rc.bottom+4)+'px';m.style.right=Math.max(8,Math.round(innerWidth-rc.right))+'px'}
+  window.addEventListener('resize',placeVerMenu);
+  function renderRelPanel(){var reopen=!!$('vb-menu');renderRelPanel0();if(reopen&&!$('vb-menu')){var pk=document.querySelector('#relpanel .vb-pick');if(pk)toggleVerMenu(pk,true)}}
+  function renderRelPanel0(){
+    if(editingIn('relpanel')){pendingPanel.relpanel=true;return}pendingPanel.relpanel=false;
+    var p=$('relpanel');p.textContent='';
+    closeVerMenu();
+    if(newRel){showNewRelease();return}
+    if(selRel===NOREL){var nt=el('div','title-row verbar st-none');nt.appendChild(verPick('ללא גרסה'));nt.appendChild(el('span','vb-f',itemsOf(NOREL).filter(function(i){return !i.archived}).length+' פריטים · משימות שוטפות שלא שויכו לגרסה (למשל קידום בחנויות)'));nt.appendChild(verAdd());p.appendChild(nt);return}
+    var r=releases.filter(function(x){return x.id===selRel})[0];if(!r)return;
+    var pr=progressOf(r.id),its=itemsOf(r.id).filter(function(i){return !i.archived});
+    var pct=pr.total?Math.round(100*pr.done/pr.total):0;
+    var top=el('div','title-row verbar st-'+r.status);top.style.setProperty('--p',pct+'%');top.setAttribute('role','group');
+    top.setAttribute('aria-label','גרסה '+r.name+', '+RST[r.status]+', '+pr.done+' מתוך '+pr.total+' הושלמו, '+pct+' אחוז');
+    top.appendChild(verPick('גרסה '+r.name));top.appendChild(el('span','vb-st',RST[r.status]));
+    if(r.targetDate)top.appendChild(el('span','vb-f','יעד '+fmtDate(r.targetDate)));if(r.releasedAt)top.appendChild(el('span','vb-f','שוחררה '+fmtDate(r.releasedAt)));if(r.build)top.appendChild(el('span','vb-f','בילד '+r.build));
+    top.appendChild(el('span','vb-f vb-prog',pr.done+'/'+pr.total+' הושלמו'));top.appendChild(el('b','vb-pct',pct+'%'));
+    top.title='התקדמות גרסה '+r.name+': '+pr.done+' מתוך '+pr.total+' משימות הושלמו ('+pct+'%)';
+    var mgb=el('button','vb-ico mgr-btn');mgb.type='button';mgb.title='ניהול גרסה '+r.name+': תאריך יעד, מצב, סימון כשוחררה, "מה חדש" ומחיקה';mgb.appendChild(document.createTextNode('⚙'));mgb.appendChild(el('span','sr',' ניהול גרסה '+r.name));mgb.setAttribute('aria-expanded','false');
+    mgb.addEventListener('click',function(){closeVerMenu();d.open=!d.open;mgb.setAttribute('aria-expanded',d.open?'true':'false')});top.appendChild(mgb);top.appendChild(verAdd());
+    var isArc=r.status==='archived',arb=el('button','vb-ico vb-arc');arb.type='button';arb.title=isArc?'החזרת גרסה '+r.name+' מהארכיון':'העברת גרסה '+r.name+' לארכיון (אפשר להחזיר מתפריט הגרסאות)';arb.setAttribute('aria-label',arb.title);arb.innerHTML=ICON_ARC;if(isArc)arb.classList.add('on');
+    arb.addEventListener('click',function(){closeVerMenu();archiveRelease(r,!isArc)});top.appendChild(arb);
+    var dlb=el('button','vb-ico vb-del');dlb.type='button';dlb.title='מחיקת גרסה '+r.name+' (תתבקש אישור ובחירה מה לעשות עם המשימות)';dlb.setAttribute('aria-label','מחיקת גרסה '+r.name);dlb.innerHTML=ICON_DEL;
+    dlb.addEventListener('click',function(){closeVerMenu();d.open=true;mgb.setAttribute('aria-expanded','true');delb.click();try{dc.scrollIntoView({block:'nearest'})}catch(e){}});top.appendChild(dlb);p.appendChild(top);
+    var bar=el('div','pbar');var f=el('i');f.style.width=(pr.total?Math.round(100*pr.done/pr.total):0)+'%';bar.appendChild(f);p.appendChild(bar);
+    var d=document.createElement('details');d.className='mgr';var sm=el('summary','mgr-sum','⚙ ניהול גרסה '+r.name);d.appendChild(sm);d.appendChild(el('b','mgr-h','ניהול גרסה '+r.name));
+    var g=el('div','grid');g.style.marginTop='8px';
+    var l1=document.createElement('label');l1.htmlFor='r-date';l1.textContent='תאריך יעד';l1.appendChild(dateField('r-date',r.targetDate,function(v){patch('releases',r.id,{targetDate:v});toast('גרסה '+r.name+': תאריך יעד '+(v?fmtDate(v):'הוסר'))}));g.appendChild(l1);
+    var l2=document.createElement('label');l2.htmlFor='r-st';l2.textContent='מצב';var se=document.createElement('select');se.id='r-st';fillSelect(se,RST,r.status);se.addEventListener('change',function(){patch('releases',r.id,{status:se.value},'מצב גרסה')});l2.appendChild(se);g.appendChild(l2);
+    d.appendChild(g);
+    var acts=el('div','row');acts.style.marginTop='8px';
+    if(r.status==='active'||r.status==='planned'){
+      var rb=el('button','primary','סימון כשוחררה');rb.type='button';
+      var conf=el('div','list confirm');conf.hidden=true;
+      rb.addEventListener('click',function(){
+        conf.textContent='';var open=its.filter(function(i){return OPEN[i.status]});
+        var nxt=relSorted().filter(function(x){return (x.order||0)>(r.order||0)&&(x.status==='planned'||x.status==='active')})[0];
+        conf.appendChild(el('p','small',open.length?('יש '+open.length+' משימות פתוחות בגרסה הזאת.'):'כל המשימות בגרסה הושלמו.'));
+        var row=el('div','row');
+        if(open.length&&nxt){var m=el('button','primary','לשחרר ולהעביר אותן ל-'+nxt.name);m.type='button';m.addEventListener('click',function(){releaseVersion(r,nxt.id)});row.appendChild(m)}
+        var k=el('button',open.length&&nxt?null:'primary',open.length?'לשחרר ולהשאיר אותן כאן':'לשחרר');k.type='button';k.addEventListener('click',function(){releaseVersion(r,null)});row.appendChild(k);
+        var c=el('button',null,'ביטול');c.type='button';c.addEventListener('click',function(){conf.hidden=true});row.appendChild(c);
+        if(open.length&&!nxt)conf.appendChild(el('p','small muted','כדי להעביר משימות פתוחות, צרו קודם גרסה הבאה בכפתור "+ גרסה".'));
+        conf.appendChild(row);conf.hidden=false;
+      });
+      acts.appendChild(rb);d.appendChild(acts);d.appendChild(conf);
+    }
+    var wn=el('button',null,'העתקת "מה חדש" מהמשימות שהושלמו');wn.type='button';wn.addEventListener('click',function(){
+      var done=its.filter(function(i){return i.status==='closed'&&i.type!=='request'});
+      var txt='מה חדש בגרסה '+r.name+':\n'+(done.length?done.map(function(i){return '- '+i.title}).join('\n'):'(עוד אין משימות שהושלמו)');
+      try{navigator.clipboard.writeText(txt).then(function(){toast('הועתק')},function(){toast(txt)})}catch(e){toast(txt)}});
+    acts.appendChild(wn);
+    var allIts=items.filter(function(i){return i.release===r.id});
+    var delb=el('button','danger','מחיקת הגרסה');delb.type='button';var dc=el('div','list confirm');dc.hidden=true;
+    delb.addEventListener('click',function(){dc.textContent='';var row=el('div','row');
+      dc.appendChild(el('p','small',allIts.length?('בגרסה '+r.name+' יש '+allIts.length+' משימות. מה לעשות איתן?'):('למחוק את גרסה '+r.name+'?')));
+      if(allIts.length){var mv=el('button',null,'להעביר ל"ללא גרסה" ולמחוק את הגרסה');mv.type='button';mv.addEventListener('click',function(){deleteRelease(r,false)});row.appendChild(mv);
+        var dl=el('button','danger solid','למחוק את הגרסה ואת '+allIts.length+' המשימות');dl.type='button';dl.addEventListener('click',function(){deleteRelease(r,true)});row.appendChild(dl)}
+      else{var y=el('button','danger solid','כן, למחוק');y.type='button';y.addEventListener('click',function(){deleteRelease(r,false)});row.appendChild(y)}
+      var c2=el('button',null,'ביטול');c2.type='button';c2.addEventListener('click',function(){dc.hidden=true});row.appendChild(c2);
+      dc.appendChild(row);dc.hidden=false});
+    acts.appendChild(delb);if(!acts.parentNode)d.appendChild(acts);d.appendChild(dc);
+    p.appendChild(d);
+  }
+
+  function setTasksTab(t){var p=$('pane-tasks');if(!p)return;p.dataset.tt=t;['items','inbox','log','tools','diag'].forEach(function(k){var b=$('tt-'+k);if(b)b.setAttribute('aria-selected',k===t?'true':'false')});p.scrollTop=0}
+  function setTab(t){var sh=$('shell');if(!sh)return;if(t==='log'){t='tasks';setTasksTab('log')}if(t!=='side')t='tasks';sh.dataset.tab=t;['side','tasks','log'].forEach(function(k){var b=$('tab-'+k);if(b)b.setAttribute('aria-pressed',k===t?'true':'false')});try{localStorage.setItem('gc_tab',t)}catch(e){}}
+  function goList(){setTab('tasks');var pn=$('pane-tasks');if(pn)pn.scrollTo({top:0,behavior:'smooth'})}
+  function renderInbox(){
+    if(editingIn('inbox')){pendingPanel.inbox=true;return}pendingPanel.inbox=false;
+    var box=$('inbox');box.textContent='';
+    var w=items.filter(function(i){return isWaiting(i)&&(selRel===NOREL?(!i.release||i.release===NOREL):i.release===selRel)});
+    var mine=meKey();w.sort(function(a,b){return ((a.owner===mine)?0:1)-((b.owner===mine)?0:1)||(a.num-b.num)});
+    $('inbox-count').textContent=w.length?w.length+' בקשות':'';var tin=$('tt-inbox-n');if(tin)tin.textContent='('+w.length+')';if(!w.length)box.appendChild(el('div','empty','אין בקשות שממתינות לתשובה בגרסה הזאת.'));
+    w.forEach(function(i){
+      var c=el('div','card ask');
+      var tr=el('div','title-row');var t=el('div','t');t.appendChild(el('span','key',keyOf(i)+(i.owner&&i.owner!=='none'?' · ל'+OWN[i.owner]:'')));t.appendChild(el('h3',null,i.title||''));tr.appendChild(t);tr.appendChild(el('span','pill waiting','ממתין לתשובה'));c.appendChild(tr);
+      if(i.desc)c.appendChild(el('p','small muted desc',i.desc));
+      var ta=document.createElement('textarea');ta.id='inb-'+i.id;ta.placeholder='כתבו כאן את התשובה';ta.value=drafts['inb-'+i.id]||'';ta.addEventListener('input',function(){saveDraft('inb-'+i.id,ta.value)});ta.setAttribute('aria-label','תשובה ל'+keyOf(i));c.appendChild(ta);
+      var r=el('div','row');var sv=el('button','primary','שליחת התשובה');sv.type='button';
+      sv.addEventListener('click',async function(){var v=ta.value.trim();if(!v){ta.focus();return}saveDraft('inb-'+i.id,'');ta.blur();await patch('items',i.id,{answer:v,answeredAt:now(),answeredBy:meName()},'נענתה בקשה');toast(keyOf(i)+' נענתה ועברה לרשימה')});
+      r.appendChild(sv);r.appendChild(uploadButton('צירוף קבצים',function(up){patch('items',i.id,{files:(i.files||[]).concat(up)},'צורפו קבצים')}));c.appendChild(r);
+      box.appendChild(c);
+    });
+  }
+
+  function defFilter(){return view==='board'?'all':'open'}
+  function renderFilters(){
+    var ts=$('flt-type'),ss=$('flt-st'),so=$('sort');
+    if(ts.value!==typeFilter)ts.value=typeFilter;ts.parentNode.classList.toggle('on',!!typeFilter);
+    if(ss.value!==filter)ss.value=filter;ss.parentNode.classList.toggle('on',filter!==defFilter()||!!special);
+    if(so.value!==sortBy)so.value=sortBy;so.parentNode.classList.toggle('on',sortBy!=='urgency');
+    ['own','sev','pkg','src'].forEach(function(k){var e=$('flt-'+k);if(e.value!==xf[k])e.value=xf[k];e.parentNode.classList.toggle('on',!!xf[k])});
+    var xn=xfCount();
+    $('flt-clear').hidden=!(typeFilter||special||xn||filter!==defFilter()||sortBy!=='urgency');
+    var v=$('view');v.textContent='';
+    [['list','רשימה'],['board','עמודות']].forEach(function(p){var b=el('button','opt',p[1]);b.type='button';b.setAttribute('aria-pressed',view===p[0]?'true':'false');b.addEventListener('click',function(){if(view!==p[0]){view=p[0];filter=view==='board'?'all':'open';special=''}try{localStorage.setItem('gc_view2',view)}catch(e){}setTab('tasks');setTasksTab('items');renderAll()});v.appendChild(b)});
+  }
+  function matches(i,q){if(!q)return true;q=q.toLowerCase();return [keyOf(i),i.title,i.desc,i.screen,i.device,i.note,i.answer,PKG[i.pkg],TYPE[i.type],labelsOf(i).join(' ')].some(function(v){return String(v||'').toLowerCase().indexOf(q)>=0})}
+  function inFilter(i){
+    if(sticky[i.id]&&sticky[i.id]===viewKey()&&!i.archived)return true;
+    if(query){if(!matches(i,query))return false}else if((i.release||NOREL)!==selRel)return false;
+    if(typeFilter&&i.type!==typeFilter)return false;
+    if(['own','sev','pkg','src'].some(function(k){return xf[k]&&xfVal(i,k)!==xf[k]}))return false;
+    if(special==='blocker')return !i.archived&&OPEN[i.status]&&i.sev==1&&i.type!=='request';
+    if(special==='late')return isOverdue(i);
+    if(filter==='archive')return !!i.archived;if(i.archived)return false;
+    if(isWaiting(i)&&!query)return false;
+    return filter==='all'?true:filter==='open'?(i.status!=='closed'&&i.status!=='wont'):filter==='review'?i.status==='fixed':(i.status==='closed'||i.status==='wont');
+  }
+  var SORTS={urgency:function(a,b){return (isOverdue(b)?1:0)-(isOverdue(a)?1:0)||(a.sev||4)-(b.sev||4)||String(a.due||'9999').localeCompare(String(b.due||'9999'))||(b.reporters||1)-(a.reporters||1)||((a.num||a._n)-(b.num||b._n))},
+    sev:function(a,b){return (a.sev||4)-(b.sev||4)||(b.reporters||1)-(a.reporters||1)||((a.num||a._n)-(b.num||b._n))},
+    due:function(a,b){return String(a.due||'9999').localeCompare(String(b.due||'9999'))||(a.sev||4)-(b.sev||4)},
+    updated:function(a,b){return String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))},
+    key:function(a,b){return (a.num||a._n)-(b.num||b._n)}};
+
+  function itemCard(i){
+    var c=el('div','card item'+(OPEN[i.status]?'':' is-done'));c.dataset.sev=i.sev||4;c.dataset.key=keyOf(i);c.dataset.id=i.id;if(i.id===lastNew)c.classList.add('flash');
+    var tr=el('div','title-row');var t=el('div','t');
+    var kl=el('div','row tight');kl.appendChild(el('span','key',keyOf(i)));kl.appendChild(el('span','pill t-'+i.type,TYPE[i.type]||i.type));
+    if(query&&(i.release||NOREL)!==selRel)kl.appendChild(el('span','pill',relName(i.release||NOREL)));
+    t.appendChild(kl);var h3=el('h3','ttl',i.title||'');h3.title=i.title||'';t.appendChild(h3);tr.appendChild(t);
+    tr.appendChild(el('span','pill st-'+i.status,i.archived?'בארכיון':(i.type==='request'&&i.answer&&i.status==='new'?'נענתה':(ST[i.status]||i.status))));c.appendChild(tr);
+    var m=el('div','row tight small');
+    if(i.type!=='request')m.appendChild(el('span','pill sev'+(i.sev||4),SEV[i.sev]||''));
+    if(i.owner&&i.owner!=='none')m.appendChild(el('span','pill',OWN[i.owner]));
+    if(i.pkg&&i.pkg!=='general')m.appendChild(el('span','pill',PKG[i.pkg]));
+    labelsOf(i).forEach(function(l){m.appendChild(el('span','pill lbl',l))});
+    if((i.reporters||1)>1)m.appendChild(el('span','pill',i.reporters+' דיווחים'));
+    if(i.due)m.appendChild(el('span','pill'+(isOverdue(i)?' late':''),(isOverdue(i)?'באיחור · ':'יעד ')+fmtDate(i.due)));
+    if((i.files||[]).length)m.appendChild(el('span','pill',i.files.length+' קבצים'));
+    c.appendChild(m);
+    if(i.type==='request'&&i.answer){var ans=el('div','answer'+(String(i.answer).length>300?' clamp':''));ans.textContent=i.answer;c.appendChild(ans);
+      if(String(i.answer).length>300){var more=el('button','link','הצגת הכל');more.type='button';more.addEventListener('click',function(){ans.classList.toggle('clamp');more.textContent=ans.classList.contains('clamp')?'הצגת הכל':'הצגה מקוצרת'});c.appendChild(more)}}
+    var d=document.createElement('details');if(openDetails[i.id])d.open=true;d.addEventListener('toggle',function(){openDetails[i.id]=d.open});
+    d.appendChild(el('summary','small','פרטים ועריכה'));
+    if(i.desc)d.appendChild(el('p','desc',i.desc));
+    var meta=[i.screen&&('מסך: '+i.screen),i.device&&('מכשיר: '+i.device),i.where&&('קובץ: '+i.where),i.source&&SRC[i.source]&&i.source!=='other'&&('מקור: '+SRC[i.source])].filter(Boolean).join(' · ');
+    if(meta)d.appendChild(el('p','muted small wrap',meta));
+    if(i.note)d.appendChild(el('p','desc small muted','הערה: '+i.note));
+    if(i.files&&i.files.length)d.appendChild(renderFiles(i.files));
+    d.appendChild(el('p','muted small','נפתח: '+(fmt(i.createdAt)||'-')+' · עודכן: '+(fmt(i.updatedAt)||'-')+(i.answeredBy?(' · נענתה ע"י '+i.answeredBy):'')));
+    var g=el('div','grid');g.style.marginTop='8px';
+    var mk=function(lbl,map,val,key){var l=document.createElement('label');var id='e-'+key+'-'+i.id;l.htmlFor=id;l.textContent=lbl;var se=document.createElement('select');se.id=id;fillSelect(se,map,val);se.addEventListener('change',function(){var o={};o[key]=key==='sev'?Number(se.value):(key==='release'&&se.value===NOREL?'':se.value);patch('items',i.id,o)});l.appendChild(se);g.appendChild(l)};
+    mk('סטטוס',ST,i.status,'status');mk('סוג',TYPE,i.type,'type');mk('גרסה',relMap(),i.release||NOREL,'release');mk('חומרה',SEV,i.sev,'sev');mk('אחראי',OWN,i.owner||'none','owner');
+    var dl2=document.createElement('label');dl2.htmlFor='e-due-'+i.id;dl2.textContent='תאריך יעד';dl2.appendChild(dateField('e-due-'+i.id,i.due,function(v){patch('items',i.id,{due:v});toast(keyOf(i)+': תאריך יעד '+(v?fmtDate(v):'הוסר'))}));g.appendChild(dl2);
+    var rl=document.createElement('label');rl.htmlFor='e-rep-'+i.id;rl.textContent='כמה דיווחו';var ri=document.createElement('input');ri.type='number';ri.min='1';ri.id='e-rep-'+i.id;ri.value=i.reporters||1;ri.addEventListener('change',function(){patch('items',i.id,{reporters:Math.max(1,Number(ri.value)||1)})});rl.appendChild(ri);g.appendChild(rl);
+    var ll=document.createElement('label');ll.htmlFor='e-lbl-'+i.id;ll.textContent='תוויות';var li=document.createElement('input');li.type='text';li.id='e-lbl-'+i.id;li.value=labelsOf(i).join(', ');li.addEventListener('change',function(){patch('items',i.id,{labels:li.value.split(',').map(function(s){return s.trim()}).filter(Boolean)})});ll.appendChild(li);g.appendChild(ll);
+    d.appendChild(g);
+    var tl=document.createElement('label');tl.htmlFor='e-title-'+i.id;tl.textContent='כותרת';var ti=document.createElement('input');ti.type='text';ti.id='e-title-'+i.id;ti.value=i.title||'';ti.addEventListener('change',function(){if(ti.value.trim())patch('items',i.id,{title:ti.value.trim()})});tl.appendChild(ti);tl.style.marginTop='8px';d.appendChild(tl);
+    var dsl=document.createElement('label');dsl.htmlFor='e-desc-'+i.id;dsl.textContent='תיאור';var ds=document.createElement('textarea');ds.id='e-desc-'+i.id;ds.value=i.desc||'';ds.addEventListener('change',function(){patch('items',i.id,{desc:ds.value})});dsl.appendChild(ds);d.appendChild(dsl);
+    if(i.type==='request'){var al=document.createElement('label');al.htmlFor='e-ans-'+i.id;al.textContent='תשובה';var at=document.createElement('textarea');at.id='e-ans-'+i.id;at.value=i.answer||'';at.addEventListener('change',function(){patch('items',i.id,{answer:at.value,answeredAt:now(),answeredBy:meName()},'נערכה תשובה')});al.appendChild(at);d.appendChild(al)}
+    var nl=document.createElement('label');nl.htmlFor='e-note-'+i.id;nl.textContent='הערה';var nt=document.createElement('textarea');nt.id='e-note-'+i.id;nt.value=i.note||'';nt.addEventListener('change',function(){patch('items',i.id,{note:nt.value},'נכתבה הערה')});nl.appendChild(nt);d.appendChild(nl);
+    var r=el('div','row');r.style.marginTop='8px';
+    if(i.type==='request'&&i.answer){var cv=el('button','primary','יצירת משימה מהתשובה');cv.type='button';cv.addEventListener('click',async function(){if(!canWrite||!db){toast('אין הרשאת עריכה');return}var n=await createItem({type:'task',title:'מתוך '+keyOf(i)+': '+(i.title||''),desc:i.answer,release:i.release||'',owner:'owner'},'נוצר מתשובה');refresh();schedulePublish();toast('נוצרה '+keyOf(n)+' - אפשר לערוך את הכותרת')});r.appendChild(cv)}
+    r.appendChild(uploadButton('צירוף קבצים',function(up){patch('items',i.id,{files:(i.files||[]).concat(up)},'צורפו קבצים')}));
+    var ab=el('button',null,i.archived?'החזרה מהארכיון':'העברה לארכיון');ab.type='button';ab.addEventListener('click',function(){patch('items',i.id,{archived:!i.archived},i.archived?'הוחזר מהארכיון':'הועבר לארכיון')});r.appendChild(ab);
+    var del=el('button','danger','מחיקה');del.type='button';var conf=el('span','row confirm');conf.hidden=true;conf.appendChild(el('span','small','למחוק את '+keyOf(i)+' לצמיתות?'));
+    var yes=el('button','danger solid','כן, למחוק');yes.type='button';yes.addEventListener('click',function(){removeItem(i)});var no=el('button',null,'ביטול');no.type='button';no.addEventListener('click',function(){conf.hidden=true;del.hidden=false});
+    conf.appendChild(yes);conf.appendChild(no);del.addEventListener('click',function(){del.hidden=true;conf.hidden=false});r.appendChild(del);r.appendChild(conf);d.appendChild(r);
+    var hist=logs.filter(function(e){return e.itemId===i.id}).sort(function(a,b){return String(b.at).localeCompare(String(a.at))}).slice(0,12);
+    if(hist.length){var hb=el('div','hist');hb.appendChild(el('b','small','היסטוריה'));hist.forEach(function(e){hb.appendChild(el('p','small muted',fmt(e.at)+' · '+(whoOf(e))+' · '+e.action+(e.details?(' · '+e.details):'')))});d.appendChild(hb)}
+    c.appendChild(d);return c;
+  }
+
+  var sortableLoaded=false;
+  function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('load '+src))};document.head.appendChild(s)})}
+  function renderItems(){
+    if(editing()){pendingRender=true;return}pendingRender=false;
+    var box=$('items');box.textContent='';box.classList.toggle('is-board',view==='board'&&!query);
+    var list=items.filter(inFilter).sort(SORTS[sortBy]||SORTS.urgency);
+    if(view==='board'&&!query){
+      var board=el('div','board');
+      COLS.forEach(function(col){
+        var its=list.filter(function(i){return col[2].indexOf(i.status)>=0});
+        var c=el('div','col');var h=el('div','col-h');h.appendChild(el('b',null,col[1]));h.appendChild(el('span','muted small',String(its.length)));c.appendChild(h);
+        var body=el('div','col-b');body.dataset.col=col[0];its.forEach(function(i){var cd=itemCard(i);cd.classList.add('mini');body.appendChild(cd)});
+        if(!its.length)body.appendChild(el('p','muted small empty-col','אין משימות'));
+        c.appendChild(body);board.appendChild(c);
+      });
+      box.appendChild(board);
+      var attach=function(){board.querySelectorAll('.col-b').forEach(function(b){window.Sortable.create(b,{group:'cols',animation:150,handle:'.title-row',draggable:'.item',onAdd:function(ev){var id=ev.item.dataset.id,to=ev.to.dataset.col;var st={todo:'new',doing:'doing',review:'fixed',done:'closed'}[to];if(id&&st)patch('items',id,{status:st},'הועבר בלוח')}})})};
+      if(window.Sortable)attach();else if(!sortableLoaded){sortableLoaded=true;loadScript('https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js').then(function(){renderItems()}).catch(function(){step('sortable load failed')})}
+      return;
+    }
+    if(!list.length){box.appendChild(el('div','empty',query?'לא נמצאו פריטים.':(filter==='archive'?'הארכיון ריק.':'אין משימות כאן. לחצו "+ משימה חדשה".')));return}
+    var l=el('div','list');list.forEach(function(i){l.appendChild(itemCard(i))});box.appendChild(l);
+  }
+
+  function renderLog(){
+    var box=$('log');box.textContent='';var all=logs.slice().sort(function(a,b){return String(b.at).localeCompare(String(a.at))});
+    var whos={};all.forEach(function(e){var w=whoOf(e);whos[w]=(whos[w]||0)+1});
+    var wf=$('logwho');wf.textContent='';[['','הכל ('+all.length+')']].concat(Object.keys(whos).map(function(w){return [w,w+' ('+whos[w]+')']})).forEach(function(p){var bt=el('button','opt',p[1]);bt.type='button';bt.setAttribute('aria-pressed',logWho===p[0]?'true':'false');bt.addEventListener('click',function(){logWho=p[0];renderLog()});wf.appendChild(bt)});
+    var list=logWho?all.filter(function(e){return (whoOf(e))===logWho}):all;
+    $('log-count').textContent=all.length?'('+all.length+')':'';
+    if(!list.length){box.appendChild(el('p','muted','עוד אין שינויים.'));return}
+    list.slice(0,300).forEach(function(e){var row=el('div','log-row'+(e.key&&e.col==='items'?' link':''));if(e.key&&e.col==='items'){row.title='הצגת '+e.key;row.addEventListener('click',function(){query=e.key.replace(/-\d+$/,'')===e.key?e.key:e.key;$('q').value=e.key;setTab('tasks');renderItems()})}row.appendChild(el('span','log-at',fmt(e.at)));var txt=el('span','log-txt');txt.appendChild(el('b',null,(whoOf(e))+' · '+e.action+' '));
+      if(e.key||e.title)txt.appendChild(document.createTextNode((e.key?e.key+' ':'')+(e.title?('"'+e.title+'"'):'')));if(e.details)txt.appendChild(el('span','muted small',' · '+e.details));row.appendChild(txt);box.appendChild(row)});
+  }
+
+  /* ---------- export & backup ---------- */
+  function itemFields(i){return [['סוג',TYPE[i.type]],['חומרה',i.type==='request'?'':SEV[i.sev]],['סטטוס',ST[i.status]],['אחראי',OWN[i.owner]],['חבילה',i.pkg!=='general'?PKG[i.pkg]:''],['תוויות',labelsOf(i).join(', ')],['תאריך יעד',i.due?fmtDate(i.due)+(isOverdue(i)?' (באיחור)':''):''],['מסך',i.screen],['מכשיר',i.device],['קובץ',i.where],['כמה דיווחו',(i.reporters||1)>1?i.reporters:''],['נפתח',fmt(i.createdAt)],['עודכן',fmt(i.updatedAt)]].filter(function(f){return f[1]})}
+  function exportSections(){var out=[];relSorted().reverse().forEach(function(r){out.push([r.id,'גרסה '+r.name+' ('+RST[r.status]+(r.targetDate?', יעד '+fmtDate(r.targetDate):'')+')'])});out.push([NOREL,'ללא גרסה']);return out}
+  function exportMd(){
+    var L=['# המשימות של '+curP().name,'','יוצא: '+fmt(now())+' · https://claude.ai/artifact/YOUR_ARTIFACT_ID'+(live.items?'':' · (עותק שמור מ-'+(SEED.at||'')+')')];
+    var a=activeRel(),l=liveRel();L.push('','בפיתוח: '+(a?a.name:'-')+' · גרסה משוחררת: '+(l?l.name:'-'));
+    exportSections().forEach(function(s){
+      var its=itemsOf(s[0]).filter(function(i){return !i.archived});if(!its.length)return;var p=progressOf(s[0]);
+      L.push('','## '+s[1]+' - '+p.done+'/'+p.total+' הושלמו');
+      COLS.forEach(function(g){var gi=its.filter(function(i){return g[2].indexOf(i.status)>=0&&!isWaiting(i)}).sort(SORTS.sev);if(!gi.length)return;L.push('','### '+g[1]+' ('+gi.length+')');
+        gi.forEach(function(i){L.push('','- ['+(g[0]==='done'?'x':' ')+'] **'+keyOf(i)+' '+(i.title||'')+'**','  - '+itemFields(i).map(function(f){return f[0]+': '+f[1]}).join(' | '));
+          if(i.desc)L.push('  - תיאור: '+String(i.desc).replace(/\n+/g,' '));if(i.answer)L.push('  - תשובה: '+String(i.answer).replace(/\n+/g,' / '));if(i.note)L.push('  - הערה: '+String(i.note).replace(/\n+/g,' '))})});
+      var w=its.filter(isWaiting);if(w.length){L.push('','### ממתין לתשובה ('+w.length+')');w.forEach(function(i){L.push('- '+keyOf(i)+' '+i.title+(i.owner!=='none'?' (ל'+OWN[i.owner]+')':''))})}
+    });
+    var arc=items.filter(function(i){return i.archived});if(arc.length){L.push('','## ארכיון ('+arc.length+')');arc.forEach(function(i){L.push('- '+keyOf(i)+' '+i.title)})}
+    var lg=logs.slice().sort(function(a,b){return String(b.at).localeCompare(String(a.at))});if(lg.length){L.push('','## לוג שינויים','');lg.forEach(function(e){L.push('- '+fmt(e.at)+' · '+(whoOf(e))+' · '+e.action+(e.key?' '+e.key:'')+(e.title?' "'+e.title+'"':'')+(e.details?' · '+String(e.details).replace(/\n+/g,' ').slice(0,200):''))})}
+    return L.join('\n')+'\n';
+  }
+  function exportTxt(){return exportMd().replace(/\*\*/g,'').replace(/^#+\s*/gm,'').replace(/^(\s*)- \[( |x)\] /gm,function(m,sp,x){return sp+(x==='x'?'[V] ':'[ ] ')})}
+  function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function exportHtml(){
+    var h=['<div class="xp-doc"><h1>המשימות של '+esc(curP().name)+'</h1><p class="xp-meta">יוצא: '+esc(fmt(now()))+'</p>'];
+    exportSections().forEach(function(s){var its=itemsOf(s[0]).filter(function(i){return !i.archived});if(!its.length)return;var p=progressOf(s[0]);h.push('<h2>'+esc(s[1])+' · '+p.done+'/'+p.total+'</h2>');
+      COLS.forEach(function(g){var gi=its.filter(function(i){return g[2].indexOf(i.status)>=0}).sort(SORTS.sev);if(!gi.length)return;h.push('<h3>'+esc(g[1])+' ('+gi.length+')</h3>');
+        gi.forEach(function(i){h.push('<div class="xp-item sev'+(i.type==='request'?4:(i.sev||4))+'"><div class="xp-t"><b>'+esc(keyOf(i))+'</b> '+esc(i.title)+'</div><div class="xp-f">'+itemFields(i).map(function(f){return esc(f[0])+': '+esc(f[1])}).join(' · ')+'</div>'+(i.desc?'<div class="xp-d">'+esc(i.desc)+'</div>':'')+(i.answer?'<div class="xp-d">תשובה: '+esc(i.answer)+'</div>':'')+'</div>')})})});
+    h.push('</div>');return h.join('');
+  }
+  function stamp(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')}
+  async function exportPdf(){
+    var msg=$('xp-msg');msg.textContent='מכין PDF...';
+    try{
+      if(!window.html2canvas)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+      if(!(window.jspdf&&window.jspdf.jsPDF))await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      var host=document.createElement('div');host.className='xp-host';host.innerHTML=exportHtml();document.body.appendChild(host);
+      if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+      var canvas=await window.html2canvas(host,{scale:2,backgroundColor:'#ffffff'});host.remove();
+      var pdf=new window.jspdf.jsPDF({unit:'pt',format:'a4'});var pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),m=24;
+      var imgW=pw-2*m,scale=imgW/canvas.width,sliceH=Math.floor((ph-2*m)/scale),y=0,first=true;
+      while(y<canvas.height){var hh=Math.min(sliceH,canvas.height-y);var c=document.createElement('canvas');c.width=canvas.width;c.height=hh;c.getContext('2d').drawImage(canvas,0,y,canvas.width,hh,0,0,canvas.width,hh);if(!first)pdf.addPage();pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',m,m,imgW,hh*scale);first=false;y+=hh}
+      if(!downloadsApi){msg.textContent='שמירת קבצים לא זמינה בתצוגה הזאת';return}
+      await downloadsApi.save({filename:symOf(curProj).toLowerCase()+'-board_'+stamp()+'.pdf',data:pdf.output('arraybuffer')});msg.textContent='ה-PDF נשמר';
+    }catch(e){msg.textContent=(e&&e.code)==='declined'?'השמירה בוטלה':'יצירת ה-PDF נכשלה ('+((e&&(e.code||e.message))||'שגיאה')+')';var x=document.querySelector('.xp-host');if(x)x.remove()}
+  }
+  async function saveFile(name,data,msgId){var msg=$(msgId);if(!downloadsApi){msg.textContent='שמירת קבצים לא זמינה בתצוגה הזאת';return}try{await downloadsApi.save({filename:name,data:data});msg.textContent='הקובץ נשמר'}catch(e){msg.textContent=(e&&e.code)==='declined'?'השמירה בוטלה':'השמירה נכשלה ('+((e&&e.code)||'שגיאה')+')'}}
+  function copyAll(){var text=exportMd(),msg=$('xp-msg'),box=$('xp-box');function fb(){box.hidden=false;box.value=text;box.focus();box.select();msg.textContent='הטקסט מסומן - העתיקו ידנית'}try{navigator.clipboard.writeText(text).then(function(){msg.textContent='הועתק - '+text.length+' תווים'},fb)}catch(e){fb()}}
+  function csvCell(v){v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+  function backupCsv(){var cols=[['מפתח',function(i){return keyOf(i)}],['גרסה',function(i){return relName(i.release||NOREL)}],['סוג',function(i){return TYPE[i.type]}],['כותרת','title'],['תיאור','desc'],['תשובה','answer'],['חומרה',function(i){return SEV[i.sev]}],['סטטוס',function(i){return ST[i.status]}],['אחראי',function(i){return OWN[i.owner]}],['תוויות',function(i){return labelsOf(i).join(', ')}],['חבילה',function(i){return PKG[i.pkg]}],['מסך','screen'],['מכשיר','device'],['כמה דיווחו','reporters'],['תאריך יעד','due'],['בארכיון',function(i){return i.archived?'כן':'לא'}],['נפתח',function(i){return fmt(i.createdAt)}],['עודכן',function(i){return fmt(i.updatedAt)}],['הערה','note']];
+    var rows=[cols.map(function(c){return c[0]})];items.slice().sort(SORTS.key).forEach(function(i){rows.push(cols.map(function(c){return typeof c[1]==='function'?c[1](i):i[c[1]]}))});return '﻿'+rows.map(function(r){return r.map(csvCell).join(',')}).join('\r\n')}
+  function backupJson(){return JSON.stringify({board:'המשימות של '+curP().name,project:curP(),url:'https://claude.ai/artifact/YOUR_ARTIFACT_ID',exportedAt:now(),exportedBy:meName(),releases:releases.map(strip),items:items.map(function(i){var c=strip(i);c.key=keyOf(i);return c}),log:logs.map(strip)},null,2)}
+
+  function renderAll(){numberItems();renderHeader();renderReleases();renderRelPanel();renderInbox();renderFilters();renderItems();renderLog();
+    var tn=$('tab-tasks-n'),sn=$('tab-side-n'),ti=$('tt-items-n'),nIt=document.querySelectorAll('#items .item').length,nW=document.querySelectorAll('#inbox .ask').length;if(tn)tn.textContent='('+(nIt+nW)+')';if(ti)ti.textContent='('+nIt+')';if(sn)sn.textContent=''
+    step('render '+items.length)}
+
+  /* ---------- controls ---------- */
+  try{view=localStorage.getItem('gc_view2')||((window.matchMedia&&matchMedia('(max-width:960px)').matches)?'list':'board')}catch(e){}filter=view==='board'?'all':'open';
+  $('items').addEventListener('focusout',function(){setTimeout(function(){if(pendingRender&&!editing())renderItems()},60)});
+  $('inbox').addEventListener('focusout',function(){setTimeout(function(){if(pendingPanel.inbox&&!editingIn('inbox'))renderInbox()},60)});
+  $('relpanel').addEventListener('focusout',function(){setTimeout(function(){if(pendingPanel.relpanel&&!editingIn('relpanel'))renderRelPanel()},60)});
+  ['f-title','f-desc'].forEach(function(id){var e=$(id);e.value=drafts[id]||'';e.addEventListener('input',function(){saveDraft(id,e.value)})});
+  $('tab-side').addEventListener('click',function(){setTab('side')});$('tt-items').addEventListener('click',function(){setTasksTab('items')});$('tt-inbox').addEventListener('click',function(){setTasksTab('inbox')});setTasksTab('items');$('tab-tasks').addEventListener('click',function(){setTab('tasks')});['log','tools','diag'].forEach(function(k){$('tt-'+k).addEventListener('click',function(){setTasksTab(k)})});
+
+  (function(){var t='side';try{t=localStorage.getItem('gc_tab')||'side'}catch(e){}setTab(t)})();
+  $('agent-text').textContent=agentText();
+  fillSelect($('f-type'),TYPE,'task');fillSelect($('f-sev'),SEV,3);fillSelect($('f-pkg'),PKG,'general');fillSelect($('f-source'),SRC,'other');fillSelect($('f-owner'),OWN,'none');
+  fillSelect($('sort'),{urgency:'דחיפות',sev:'חומרה',due:'תאריך יעד',updated:'עודכן לאחרונה',key:'מספר'},'urgency');fillSelect($('me'),ME,meKey());
+  $('me').addEventListener('change',function(){try{localStorage.setItem('gc_me',this.value)}catch(e){}renderInbox()});
+  fillSelect($('flt-type'),Object.assign({'':'הכל'},TYPE),'');fillSelect($('flt-st'),{open:'פתוחים',review:'לבדיקה',done:'הושלמו',all:'הכל',archive:'ארכיון'},filter);
+  (function(){var pane=document.querySelector('#frames>[data-frame="side"]>.pane'),th=document.querySelector('.tasks-head>.thead'),top=document.createElement('div');top.id='topacts';top.className='topacts';top.setAttribute('role','group');top.setAttribute('aria-label','חיפוש, משימה חדשה ותצוגה');if(pane)pane.appendChild(top);
+    var mq=window.matchMedia('(min-width:961px)');function place(){var ta=document.querySelector('.tasks-actions'),vw=$('view');if(!ta||!vw||!pane)return;var dest=mq.matches?top:th;if(ta.parentNode!==dest){dest.appendChild(ta);dest.appendChild(vw)}}
+    place();if(mq.addEventListener)mq.addEventListener('change',place);else if(mq.addListener)mq.addListener(place)})();
+  (function(){var pane=document.querySelector('#frames>[data-frame="side"]>.pane');if(!pane)return;['a','b','c','d'].forEach(function(k){var sp=document.createElement('span');sp.className='tsp tsp-'+k;sp.setAttribute('aria-hidden','true');pane.appendChild(sp)});var w=document.createElement('div');w.className='projpick';w.id='projpick';
+    var b=document.createElement('button');b.type='button';b.id='pp-btn';b.className='pp-btn';b.setAttribute('aria-haspopup','menu');b.setAttribute('aria-expanded','false');
+    b.addEventListener('click',function(e){e.stopPropagation();togglePP()});w.appendChild(b);pane.appendChild(w)})();
+  function renderProjPick(){var b=$('pp-btn');if(!b)return;var P=curP();b.textContent='';var im=document.createElement('img');im.src=iconOf(P);im.alt='';b.appendChild(im);
+    b.appendChild(el('span','pp-k','פרוייקט'));b.appendChild(el('b','pp-sym',P.symbol));b.title='הפרוייקט הנבחר: '+P.name+' ('+P.symbol+'). לחיצה להחלפה, להוספה או לעריכה';b.setAttribute('aria-label','פרוייקט: '+P.name+'. החלפת פרוייקט')}
+  function closePP(){var m=$('pp-menu');if(m)m.remove();var b=$('pp-btn');if(b)b.setAttribute('aria-expanded','false')}
+  function placePP(){var m=$('pp-menu'),b=$('pp-btn');if(!m||!b)return;var rc=b.getBoundingClientRect();m.style.top=Math.round(rc.bottom+4)+'px';m.style.right='auto';m.style.left=Math.max(8,Math.min(Math.round(rc.left),innerWidth-m.offsetWidth-8))+'px'}
+  function togglePP(){if($('pp-menu')){closePP();return}closeVerMenu();var m=el('div','vb-menu pp-menu');m.id='pp-menu';m.setAttribute('role','menu');m.setAttribute('aria-label','פרוייקטים');
+    projList().forEach(function(q){var it=el('button','rel pp-it'+(q.id===curProj?' on':''));it.type='button';it.setAttribute('role','menuitemradio');it.setAttribute('aria-checked',q.id===curProj?'true':'false');
+      var im=document.createElement('img');im.src=iconOf(q);im.alt='';it.appendChild(im);it.appendChild(el('b',null,q.name));it.appendChild(el('span','rs',q.symbol+' · '+allItems.filter(function(x){return projOf(x)===q.id&&!x.archived}).length+' משימות'));
+      it.addEventListener('click',function(){closePP();setProj(q.id)});m.appendChild(it)});
+    var ad=el('button','rel add','+ פרוייקט חדש');ad.type='button';ad.setAttribute('role','menuitem');ad.addEventListener('click',function(){closePP();projForm(null)});m.appendChild(ad);
+    var ed=el('button','rel pp-edit','עריכת הפרוייקט "'+curP().name+'"');ed.type='button';ed.setAttribute('role','menuitem');ed.addEventListener('click',function(){closePP();projForm(curP())});m.appendChild(ed);
+    document.body.appendChild(m);placePP();$('pp-btn').setAttribute('aria-expanded','true');var f=m.querySelector('.rel.on')||m.firstChild;if(f)f.focus()}
+  document.addEventListener('click',function(e){var m=$('pp-menu');if(m&&!m.contains(e.target)&&!(e.target.closest&&e.target.closest('#pp-btn')))closePP()});
+  document.addEventListener('keydown',function(e){var m=$('pp-menu');if(!m)return;if(e.key==='Escape'){closePP();var b=$('pp-btn');if(b)b.focus();return}
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();var bs=Array.prototype.slice.call(m.querySelectorAll('button')),k=bs.indexOf(document.activeElement);k=(k+(e.key==='ArrowDown'?1:-1)+bs.length)%bs.length;bs[k].focus()}});
+  window.addEventListener('resize',placePP);
+  function setProj(id){if(id===curProj)return;curProj=id;try{localStorage.setItem('gc_proj',id)}catch(e){}selRel='';newRel=null;typeFilter='';special='';xf={own:'',sev:'',pkg:'',src:''};query='';var qq=$('q');if(qq)qq.value='';
+    var cb=$('createbox');if(cb)cb.hidden=true;refresh();toast('עברת לפרוייקט '+curP().name)}
+  function shrinkIcon(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onerror=function(){rej(new Error('read'))};fr.onload=function(){var im=new Image();im.onerror=function(){rej(new Error('image'))};im.onload=function(){
+      var S=96,c=document.createElement('canvas');c.width=S;c.height=S;var g=c.getContext('2d'),k=Math.max(S/im.width,S/im.height),w=im.width*k,h=im.height*k;g.drawImage(im,(S-w)/2,(S-h)/2,w,h);res(c.toDataURL('image/png'))};im.src=fr.result};fr.readAsDataURL(file)})}
+  function projForm(q){var old=$('pp-form');if(old)old.remove();var isNew=!q;
+    var back=el('div','pp-back');back.id='pp-form';var f=el('form','pp-form');f.setAttribute('role','dialog');f.setAttribute('aria-modal','true');f.setAttribute('aria-label',isNew?'פרוייקט חדש':'עריכת פרוייקט');
+    f.appendChild(el('h3',null,isNew?'פרוייקט חדש':'עריכת הפרוייקט'));
+    var l1=document.createElement('label');l1.textContent='שם הפרוייקט (יופיע בכותרת: "המשימות של ...")';var nm=document.createElement('input');nm.type='text';nm.id='pp-name';nm.maxLength=40;nm.required=true;nm.value=q?q.name:'';l1.appendChild(nm);f.appendChild(l1);
+    var l2=document.createElement('label');l2.textContent='סימול (2-5 אותיות באנגלית או ספרות, למשל GC). יופיע במספרי המשימות';var sy=document.createElement('input');sy.type='text';sy.id='pp-sym';sy.maxLength=5;sy.dir='ltr';sy.value=q?q.symbol:'';sy.disabled=!isNew;
+    sy.addEventListener('input',function(){var v=sy.value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(v!==sy.value)sy.value=v;prev()});l2.appendChild(sy);if(!isNew)l2.appendChild(el('span','muted small','הסימול קבוע אחרי יצירת הפרוייקט, כדי שמספרי המשימות לא ישתנו.'));f.appendChild(l2);
+    var l3=document.createElement('label');l3.textContent='אייקון (לא חובה - בלי תמונה ייווצר אייקון עם הסימול)';var row=el('div','row pp-icrow');var pv=document.createElement('img');pv.className='pp-prev';pv.alt='';var fi=document.createElement('input');fi.type='file';fi.id='pp-icon';fi.accept='image/*';
+    var icon=q?(q.icon||''):'';var clr=el('button',null,'הסרת התמונה');clr.type='button';clr.addEventListener('click',function(){icon='';fi.value='';prev()});
+    function prev(){pv.src=icon||(q&&q.id==='gc'&&LOGO0?LOGO0:genIcon({symbol:sy.value||'?'}));clr.hidden=!icon}
+    fi.addEventListener('change',function(){var file=fi.files&&fi.files[0];if(!file)return;shrinkIcon(file).then(function(d){icon=d;prev()},function(){toast('לא הצלחנו לקרוא את התמונה')})});
+    row.appendChild(pv);row.appendChild(fi);row.appendChild(clr);l3.appendChild(row);f.appendChild(l3);prev();
+    var msg=el('p','small pp-msg');msg.setAttribute('role','alert');f.appendChild(msg);
+    var acts=el('div','row');var ok=el('button','primary',isNew?'יצירת הפרוייקט':'שמירה');ok.type='submit';var cn=el('button',null,'ביטול');cn.type='button';acts.appendChild(ok);acts.appendChild(cn);f.appendChild(acts);
+    function close(){back.remove();var b=$('pp-btn');if(b)b.focus()}
+    cn.addEventListener('click',close);back.addEventListener('click',function(e){if(e.target===back)close()});f.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();close()}});
+    f.addEventListener('submit',async function(e){e.preventDefault();msg.textContent='';
+      if(!canWrite||!db){msg.textContent='אין חיבור למאגר או הרשאת עריכה';return}
+      var name=nm.value.trim(),sym=(q?q.symbol:sy.value.trim());if(!name){msg.textContent='צריך שם לפרוייקט';nm.focus();return}
+      if(isNew){if(!/^[A-Z][A-Z0-9]{1,4}$/.test(sym)){msg.textContent='סימול: 2-5 אותיות באנגלית או ספרות, שמתחיל באות';sy.focus();return}
+        if(projList().some(function(x){return x.symbol===sym||x.id===sym.toLowerCase()})){msg.textContent='כבר יש פרוייקט עם הסימול '+sym;sy.focus();return}}
+      var id=q?q.id:sym.toLowerCase(),o={name:name,symbol:sym,icon:icon,createdAt:(q&&q.createdAt)||now(),updatedAt:now(),by:myId||''};
+      ok.disabled=true;ok.textContent='שומר...';
+      try{await retry(function(){return db.collection('projects').doc(id).set(o)})}catch(err){ok.disabled=false;ok.textContent=isNew?'יצירת הפרוייקט':'שמירה';msg.textContent='השמירה במאגר נכשלה - נסו שוב';return}
+      remember('projects',Object.assign({id:id},o),q?(q.updatedAt||''):'');
+      close();
+      if(isNew){curProj=id;try{localStorage.setItem('gc_proj',id)}catch(err){}selRel='';newRel=null;typeFilter='';special='';xf={own:'',sev:'',pkg:'',src:''};query='';$('q').value=''}
+      logEvent(isNew?'נוצר פרוייקט':'עודכן פרוייקט','projects',{id:id},name+' ('+sym+')');
+      refresh();schedulePublish();toast(isNew?'נוצר הפרוייקט '+name+' ('+sym+')':'הפרוייקט עודכן')});
+    back.appendChild(f);document.body.appendChild(back);(isNew?nm:nm).focus()}
+  $('flt-type').addEventListener('change',function(){typeFilter=this.value;renderAll()});
+  $('flt-st').addEventListener('change',function(){filter=this.value;special='';renderAll()});
+  fillSelect($('flt-own'),Object.assign({'':'הכל'},OWN),'');fillSelect($('flt-sev'),Object.assign({'':'הכל'},SEV),'');fillSelect($('flt-pkg'),Object.assign({'':'הכל'},PKG),'');fillSelect($('flt-src'),Object.assign({'':'הכל'},SRC),'');
+  ['own','sev','pkg','src'].forEach(function(k){$('flt-'+k).addEventListener('change',function(){xf[k]=this.value;renderAll()})});
+  $('flt-clear').addEventListener('click',function(){typeFilter='';special='';xf={own:'',sev:'',pkg:'',src:''};filter=defFilter();sortBy='urgency';renderAll()});
+  $('sort').addEventListener('change',function(){sortBy=this.value;renderItems();renderFilters()});
+  $('q').addEventListener('input',function(){query=this.value.trim();setTab('tasks');setTasksTab('items');renderItems()});
+  $('btn-create').addEventListener('click',function(){var b=$('createbox');b.hidden=!b.hidden;if(!b.hidden){setTab('tasks');setTasksTab('items');var pn=$('pane-tasks');if(pn)pn.scrollTo({top:0});fillSelect($('f-rel'),relMap(),selRel);$('f-result').textContent='';$('f-title').focus()}});
+  $('f-cancel').addEventListener('click',function(){$('createbox').hidden=true});
+  $('f-type').addEventListener('change',function(){if(this.value==='request'&&$('f-owner').value==='none')$('f-owner').value='partner'});
+  $('copy-agent').addEventListener('click',function(){var ok=$('copy-ok');function sel(){try{var r=document.createRange();r.selectNodeContents($('agent-text'));var s=window.getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}ok.textContent='סמנו והעתיקו ידנית'}try{navigator.clipboard.writeText(AGENT).then(function(){ok.textContent='הועתק'},sel)}catch(e){sel()}});
+  $('xp-copy').addEventListener('click',copyAll);
+  $('xp-md').addEventListener('click',function(){saveFile(symOf(curProj).toLowerCase()+'-board_'+stamp()+'.md',exportMd(),'xp-msg')});
+  $('xp-txt').addEventListener('click',function(){saveFile(symOf(curProj).toLowerCase()+'-board_'+stamp()+'.txt',exportTxt(),'xp-msg')});
+  $('xp-pdf').addEventListener('click',exportPdf);
+  $('bk-json').addEventListener('click',function(){saveFile(symOf(curProj).toLowerCase()+'-board-backup_'+stamp()+'.json',backupJson(),'bk-msg')});
+  $('bk-csv').addEventListener('click',function(){saveFile(symOf(curProj).toLowerCase()+'-board-items_'+stamp()+'.csv',backupCsv(),'bk-msg')});
+  var pending=[];
+  $('f-files').addEventListener('change',function(e){pending=Array.prototype.slice.call(e.target.files);$('f-files-n').textContent=pending.length?pending.length+' קבצים נבחרו':''});
+  $('addform').addEventListener('submit',async function(e){
+    e.preventDefault();
+    if(!canWrite||!db){$('f-result').textContent='לא נשמר: אין חיבור למאגר או אין הרשאת עריכה.';return}
+    var title=$('f-title').value.trim();if(!title){$('f-title').focus();return}
+    var btn=$('f-submit');btn.disabled=true;btn.textContent='שומר...';$('f-result').textContent='';
+    try{
+      var files=pending.length?await uploadAll(pending):[];var rel=$('f-rel').value;
+      var doc=await createItem({type:$('f-type').value,title:title,desc:$('f-desc').value.trim(),sev:Number($('f-sev').value),pkg:$('f-pkg').value,screen:$('f-screen').value.trim(),device:$('f-device').value.trim(),source:$('f-source').value,reporters:Math.max(1,Number($('f-rep').value)||1),owner:$('f-owner').value,due:$('f-due').value||'',labels:$('f-labels').value.split(',').map(function(s){return s.trim()}).filter(Boolean),release:rel===NOREL?'':rel,files:files});
+      saveDraft('f-title','');saveDraft('f-desc','');e.target.reset();pending=[];$('f-files-n').textContent='';$('f-rep').value=1;fillSelect($('f-type'),TYPE,'task');
+      $('createbox').hidden=true;query='';$('q').value='';selRel=rel;if(filter!=='open'&&filter!=='all'){filter='open'}lastNew=doc.id;refresh();schedulePublish();
+      $('f-result').textContent='נשמר: '+keyOf(doc)+' - '+title+(doc.type==='request'?' (מופיע ב"ממתין לתשובה")':'');
+      setTimeout(function(){var card=document.querySelector('[data-id="'+doc.id+'"]');if(card)card.scrollIntoView({behavior:'smooth',block:'center'})},200);
+    }catch(err){$('f-result').textContent='לא נשמר: '+((err&&err.message)||'שגיאה')}
+    btn.disabled=false;btn.textContent='שמירה';
+  });
+
+  /* ---------- loading ---------- */
+  function applySnap(col,s){
+    if(s.metadata&&s.metadata.fromCache&&!s.docs.length&&(SEED[col]||[]).length)return;
+    var first=!live[col];live[col]=s.docs.map(function(d){var o=d.data()||{};o.id=d.id;return o});
+    if(first)step('live '+col+': '+live[col].length);
+    refresh();
+    if(live.items&&live.releases)setSync(artifactApi?'מחובר · מסונכרן':'מחובר');
+  }
+  async function load(){
+    var st=null;
+    if(perms){try{st=await withTimeout(perms.state('db'),4000)}catch(e){st='unknown'}step('permission db: '+st)}
+    if(st==='denied'){setStatus('הגישה לנתונים חסומה בדפדפן הזה','אפשר לאשר מחדש בתפריט ההרשאות של הארטיפקט.');return}
+    ['items','releases','log','projects'].forEach(function(col){
+      withTimeout(db.collection(col).get(),15000).then(function(s){step('get '+col+': '+s.size);applySnap(col,s)},function(e){step('get '+col+': '+((e&&e.code)||'error'));
+        if(!seedShown&&col==='items')setStatus('לא הצלחנו לטעון את הנתונים','פתחו את "פרטים טכניים" בתחתית הדף ושלחו לבעלים.')});
+      try{db.collection(col).onSnapshot(function(s){applySnap(col,s)},function(e){step('live '+col+' error: '+((e&&e.code)||'error'))})}catch(e){step('live '+col+' throw: '+e.message)}
+    });
+  }
+  async function start(){
+    if(SEED.items.length){seedShown=true;refresh();setSync('עותק מ-'+(SEED.at||''))}
+    step('seed '+SEED.items.length+' items, at '+SEED.at);
+    if(!window.claude||!window.claude.use){step('no window.claude');if(!seedShown)setStatus('הלוח לא מחובר לנתונים בתצוגה הזאת','פתחו את הקישור ב-claude.ai, מחוברים לחשבון.');return}
+    canWrite=true;
+    db=await window.claude.use('db');step('use db: '+(db?'ok':'null'));
+    if(!db){noDb=true;canWrite=false;if(!seedShown)setStatus('אין גישה לנתונים בתצוגה הזאת','פתחו את הקישור ב-claude.ai, מחוברים לחשבון שהוזמן ללוח.');else setSync('צפייה בעותק מ-'+(SEED.at||'')+' (אין חיבור למאגר)');return}
+    try{perms=await withTimeout(window.claude.use('permissions'),3000)}catch(e){perms=null}
+    load();
+    window.claude.use('downloads').then(function(d){downloadsApi=d;step('use downloads: '+(d?'ok':'null'))});
+    window.claude.use('artifact').then(function(a){artifactApi=a;step('use artifact: '+(a?'ok':'null'));if(a&&localAhead()){var lastAp=0;try{lastAp=+localStorage.getItem('gc_autopub')||0}catch(e){}if(Date.now()-lastAp<120000){step('local changes not in page copy - auto republish skipped (ran less than 2 minutes ago)')}else{try{localStorage.setItem('gc_autopub',String(Date.now()))}catch(e){}step('local changes not in page copy - republishing');schedulePublish()}}});
+    window.claude.use('assets').then(function(a){assets=a});
+    window.claude.use('mcp').then(function(m){mcpApi=m;step('use mcp: '+(m?'ok':'null'));var last='';try{last=localStorage.getItem('gc_mirror_sig')||''}catch(e){}if(m&&last!==signature())scheduleMirror()});
+    window.claude.use('user').then(async function(u){if(!u)return;try{myId=await u.id()}catch(e){}
+      if(!meKey()){var k='';try{if(await u.isOwner())k='owner';else if(myId===MICHAL_ID)k='partner'}catch(e){}if(k){try{localStorage.setItem('gc_me',k)}catch(e){}$('me').value=k;renderInbox()}}
+      try{var c=await u.can('data.write');step('can write: '+c);if(c===false){canWrite=false;setSync('צפייה בלבד')}}catch(e){}});
+  }
+
+  start();
+})();
+</script>

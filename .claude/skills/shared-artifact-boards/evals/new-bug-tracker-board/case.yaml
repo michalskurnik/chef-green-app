@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: new-bug-tracker-board
+expected_outcome: |
+  A single self-contained board.html built from the skill template: shared db collections, seed placeholder replaced, project/team names adapted, kanban columns, uniform filter dropdowns, a version capsule; tests from the starter harness pass and layout is measured at desktop and phone widths.

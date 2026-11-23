@@ -1,0 +1,11 @@
+{
+ "at": "2026-01-10T09:00:00Z",
+ "who": "בעלים",
+ "by": "",
+ "col": "items",
+ "itemId": "s1",
+ "key": "PRJ-1",
+ "title": "Login button does nothing on slow networks",
+ "action": "נוצר",
+ "details": "באג · גרסה 1.0"
+}
