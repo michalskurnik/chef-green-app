@@ -77,3 +77,5 @@ Fix: build options once; only set value and classes on refresh.
 **Outside-click close that closes on inside clicks.** A document click handler in the bubble phase runs after the card's own handlers; if those re-rendered the card, the event target is detached and looks "outside". Listen in the capture phase, ignore targets no longer in the document, and ignore clicks inside floating menus and dialogs.
 
 **Equal-width button grid collapsing to one column.** `repeat(auto-fit, minmax(112px,150px))` counts columns by the maximum (150px), so a 300px card got one button per row. Use `minmax(104px,1fr)` with a `max-width` on the grid and `margin-inline:auto` to keep it centered.
+
+**External write invisible to the people it was meant for.** Another session wrote its question into an item's `note` and stamped an earlier time than the real write. The closed card shows no note and the waiting tab lists only requests, so nobody noticed; the backdated stamp could also be hidden by a pending local edit. Fix: rules in `external-writers.md` (real time, assign and move status, or create a request).

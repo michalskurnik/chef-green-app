@@ -61,6 +61,10 @@ Full protocol and recovery steps: `references/publish-protocol.md`.
 - "Publish refused - newer version saved from inside the page": a user's page republished itself. Run `scripts/compare_live.py` (saved file vs your build vs fresh dump). If the data matches, Read the saved file with the Read tool (the publish gate requires an actual Read; a script reading it does not count), then publish again in a separate turn step (not in parallel with the Read). If the data differs, dump again, rebuild, publish.
 - After publishing, `Artifact read path:"index.html"` and run `scripts/verify_live.sh <build> <live>`: zero lines missing from live, only the 5 wrapper lines added.
 
+## Writing to the database from outside the page
+
+Other sessions (Claude Code in a terminal or IDE) may update items directly with ArtifactData. Follow `references/external-writers.md`: real UTC time in `updatedAt`, `if_version` pin, `update` only the changed fields, board enum values, a log entry in the same batch, re-read to verify, then `scripts/validate_data.py`. A backdated timestamp can hide the change in a tab with a pending local edit.
+
 ## Reporting to the user
 
 - First line: what is live now (version number and link) and what is not, if anything is blocked. A built-but-unpublished change is not done.
@@ -77,9 +81,11 @@ Full protocol and recovery steps: `references/publish-protocol.md`.
 - `scripts/measure_layout.js` - per-width JSON: row line counts, gaps, overflow, clipped/squeezed controls; plus screenshots.
 - `scripts/compare_live.py` - page-saved HTML vs build vs dump: data and code equality per collection.
 - `scripts/verify_live.sh` - live file equals build except the platform wrapper.
+- `scripts/validate_data.py` - checks a data dump against the template's own enums: valid values, releases and projects exist, unique numbers, log keys, timestamps; lists writes made outside the page.
 - `references/architecture.md` - data layer, merge, tombstones, numbering, self-republish guards, multi-project, Google Docs mirror.
 - `references/publish-protocol.md` - every publish refusal seen and its exact remedy.
 - `references/ui-patterns.md` - toolbar, dropdowns, capsule, menus that survive resize, archive/restore, project picker, research sources.
 - `references/testing.md` - the test catalog (what every board must test) and how to write tests that can fail.
 - `references/pitfalls.md` - incidents and their root causes; read before changing data, menus, forms or layout.
+- `references/external-writers.md` - rules for other sessions that write straight to the board's database.
 - `assets/board-template.html` - full working board (images replaced by a placeholder SVG); `__SEED__` marks the seed.
