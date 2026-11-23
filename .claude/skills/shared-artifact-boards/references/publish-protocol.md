@@ -24,7 +24,7 @@ A user's tab republished with their latest edits. Nothing is lost yet.
 3. Publish again, as its own step after the Read has returned. Sending Read and publish in the same parallel batch fails, because the publish can run first.
 
 **"identical content already refused ... resent unchanged"**
-Same as above: Read the saved file first, then publish the unchanged file again; it goes through if the artifact has not moved again.
+Same as above: Read the saved file first, then publish the unchanged file again; it goes through if the artifact has not moved again. Observed sequence that works: refusal, compare, Read, publish (may still be refused once as "identical"), publish again (goes through). Do not change the file between these attempts; do not dump again unless compare_live reports a difference.
 
 **The auto-mode or safety classifier blocks a command ("This is not a judgement on ...")**
 Usually a heredoc or an inline script in a shell command. Write the script to a file with the Write tool and run the file.
