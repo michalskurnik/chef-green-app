@@ -885,6 +885,9 @@ body.fl-lock{overflow:hidden}
 .lb-bar button:hover,.lb-x:hover{background:rgba(255,255,255,.24)}
 .lb-bar button:focus-visible,.lb-x:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .lb-cnt{color:#F3F4F1;font-size:.85rem;min-width:60px;text-align:center}
+
+/* v57: diagnostics - send to the database or copy */
+.diag-act{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 6px}
 </style>
 
 <div class="food" aria-hidden="true">
@@ -978,7 +981,7 @@ body.fl-lock{overflow:hidden}
         <div class="row"><button type="button" id="copy-agent">העתקת ההוראות</button><span class="saved" id="copy-ok"></span></div>
       </div>
     </div>
-    <div id="lp-diag" class="tpanel" role="tabpanel" aria-labelledby="tt-diag"><label class="inline me-pick" for="me">מי משתמש בדף במכשיר הזה<select id="me"></select><span class="muted small">מזוהה אוטומטית. לשנות רק אם הזיהוי שגוי (משפיע על השם בלוג ועל סדר הבקשות בממתין לתשובה)</span></label><pre class="diag" id="diag"></pre></div>
+    <div id="lp-diag" class="tpanel" role="tabpanel" aria-labelledby="tt-diag"><label class="inline me-pick" for="me">מי משתמש בדף במכשיר הזה<select id="me"></select><span class="muted small">מזוהה אוטומטית. לשנות רק אם הזיהוי שגוי (משפיע על השם בלוג ועל סדר הבקשות בממתין לתשובה)</span></label><div class="diag-act"><button type="button" id="diag-send">שליחת הפרטים לבדיקה</button><button type="button" id="diag-copy">העתקה</button><span class="muted small" id="diag-msg" role="status"></span></div><pre class="diag" id="diag"></pre></div>
 
   </section>
 </div>
@@ -1082,7 +1085,10 @@ body.fl-lock{overflow:hidden}
   function fillSelect(el,map,def){el.textContent='';Object.keys(map).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=map[k];if(k===String(def))o.selected=true;el.appendChild(o)})}
   var toastT;function toast(msg,ms){var t=$('toast');if(!t){t=el('div','toast');t.id='toast';t.setAttribute('role','status');document.body.appendChild(t)}t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true},ms||2600)}
   function setStatus(title,detail){var s=$('status');if(!title){s.hidden=true;s.textContent='';return}s.hidden=false;s.textContent='';s.appendChild(el('b',null,title));if(detail)s.appendChild(el('span','small muted',detail))}
-  function step(s){diagState.steps.push(new Date().toISOString().slice(11,19)+' '+s);var d=$('diag');if(d)d.textContent=JSON.stringify({opened:diagState.start,url:location.href.split('#')[0].slice(0,80),live:{items:!!live.items,releases:!!live.releases,log:!!live.log},seedAt:SEED.at,canWrite:canWrite,sync:!!artifactApi,steps:diagState.steps},null,1)}
+  var snapN={};
+  function diagData(){var newest='';(live.items||[]).forEach(function(d){var u=String(d.updatedAt||'');if(u>newest)newest=u});
+    return {opened:diagState.start,now:new Date().toISOString(),ua:navigator.userAgent.slice(0,160),url:location.href.split('#')[0].slice(0,80),live:{items:!!live.items,releases:!!live.releases,log:!!live.log},fresh:{items:!!liveFresh.items,releases:!!liveFresh.releases,log:!!liveFresh.log,projects:!!liveFresh.projects},snaps:snapN,newestLiveItem:newest,seedAt:SEED.at,canWrite:canWrite,sync:!!artifactApi,steps:diagState.steps.slice(-60)}}
+  function step(s){diagState.steps.push(new Date().toISOString().slice(11,19)+' '+s);var d=$('diag');if(d)d.textContent=JSON.stringify(diagData(),null,1)}
   function withTimeout(p,ms){return Promise.race([p,new Promise(function(_,rej){setTimeout(function(){rej({code:'timeout'})},ms)})])}
   function lsGet(){try{return JSON.parse(localStorage.getItem('gc_local2')||'{}')}catch(e){return {}}}
   function lsSet(v){try{localStorage.setItem('gc_local2',JSON.stringify(v))}catch(e){}}
@@ -1777,8 +1783,12 @@ body.fl-lock{overflow:hidden}
   });
 
   /* ---------- loading ---------- */
+  async function sendDiag(){var m=$('diag-msg');if(!db||!myId){m.textContent='לא נשלח: אין חיבור למאגר או שהמשתמש לא מזוהה - אפשר ללחוץ על העתקה ולהדביק בצ\'אט';return}
+    m.textContent='שולח...';try{var d=diagData();await withTimeout(db.collection('data/users/'+myId).doc('diag').set({at:d.now,json:JSON.stringify(d)}),15000);m.textContent='נשלח - אפשר לומר לקלוד לקרוא את הפרטים';step('diagnostics sent')}
+    catch(e){m.textContent='לא נשלח ('+((e&&e.code)||(e&&e.message)||'שגיאה')+') - אפשר ללחוץ על העתקה ולהדביק בצ\'אט';step('diagnostics send failed: '+((e&&e.code)||'error'))}}
+  function copyDiag(){var t=JSON.stringify(diagData(),null,1),m=$('diag-msg');try{navigator.clipboard.writeText(t).then(function(){m.textContent='הועתק - הדביקו בצ\'אט'},function(){m.textContent='ההעתקה נחסמה - סמנו את הטקסט למטה והעתיקו ידנית'})}catch(e){m.textContent='ההעתקה נחסמה - סמנו את הטקסט למטה והעתיקו ידנית'}}
   function applySnap(col,s){
-    var fc=!!(s.metadata&&s.metadata.fromCache);
+    var fc=!!(s.metadata&&s.metadata.fromCache);var sn=snapN[col]=snapN[col]||{saved:0,confirmed:0,last:''};if(fc)sn.saved++;else{sn.confirmed++;sn.last=new Date().toISOString().slice(11,19)}
     if(fc&&!s.docs.length&&(SEED[col]||[]).length)return;
     if(fc&&liveFresh[col])return;
     var first=!live[col];live[col]=s.docs.map(function(d){var o=d.data()||{};o.id=d.id;return o});liveFresh[col]=!fc;
@@ -1798,6 +1808,7 @@ body.fl-lock{overflow:hidden}
   }
   function sub(col,n){try{db.collection(col).onSnapshot(function(s){applySnap(col,s)},function(e){var c=(e&&e.code)||'error';step('live '+col+' error: '+c);liveFresh[col]=false;showStale('dead');
       if(c==='unavailable'||c==='error'){var d=Math.min(300000,3000*Math.pow(2,n))+Math.floor(Math.random()*1000);setTimeout(function(){step('live '+col+' resubscribe #'+(n+1));sub(col,n+1)},d)}})}catch(e){step('live '+col+' throw: '+e.message)}}
+  $('diag-send').addEventListener('click',sendDiag);$('diag-copy').addEventListener('click',copyDiag);
   async function start(){
     if(SEED.items.length){seedShown=true;refresh();setSync('עותק מ-'+(SEED.at||''))}
     step('seed '+SEED.items.length+' items, at '+SEED.at);

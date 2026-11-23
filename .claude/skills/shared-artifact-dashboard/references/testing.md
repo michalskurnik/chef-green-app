@@ -33,6 +33,7 @@ Data
 - projects: create, duplicate symbol rejected, switch, separate numbering and version ids, choice remembered after reload, rename
 
 UI behaviour
+- diagnostics: snapshot counts (saved vs confirmed) shown; "send" writes them to the viewer's own `data/users/<id>/diag` and confirms or reports the error
 - versions menu and new-version form survive resize events and data refreshes while the mouse moves over them
 - filter dropdowns: change, highlight, combine, clear resets; open dropdown survives a refresh
 - view toggle from another tab brings the task list into view; typing a search from another tab shows results
