@@ -9,6 +9,10 @@ Distilled from a long real session that built and ran a bilingual (Hebrew RTL) t
 
 Two other skills hold the platform contract; load them first when they are listed: `artifact-design` (page contract, theming, size limits) and `artifact-capabilities` (db, artifact.publish, user, downloads, mcp). This skill is the layer above them: how to build and operate a real multi-user board.
 
+## Never mutate platform data
+
+Snapshot `data()` objects are frozen; the board runs in strict mode. Copy before you add or change a field (`Object.assign({}, d.data())`). Mutating one silently dropped every live answer for a whole day of debugging (`references/pitfalls.md`, last entry). The test mock must freeze `data()` too, or this class of bug stays invisible.
+
 ## Choose your path
 
 - **Only updating tickets on an existing board** (you fixed bugs elsewhere and report back, attach screenshots, change status or owner, add an item) - any session, including a teammate's: follow "Updating tickets" right below. No template, test suite or build setup is needed.

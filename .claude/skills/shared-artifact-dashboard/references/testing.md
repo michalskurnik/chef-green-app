@@ -33,6 +33,7 @@ Data
 - projects: create, duplicate symbol rejected, switch, separate numbering and version ids, choice remembered after reload, rename
 
 UI behaviour
+- the mock freezes every snapshot's `data()` like the platform; a test delivers frozen data and checks it is applied and marked fresh
 - outbox: a failed save is resent once after 20 s, its log entry re-set by id, nothing resent once the database has it, never pushed over someone else's newer change (mock `doc().get` + `page.clock`)
 - no page publish after ordinary edits (a publish reloads every open view); the manual button publishes once
 - reconnect: every reconnect within ~3 s after short drops; waits capped at ~30 s in a lasting outage; immediate reconnect when the tab becomes visible (use `page.clock`)

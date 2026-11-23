@@ -11,7 +11,7 @@ const init = () => {
   window.__w = []; window.__pub = []; window.__snap = {}; let n = 0;
   const db = { collection: (c) => ({
     get: () => new Promise(() => {}),
-    onSnapshot: (fn, err) => { window.__snap[c] = fn; (window.__snapErr = window.__snapErr || {})[c] = err; window.__subs = (window.__subs || 0) + 1; return () => {}; },
+    onSnapshot: (fn, err) => { window.__snap[c] = (s) => fn(Object.assign({}, s, { docs: (s.docs || []).map(x => { const v = Object.freeze(Object.assign({}, x.data())); return { id: x.id, data: () => v }; }) })); /* like the platform: data() is frozen */ (window.__snapErr = window.__snapErr || {})[c] = err; window.__subs = (window.__subs || 0) + 1; return () => {}; },
     add: async (o) => { if (window.__failTitle && o.title === window.__failTitle) throw new Error('mock write failure'); __w.push(['add', c, o.title]); return { id: 'n' + (++n) }; },
     doc: (id) => ({
       update: async (o) => { __w.push(['update', c, id, JSON.stringify(o)]); },

@@ -1882,7 +1882,8 @@ body.fl-lock{overflow:hidden}
     var fc=!!(s.metadata&&s.metadata.fromCache);var sn=snapN[col]=snapN[col]||{saved:0,confirmed:0,last:''};if(fc)sn.saved++;else{sn.confirmed++;sn.last=new Date().toISOString().slice(11,19)}
     if(fc&&!s.docs.length&&(SEED[col]||[]).length)return;
     if(fc&&liveFresh[col])return;
-    var first=!live[col];live[col]=s.docs.map(function(d){var o=d.data()||{};o.id=d.id;return o});liveFresh[col]=!fc;
+    var first=!live[col],docs;try{docs=s.docs.map(function(d){var o=Object.assign({},d.data()||{});o.id=d.id;return o})}catch(e){step('live '+col+' could not be read: '+(e&&e.message));return}
+    live[col]=docs;liveFresh[col]=!fc;
     if(first||!fc)step('live '+col+': '+live[col].length+(fc?' (saved copy)':''));
     refresh();updateSyncState();if(!fc)scheduleFlush('confirmed data');
   }
