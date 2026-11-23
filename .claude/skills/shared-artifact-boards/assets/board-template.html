@@ -794,6 +794,18 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
 /* v48: filter row - typical active filters fit on one line at 1280; extreme values wrap to a second line instead of being clipped */
 @media (min-width:961px){.tasks-head>.thead{flex-wrap:wrap!important}.fbar{flex-wrap:wrap!important;row-gap:6px}}
 @media (min-width:961px) and (max-width:1340px){.fdd-k{padding-inline-start:6px!important}.fdd select{padding-left:19px!important}.fdd::after{left:7px}}
+
+/* v49: card actions - one size, centered (grid), delete last; open card highlighted; title toggles the card */
+#items .card.item .acts{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));max-width:624px;margin-inline:auto;gap:8px;align-items:stretch}
+#items .card.item .acts>button,#items .card.item .acts>.btn{box-sizing:border-box;width:100%;height:34px;margin:0;padding:0 10px;border-radius:8px!important;border-width:1.5px!important;font-family:var(--text);font-size:.86rem;font-weight:600;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;line-height:1;position:relative;overflow:hidden}
+#items .card.item .acts>.btn.upl input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+#items .card.item .acts>.primary{grid-column:1/-1}
+#items .card.item .acts>.confirm{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px}
+#items .card.item .acts>.confirm button{box-sizing:border-box;min-width:112px;height:34px;border-radius:8px!important;border-width:1.5px!important;font-family:var(--text);font-size:.86rem;font-weight:600;padding:0 12px}
+#items .card.item .acts>.card-close{color:var(--ink-soft);border-color:var(--line)}
+#items .card.item .acts>.card-close:hover{border-color:var(--ink-soft);color:var(--ink)}
+#items .card.item.is-open{box-shadow:0 0 0 2px color-mix(in srgb,var(--chef) 55%,transparent),0 6px 18px rgba(0,0,0,.08)!important}
+#items .card.item .ttl-toggle{cursor:pointer}
 </style>
 
 <div class="food" aria-hidden="true">
@@ -1377,7 +1389,9 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
     c.appendChild(m);
     if(i.type==='request'&&i.answer){var ans=el('div','answer'+(String(i.answer).length>300?' clamp':''));ans.textContent=i.answer;c.appendChild(ans);
       if(String(i.answer).length>300){var more=el('button','link','הצגת הכל');more.type='button';more.addEventListener('click',function(){ans.classList.toggle('clamp');more.textContent=ans.classList.contains('clamp')?'הצגת הכל':'הצגה מקוצרת'});c.appendChild(more)}}
-    var d=document.createElement('details');if(openDetails[i.id])d.open=true;d.addEventListener('toggle',function(){openDetails[i.id]=d.open});
+    var d=document.createElement('details');if(openDetails[i.id]){d.open=true;c.classList.add('is-open')}
+    d.addEventListener('toggle',function(){openDetails[i.id]=d.open;c.classList.toggle('is-open',d.open);if(d.open)closeOtherCards(i.id)});
+    tr.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('button,a,input,select,textarea,label'))return;d.open=!d.open;if(d.open){var sm=d.querySelector('summary');if(sm)sm.focus({preventScroll:true})}});tr.classList.add('ttl-toggle');tr.title='לחיצה לפתיחה או סגירה של הכרטיס';
     d.appendChild(el('summary','small','פרטים ועריכה'));
     if(i.desc)d.appendChild(el('p','desc',i.desc));
     var meta=[i.screen&&('מסך: '+i.screen),i.device&&('מכשיר: '+i.device),i.where&&('קובץ: '+i.where),i.source&&SRC[i.source]&&i.source!=='other'&&('מקור: '+SRC[i.source])].filter(Boolean).join(' · ');
@@ -1396,9 +1410,10 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
     var dsl=document.createElement('label');dsl.htmlFor='e-desc-'+i.id;dsl.textContent='תיאור';var ds=document.createElement('textarea');ds.id='e-desc-'+i.id;ds.value=i.desc||'';ds.addEventListener('change',function(){patch('items',i.id,{desc:ds.value})});dsl.appendChild(ds);d.appendChild(dsl);
     if(i.type==='request'){var al=document.createElement('label');al.htmlFor='e-ans-'+i.id;al.textContent='תשובה';var at=document.createElement('textarea');at.id='e-ans-'+i.id;at.value=i.answer||'';at.addEventListener('change',function(){patch('items',i.id,{answer:at.value,answeredAt:now(),answeredBy:meName()},'נערכה תשובה')});al.appendChild(at);d.appendChild(al)}
     var nl=document.createElement('label');nl.htmlFor='e-note-'+i.id;nl.textContent='הערה';var nt=document.createElement('textarea');nt.id='e-note-'+i.id;nt.value=i.note||'';nt.addEventListener('change',function(){patch('items',i.id,{note:nt.value},'נכתבה הערה')});nl.appendChild(nt);d.appendChild(nl);
-    var r=el('div','row');r.style.marginTop='8px';
+    var r=el('div','row acts');r.style.marginTop='10px';
+    var cls=el('button','card-close','✕ סגירה');cls.type='button';cls.setAttribute('aria-label','סגירת הכרטיס '+keyOf(i));cls.addEventListener('click',function(){d.open=false;var sm=d.querySelector('summary');if(sm)sm.focus({preventScroll:true})});
     if(i.type==='request'&&i.answer){var cv=el('button','primary','יצירת משימה מהתשובה');cv.type='button';cv.addEventListener('click',async function(){if(!canWrite||!db){toast('אין הרשאת עריכה');return}var n=await createItem({type:'task',title:'מתוך '+keyOf(i)+': '+(i.title||''),desc:i.answer,release:i.release||'',owner:'owner'},'נוצר מתשובה');refresh();schedulePublish();toast('נוצרה '+keyOf(n)+' - אפשר לערוך את הכותרת')});r.appendChild(cv)}
-    r.appendChild(uploadButton('צירוף קבצים',function(up){patch('items',i.id,{files:(i.files||[]).concat(up)},'צורפו קבצים')}));
+    r.appendChild(cls);r.appendChild(uploadButton('צירוף קבצים',function(up){patch('items',i.id,{files:(i.files||[]).concat(up)},'צורפו קבצים')}));
     var ab=el('button',null,i.archived?'החזרה מהארכיון':'העברה לארכיון');ab.type='button';ab.addEventListener('click',function(){patch('items',i.id,{archived:!i.archived},i.archived?'הוחזר מהארכיון':'הועבר לארכיון')});r.appendChild(ab);
     var del=el('button','danger','מחיקה');del.type='button';var conf=el('span','row confirm');conf.hidden=true;conf.appendChild(el('span','small','למחוק את '+keyOf(i)+' לצמיתות?'));
     var yes=el('button','danger solid','כן, למחוק');yes.type='button';yes.addEventListener('click',function(){removeItem(i)});var no=el('button',null,'ביטול');no.type='button';no.addEventListener('click',function(){conf.hidden=true;del.hidden=false});
@@ -1408,6 +1423,15 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
     c.appendChild(d);return c;
   }
 
+  function closeOtherCards(keep){Object.keys(openDetails).forEach(function(k){if(k!==keep)openDetails[k]=false});
+    Array.prototype.forEach.call(document.querySelectorAll('#items .card.item>details[open]'),function(dd){var cc=dd.parentNode;if(cc&&cc.dataset.id!==keep)dd.open=false})}
+  function openCardDetails(){return document.querySelector('#items .card.item>details[open]')}
+  document.addEventListener('click',function(e){var t=e.target;if(!t||!document.contains(t))return;var od=openCardDetails();if(!od)return;
+    if(od.parentNode.contains(t))return;if(t.closest&&t.closest('#vb-menu,#pp-menu,.pp-back,#toast'))return;
+    closeOtherCards(null)},true);
+  document.addEventListener('keydown',function(e){if(e.key!=='Escape'||e.defaultPrevented)return;if($('vb-menu')||$('pp-menu')||$('pp-form'))return;
+    var od=openCardDetails();if(!od)return;var ae=document.activeElement;if(ae&&ae.tagName==='SELECT')return;
+    od.open=false;var sm=od.querySelector('summary');if(sm)sm.focus({preventScroll:true})});
   var sortableLoaded=false;
   function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=function(){rej(new Error('load '+src))};document.head.appendChild(s)})}
   function renderItems(){

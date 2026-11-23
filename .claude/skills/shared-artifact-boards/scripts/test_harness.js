@@ -89,6 +89,20 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
     ok(lines === 1, '7 ' + w + ' wide: filter row stays on one line with a filter active (' + lines + ' line(s))');
   }
 
+  // 8. expanded card: equal centered buttons; close button, outside click and Escape close it; inner clicks do not
+  {
+    await ctx.close(); [ctx, p] = await fresh();
+    await p.click('#view button:has-text("רשימה")'); await p.waitForTimeout(200);
+    await p.click('#items .card.item >> nth=0 >> summary'); await p.waitForTimeout(150);
+    const open = () => p.evaluate(() => !!document.querySelector('#items .card.item>details[open]'));
+    const ws = await p.$$eval('#items .card.item.is-open .acts>button, #items .card.item.is-open .acts>.btn', e => [...new Set(e.filter(x => x.offsetWidth).map(x => Math.round(x.getBoundingClientRect().width) + 'x' + Math.round(x.getBoundingClientRect().height)))]);
+    await p.click('#items .card.item.is-open textarea >> nth=0'); const inside = await open();
+    await p.click('.ovr-top h1'); const outside = !(await open());
+    await p.click('#items .card.item >> nth=0 >> summary'); await p.keyboard.press('Escape'); const esc = !(await open());
+    await p.click('#items .card.item >> nth=0 >> summary'); await p.click('#items .card.item.is-open .card-close'); const btn = !(await open());
+    ok(ws.length === 1 && inside && outside && esc && btn, '8 card: one button size ' + JSON.stringify(ws) + ', inner click keeps it open, outside click / Escape / close button close it');
+  }
+
   await ctx.close(); await b.close();
   console.log(fails ? 'FAILURES: ' + fails : 'ALL PASSED');
   process.exit(fails ? 1 : 0);

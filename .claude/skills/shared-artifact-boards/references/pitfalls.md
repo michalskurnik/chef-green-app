@@ -73,3 +73,7 @@ Fix: build options once; only set value and classes on refresh.
 **A full row wraps as soon as a conditional control appears.** At 1280px the filter row had about 20px of slack; choosing any filter shows the "clear" button and the row broke onto two lines. Found by a comparison run, not by the suite, because every layout test measured the default state. Fix: at narrow widths "clear" becomes an x icon (`font-size:0` + `::before`) with `aria-label` and `title`, and the tabs lose 2px of padding. Test layout in the active states too: a filter set, a menu open, a long name, the clear button visible.
 
 **Hidden elements counted in layout tests.** A hidden chip has a rect at top 0 and turns "1 line" into "2 lines". Filter by `offsetWidth` before measuring.
+
+**Outside-click close that closes on inside clicks.** A document click handler in the bubble phase runs after the card's own handlers; if those re-rendered the card, the event target is detached and looks "outside". Listen in the capture phase, ignore targets no longer in the document, and ignore clicks inside floating menus and dialogs.
+
+**Equal-width button grid collapsing to one column.** `repeat(auto-fit, minmax(112px,150px))` counts columns by the maximum (150px), so a 300px card got one button per row. Use `minmax(104px,1fr)` with a `max-width` on the grid and `margin-inline:auto` to keep it centered.

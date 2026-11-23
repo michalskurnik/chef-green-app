@@ -80,6 +80,12 @@ function renderRelPanel(){var reopen=!!$('vb-menu');renderRelPanel0();
 - Menu: each project with icon, name, symbol and task count; "+ New project"; "Edit project".
 - Form (modal dialog, Escape and backdrop close): name (used in the title), symbol (2-5 latin letters/digits, starts with a letter, forced to upper case, unique, locked after creation), optional image (resized to 96px), live preview of the generated icon.
 
+## 7b. Expanded card: actions and closing
+
+- Actions in one centered grid of equal buttons (34px, 8px radius): "x Close", "Attach files", "Archive", "Delete" (delete last, red outline, two-step confirm). `grid-template-columns:repeat(auto-fit,minmax(104px,1fr)); max-width:624px; margin-inline:auto` gives 4 in a row on wide cards, 2x2 on narrow columns and phones.
+- Closing (W3C APG disclosure pattern and common card guidance): a labelled close button (`aria-label="Close card GC-7"`), Escape, clicking the title again, and clicking anywhere outside the open card. Return focus to the card's summary. Clicks on inner controls never close it; menus and dialogs take Escape first.
+- One open card at a time keeps the board readable and makes "click outside closes" predictable. Highlight the open card with a soft ring.
+
 ## 8. Archive, restore, delete (general rule)
 
 Any action that hides data needs a visible way back, and any action that removes data needs a confirmation that says what happens to dependent data. Archive is one click and reversible; delete is two steps.
