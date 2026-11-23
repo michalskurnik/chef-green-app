@@ -861,6 +861,13 @@ body.fl-lock{overflow:hidden}
 
 /* v54: floating window head - type and status tags */
 #fl-back .fl-head{flex-wrap:wrap}#fl-back .fl-head .pill{flex:none}
+
+/* v55: screenshots in an open card - readable previews (240px, 200px on phones), not cropped, with the file name */
+.ci-files .files{gap:12px;align-items:flex-start}
+.ci-files .files a{flex-direction:column;align-items:center;padding:6px;max-width:min(100%,300px)}
+.ci-files .files img{width:auto;height:240px;max-width:100%;object-fit:contain;background:var(--paper)}
+.ci-files .files .fname{font-size:.75rem;line-height:1.3;color:var(--ink-soft);max-width:100%;align-self:stretch}
+@media (max-width:600px){.ci-files .files img{height:200px}}
 </style>
 
 <div class="food" aria-hidden="true">
@@ -1253,7 +1260,7 @@ body.fl-lock{overflow:hidden}
   function renderFiles(files){
     var box=el('div','files');(files||[]).forEach(function(f){
       var a=document.createElement('a');a.href='/_blob/'+f.id;a.target='_blank';a.rel='noopener';
-      if(/^image\//.test(f.type||'')){var im=document.createElement('img');im.src='/_blob/'+f.id;im.alt=f.name||'צילום מסך';a.appendChild(im)}else a.textContent='קובץ: '+(f.name||'ללא שם');
+      if(/^image\//.test(f.type||'')){var im=document.createElement('img');im.src='/_blob/'+f.id;im.alt=f.name||'צילום מסך';im.loading='lazy';a.appendChild(im);a.title='פתיחה בגודל מלא';if(f.name)a.appendChild(el('span','fname',String(f.name).replace(/\.(jpe?g|png|gif|webp|heic)$/i,'')))}else a.textContent='קובץ: '+(f.name||'ללא שם');
       box.appendChild(a)});return box;
   }
   function uploadButton(label,onFiles){

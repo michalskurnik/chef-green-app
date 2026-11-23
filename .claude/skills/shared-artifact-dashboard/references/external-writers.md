@@ -1,5 +1,7 @@
 # Writing to a board's database from outside the page
 
+**Definition of done for any external write:** the database has the change AND the page copy is republished from a fresh dump AND `check_copy_vs_db.py` reports a match. Writing alone is not done; a viewer whose live connection is not working sees only the page copy (this was missed three times).
+
 Other Claude sessions (Claude Code in a terminal or IDE, another chat) may update the board directly with `ArtifactData` instead of through the page. That is fine and safe when these rules are followed. Each rule comes from a verified scenario (tests 46a-46f in the board suite).
 
 ## Rules
@@ -14,6 +16,8 @@ Other Claude sessions (Claude Code in a terminal or IDE, another chat) may updat
 8. **Verify after writing**: `get` the doc again and check the fields; then run `scripts/validate_data.py <template> <dump>` on a fresh dump. Zero errors expected.
 
 9. **Refresh the page copy.** After the write, rebuild and republish the page from a fresh dump (or ask the board's maintainer session to), then check `check_copy_vs_db.py` reports a match. Without it, a viewer whose live connection fails keeps seeing the old state (this happened twice).
+
+10. **Attaching screenshots or files.** Upload each file to the artifact's asset store (`Artifact publish` with `url`, `asset:true`, `file_path`); the result gives `/_blob/<32-hex id>`. Then `update` the item's `files` with the whole array: the existing entries plus `{id, name, type}` per new file (`id` = the 32-hex part, `type` = the MIME type such as `image/jpeg`; arrays replace wholesale, so never send only the new entries). Give screenshots a short descriptive `name` (it is shown under the preview). Then rule 9.
 
 ## What does not need doing
 

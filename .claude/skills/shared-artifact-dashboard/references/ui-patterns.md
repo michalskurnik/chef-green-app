@@ -93,6 +93,10 @@ function renderRelPanel(){var reopen=!!$('vb-menu');renderRelPanel0();
 - Modal standard (W3C APG dialog-modal, MDN aria-modal): `role=dialog`, `aria-modal`, `aria-labelledby` the title; everything else `inert`; initial focus on the title (content-heavy dialog); Escape, the close button and a click anywhere on the backdrop close it, but only when the press also started on the backdrop (a drag-select ending outside does not close it); focus returns to the icon; body scroll locked; near full screen on phones.
 - Closing blurs a focused field first so its change event saves the text. Live updates re-render the window except while someone types in it (deferred until focus leaves). Inside the window the card's ids get an `fl-` prefix (no duplicate ids with the board card).
 
+## 7d. Screenshots and files in a card
+
+Images in an expanded card or the floating window: previews 240px tall (200px under 600px wide), `width:auto; max-width:100%; object-fit:contain`, the file name without its extension under each, the whole tile a link to the full-size file in a new tab (`/_blob/<id>`, `rel=noopener`), `loading=lazy`. Other files: a text link "קובץ: <name>". Closed cards show only a count pill ("2 קבצים").
+
 ## 8. Archive, restore, delete (general rule)
 
 Any action that hides data needs a visible way back, and any action that removes data needs a confirmation that says what happens to dependent data. Archive is one click and reversible; delete is two steps.
