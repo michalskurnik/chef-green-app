@@ -95,7 +95,11 @@ function renderRelPanel(){var reopen=!!$('vb-menu');renderRelPanel0();
 
 ## 7d. Screenshots and files in a card
 
-Images in an expanded card or the floating window: previews 240px tall (200px under 600px wide), `width:auto; max-width:100%; object-fit:contain`, the file name without its extension under each, the whole tile a link to the full-size file in a new tab (`/_blob/<id>`, `rel=noopener`), `loading=lazy`. Other files: a text link "קובץ: <name>". Closed cards show only a count pill ("2 קבצים").
+Images in an expanded card or the floating window: previews 240px tall (200px under 600px wide), `width:auto; max-width:100%; object-fit:contain`, the file name without its extension under each, `loading=lazy`. Closed cards show only a count pill ("2 קבצים").
+
+**Never a link that opens a new tab.** Inside claude.ai a `target=_blank` link (or `window.open`) to `/_blob/<id>` shows "this link cannot be opened here". Each image tile is a `<button>` that opens an in-page viewer; other files are buttons that download through the `downloads` capability (`fetch('/_blob/'+id)` then `downloads.save({filename, data: blob})`, toast on decline or failure).
+
+In-page image viewer (lightbox), per the W3C APG modal dialog pattern: `role=dialog`, `aria-modal`, `aria-label` = image name; everything else `inert`; focus on the close button when it opens and back on the tile when it closes (re-found by file id if the card re-rendered); Escape, the close button, or a click outside the image close it (only if the press also started outside, so a drag from the image does not); arrow keys and "→ הקודמת" / "הבאה ←" buttons move between the card's images and wrap; "1 מתוך 2" counter; a download button. The close button has its own row above the image so it never covers it; the image is limited to `100dvh - 176px`. The Escape listener is on `window` in the capture phase and stops propagation, so when the viewer was opened from the floating window, the first Escape closes only the viewer. Tests 48d-48j.
 
 ## 8. Archive, restore, delete (general rule)
 

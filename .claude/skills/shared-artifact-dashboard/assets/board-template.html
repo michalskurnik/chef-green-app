@@ -864,10 +864,27 @@ body.fl-lock{overflow:hidden}
 
 /* v55: screenshots in an open card - readable previews (240px, 200px on phones), not cropped, with the file name */
 .ci-files .files{gap:12px;align-items:flex-start}
-.ci-files .files a{flex-direction:column;align-items:center;padding:6px;max-width:min(100%,300px)}
 .ci-files .files img{width:auto;height:240px;max-width:100%;object-fit:contain;background:var(--paper)}
 .ci-files .files .fname{font-size:.75rem;line-height:1.3;color:var(--ink-soft);max-width:100%;align-self:stretch}
 @media (max-width:600px){.ci-files .files img{height:200px}}
+
+/* v56: files as buttons (a new tab is blocked inside claude.ai); in-page image viewer */
+.files .fimg,.files .ffile{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:.85rem;color:var(--ink);background:var(--chip);border:0;border-radius:10px;padding:4px 8px;max-width:100%;overflow-wrap:anywhere;cursor:pointer;text-align:start}
+.files .fimg{cursor:zoom-in}
+.files .fimg:hover,.files .ffile:hover{background:color-mix(in srgb,var(--chef) 14%,var(--chip))}
+.files .fimg:focus-visible,.files .ffile:focus-visible{outline:2px solid var(--chef);outline-offset:2px}
+.ci-files .files .fimg{flex-direction:column;align-items:center;padding:6px;max-width:min(100%,300px)}
+.lb-back{position:fixed;inset:0;z-index:90;background:rgba(10,14,12,.88);display:flex;align-items:center;justify-content:center;padding:12px}
+.lb-dlg{position:relative;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;max-width:1200px;padding-top:48px}
+.lb-fig{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:100%;min-height:0}
+.lb-img{display:block;max-width:100%;max-height:calc(100dvh - 176px);object-fit:contain;border-radius:8px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.lb-cap{color:#F3F4F1;font-size:.9rem;text-align:center;overflow-wrap:anywhere}
+.lb-bar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.lb-bar button,.lb-x{box-sizing:border-box;height:34px;min-width:44px;padding:0 14px;border-radius:8px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.lb-x{position:absolute;top:0;inset-inline-end:0;z-index:1;width:40px;height:40px;padding:0;font-size:1.1rem}
+.lb-bar button:hover,.lb-x:hover{background:rgba(255,255,255,.24)}
+.lb-bar button:focus-visible,.lb-x:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.lb-cnt{color:#F3F4F1;font-size:.85rem;min-width:60px;text-align:center}
 </style>
 
 <div class="food" aria-hidden="true">
@@ -1257,12 +1274,45 @@ body.fl-lock{overflow:hidden}
       try{var r=await assets.upload(f,{type:fileType(f)});out.push({id:r.id,name:f.name,type:r.contentType})}catch(e){toast('העלאת '+f.name+' נכשלה')}}
     return out;
   }
+  /* files: inside claude.ai a link that opens a new tab is blocked ("this link cannot be opened here"),
+     so images open in an in-page viewer and other files download through the downloads capability */
+  function isImg(f){return /^image\//.test(f.type||'')}
+  function fileTitle(f){return String(f.name||'').replace(/\.(jpe?g|png|gif|webp|heic)$/i,'')}
+  async function downloadFile(f){if(!downloadsApi){toast('הורדת קבצים לא זמינה בתצוגה הזאת');return}
+    try{var r=await fetch('/_blob/'+f.id);if(!r.ok)throw {code:'http '+r.status};var bl=await r.blob();await downloadsApi.save({filename:f.name||('file-'+f.id),data:bl});toast('הקובץ נשמר')}
+    catch(e){toast((e&&e.code)==='declined'?'ההורדה בוטלה':'ההורדה נכשלה ('+((e&&e.code)||'שגיאה')+')')}}
   function renderFiles(files){
-    var box=el('div','files');(files||[]).forEach(function(f){
-      var a=document.createElement('a');a.href='/_blob/'+f.id;a.target='_blank';a.rel='noopener';
-      if(/^image\//.test(f.type||'')){var im=document.createElement('img');im.src='/_blob/'+f.id;im.alt=f.name||'צילום מסך';im.loading='lazy';a.appendChild(im);a.title='פתיחה בגודל מלא';if(f.name)a.appendChild(el('span','fname',String(f.name).replace(/\.(jpe?g|png|gif|webp|heic)$/i,'')))}else a.textContent='קובץ: '+(f.name||'ללא שם');
-      box.appendChild(a)});return box;
+    var box=el('div','files'),list=files||[],imgs=list.filter(isImg);
+    list.forEach(function(f){var b=el('button',isImg(f)?'fimg':'ffile');b.type='button';
+      if(isImg(f)){var im=document.createElement('img');im.src='/_blob/'+f.id;im.alt='';im.loading='lazy';b.appendChild(im);var t=fileTitle(f);if(t)b.appendChild(el('span','fname',t));
+        b.dataset.fid=f.id;b.setAttribute('aria-label','הגדלת תמונה'+(t?': '+t:''));b.title='לחיצה להגדלה';b.addEventListener('click',function(e){e.stopPropagation();openViewer(imgs,imgs.indexOf(f),b)})}
+      else{b.textContent='קובץ: '+(f.name||'ללא שם');b.title='הורדת הקובץ';b.addEventListener('click',function(e){e.stopPropagation();downloadFile(f)})}
+      box.appendChild(b)});return box;
   }
+  /* image viewer (lightbox): modal dialog over everything, Escape / close button / click outside the image close it,
+     arrow keys and buttons move between the card's images, focus returns to the tile that opened it */
+  var lbState=null;
+  function openViewer(imgs,idx,opener){if(!imgs.length)return;closeViewer(true);
+    var back=el('div','lb-back');back.id='lb-back';var dlg=el('div','lb-dlg');dlg.setAttribute('role','dialog');dlg.setAttribute('aria-modal','true');
+    var x=el('button','lb-x','✕');x.type='button';x.setAttribute('aria-label','סגירת התמונה');x.title='סגירה (Esc)';x.addEventListener('click',function(){closeViewer()});
+    var fig=el('figure','lb-fig'),im=document.createElement('img');im.className='lb-img';var cap=el('figcaption','lb-cap');fig.appendChild(im);fig.appendChild(cap);
+    var bar=el('div','lb-bar'),prev=el('button','lb-nav lb-prev','→ הקודמת'),cnt=el('span','lb-cnt'),next=el('button','lb-nav lb-next','הבאה ←'),dl=el('button','lb-dl','הורדה');
+    [prev,next,dl].forEach(function(b){b.type='button'});
+    prev.addEventListener('click',function(){show(lbState.i-1)});next.addEventListener('click',function(){show(lbState.i+1)});dl.addEventListener('click',function(){downloadFile(lbState.imgs[lbState.i])});
+    bar.appendChild(prev);bar.appendChild(cnt);bar.appendChild(next);bar.appendChild(dl);dlg.appendChild(x);dlg.appendChild(fig);dlg.appendChild(bar);back.appendChild(dlg);
+    var down=false,outside=function(t){return t===back||t===dlg||t===fig};
+    back.addEventListener('pointerdown',function(e){down=outside(e.target)});back.addEventListener('click',function(e){if(down&&outside(e.target))closeViewer();down=false});
+    var inert=[];Array.prototype.forEach.call(document.body.children,function(n){if(n!==back&&n.id!=='toast'&&!n.inert){n.inert=true;inert.push(n)}});
+    function show(i){var n=lbState.imgs.length;i=((i%n)+n)%n;lbState.i=i;var f=lbState.imgs[i],t=fileTitle(f)||'תמונה';im.src='/_blob/'+f.id;im.alt=t;cap.textContent=t;dlg.setAttribute('aria-label',t);
+      cnt.textContent=n>1?(i+1)+' מתוך '+n:'';prev.hidden=next.hidden=cnt.hidden=n<2}
+    lbState={imgs:imgs,i:idx<0?0:idx,fid:opener&&opener.dataset?opener.dataset.fid:'',opener:opener,inert:inert,back:back,show:show};
+    document.body.appendChild(back);document.body.classList.add('fl-lock');show(lbState.i);x.focus({preventScroll:true});
+  }
+  function closeViewer(silent){var s=lbState;if(!s)return;lbState=null;s.back.remove();s.inert.forEach(function(n){n.inert=false});if(!$('fl-back'))document.body.classList.remove('fl-lock');
+    if(silent)return;var o=s.opener;if(!o||!document.contains(o))o=document.querySelector('#fl-back .fimg[data-fid="'+s.fid+'"]')||document.querySelector('#items .fimg[data-fid="'+s.fid+'"]');if(o)o.focus({preventScroll:true})}
+  window.addEventListener('keydown',function(e){if(!lbState)return;
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closeViewer();return}
+    if((e.key==='ArrowLeft'||e.key==='ArrowRight')&&lbState.imgs.length>1){e.preventDefault();e.stopPropagation();lbState.show(lbState.i+(e.key==='ArrowLeft'?1:-1))}},true);
   function uploadButton(label,onFiles){
     var w=el('span','btn upl',label);var inp=document.createElement('input');inp.type='file';inp.multiple=true;inp.accept='image/*,video/*,.txt,.pdf';
     inp.addEventListener('change',async function(){if(!inp.files.length)return;w.firstChild.textContent='מעלה...';var up=await uploadAll(inp.files);inp.value='';w.firstChild.textContent=label;if(up.length)onFiles(up)});
@@ -1529,7 +1579,7 @@ body.fl-lock{overflow:hidden}
     Array.prototype.forEach.call(document.querySelectorAll('#items .card.item>details[open]'),function(dd){var cc=dd.parentNode;if(cc&&cc.dataset.id!==keep)dd.open=false})}
   function openCardDetails(){return document.querySelector('#items .card.item>details[open]')}
   document.addEventListener('click',function(e){var t=e.target;if(!t||!document.contains(t))return;var od=openCardDetails();if(!od)return;
-    if(od.parentNode.contains(t))return;if(t.closest&&t.closest('#vb-menu,#pp-menu,.pp-back,#toast,#fl-back'))return;
+    if(od.parentNode.contains(t))return;if(t.closest&&t.closest('#vb-menu,#pp-menu,.pp-back,#toast,#fl-back,#lb-back'))return;
     closeOtherCards(null)},true);
   document.addEventListener('keydown',function(e){if(e.key!=='Escape'||e.defaultPrevented)return;if($('vb-menu')||$('pp-menu')||$('pp-form'))return;
     var od=openCardDetails();if(!od)return;var ae=document.activeElement;if(ae&&ae.tagName==='SELECT')return;
