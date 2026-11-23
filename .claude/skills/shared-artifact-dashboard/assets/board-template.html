@@ -811,6 +811,17 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
 .ovr-top .logo.stale{outline:3px solid #e0a40f;outline-offset:2px;border-radius:10px;animation:gcStale 1.6s ease-in-out infinite}
 @keyframes gcStale{50%{outline-color:rgba(224,164,15,.35)}}
 @media (prefers-reduced-motion:reduce){.ovr-top .logo.stale{animation:none}}
+
+/* v51: expanded card - fields as bold-labelled sub-sections, empty ones hidden */
+#items .card.item .cinfo{display:flex;flex-direction:column;gap:10px;margin:8px 0 4px}
+#items .card.item .ci-h{margin:0 0 2px;font-family:var(--display);font-size:.8rem;font-weight:700;color:var(--chef-deep)}
+#items .card.item .ci-b{margin:0;font-size:.9rem;line-height:1.5;white-space:pre-line;overflow-wrap:anywhere;color:var(--ink)}
+#items .card.item .ci-note .ci-b{background:color-mix(in srgb,var(--yolk) 14%,transparent);border-inline-start:3px solid var(--yolk);padding:6px 10px;border-radius:6px}
+#items .card.item .ci-dates .ci-b{font-size:.78rem;color:var(--ink-soft)}
+#items .card.item .ci-grid{display:grid;grid-template-columns:max-content 1fr;gap:3px 12px;margin:0;align-items:baseline}
+#items .card.item .ci-grid dt{margin:0}
+#items .card.item .ci-grid dd{margin:0;font-size:.88rem;overflow-wrap:anywhere}
+#items .card.item .ci-grid dd[dir=ltr]{text-align:end;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem}
 </style>
 
 <div class="food" aria-hidden="true">
@@ -1384,6 +1395,19 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
     updated:function(a,b){return String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))},
     key:function(a,b){return (a.num||a._n)-(b.num||b._n)}};
 
+  /* expanded card: the item's fields as bold-labelled sub-sections; an empty field shows nothing, not even its label */
+  function cardInfo(i){
+    var box=el('div','cinfo');var has=function(v){return v!=null&&String(v).trim()!==''};
+    var block=function(label,text,cls){if(!has(text))return;var s=el('section','ci-sec '+(cls||''));s.appendChild(el('h4','ci-h',label));s.appendChild(el('p','ci-b',String(text).trim()));box.appendChild(s)};
+    block('תיאור',i.desc,'ci-desc');
+    var pairs=[['מסך',i.screen],['מכשיר',i.device],['קובץ',i.where],['מקור',(i.source&&i.source!=='other'&&SRC[i.source])||'']].filter(function(p){return has(p[1])});
+    if(pairs.length){var g=el('dl','ci-grid');pairs.forEach(function(p){g.appendChild(el('dt','ci-h',p[0]));var dd=el('dd','ci-v',String(p[1]).trim());if(p[0]==='קובץ')dd.dir='ltr';g.appendChild(dd)});box.appendChild(g)}
+    block('הערה',i.note,'ci-note');
+    if(i.files&&i.files.length){var fs=el('section','ci-sec ci-files');fs.appendChild(el('h4','ci-h','קבצים ('+i.files.length+')'));fs.appendChild(renderFiles(i.files));box.appendChild(fs)}
+    var dates=[i.createdAt&&('נפתח '+fmt(i.createdAt)),i.updatedAt&&('עודכן '+fmt(i.updatedAt)),i.answeredBy&&('נענתה ע"י '+i.answeredBy)].filter(Boolean);
+    if(dates.length){var ds=el('section','ci-sec ci-dates');ds.appendChild(el('h4','ci-h','תאריכים'));ds.appendChild(el('p','ci-b',dates.join(' · ')));box.appendChild(ds)}
+    return box;
+  }
   function itemCard(i){
     var c=el('div','card item'+(OPEN[i.status]?'':' is-done'));c.dataset.sev=i.sev||4;c.dataset.key=keyOf(i);c.dataset.id=i.id;if(i.id===lastNew)c.classList.add('flash');
     var tr=el('div','title-row');var t=el('div','t');
@@ -1406,12 +1430,7 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
     d.addEventListener('toggle',function(){openDetails[i.id]=d.open;c.classList.toggle('is-open',d.open);if(d.open)closeOtherCards(i.id)});
     tr.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('button,a,input,select,textarea,label'))return;d.open=!d.open;if(d.open){var sm=d.querySelector('summary');if(sm)sm.focus({preventScroll:true})}});tr.classList.add('ttl-toggle');tr.title='לחיצה לפתיחה או סגירה של הכרטיס';
     d.appendChild(el('summary','small','פרטים ועריכה'));
-    if(i.desc)d.appendChild(el('p','desc',i.desc));
-    var meta=[i.screen&&('מסך: '+i.screen),i.device&&('מכשיר: '+i.device),i.where&&('קובץ: '+i.where),i.source&&SRC[i.source]&&i.source!=='other'&&('מקור: '+SRC[i.source])].filter(Boolean).join(' · ');
-    if(meta)d.appendChild(el('p','muted small wrap',meta));
-    if(i.note)d.appendChild(el('p','desc small muted','הערה: '+i.note));
-    if(i.files&&i.files.length)d.appendChild(renderFiles(i.files));
-    d.appendChild(el('p','muted small','נפתח: '+(fmt(i.createdAt)||'-')+' · עודכן: '+(fmt(i.updatedAt)||'-')+(i.answeredBy?(' · נענתה ע"י '+i.answeredBy):'')));
+    d.appendChild(cardInfo(i));
     var g=el('div','grid');g.style.marginTop='8px';
     var mk=function(lbl,map,val,key){var l=document.createElement('label');var id='e-'+key+'-'+i.id;l.htmlFor=id;l.textContent=lbl;var se=document.createElement('select');se.id=id;fillSelect(se,map,val);se.addEventListener('change',function(){var o={};o[key]=key==='sev'?Number(se.value):(key==='release'&&se.value===NOREL?'':se.value);patch('items',i.id,o)});l.appendChild(se);g.appendChild(l)};
     mk('סטטוס',ST,i.status,'status');mk('סוג',TYPE,i.type,'type');mk('גרסה',relMap(),i.release||NOREL,'release');mk('חומרה',SEV,i.sev,'sev');mk('אחראי',OWN,i.owner||'none','owner');
