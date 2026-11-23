@@ -11,7 +11,7 @@ const init = () => {
   window.__w = []; window.__pub = []; window.__snap = {}; let n = 0;
   const db = { collection: (c) => ({
     get: () => new Promise(() => {}),
-    onSnapshot: (fn) => { window.__snap[c] = fn; return () => {}; },
+    onSnapshot: (fn, err) => { window.__snap[c] = fn; (window.__snapErr = window.__snapErr || {})[c] = err; window.__subs = (window.__subs || 0) + 1; return () => {}; },
     add: async (o) => { if (window.__failTitle && o.title === window.__failTitle) throw new Error('mock write failure'); __w.push(['add', c, o.title]); return { id: 'n' + (++n) }; },
     doc: (id) => ({
       update: async (o) => { __w.push(['update', c, id, JSON.stringify(o)]); },
@@ -25,10 +25,11 @@ const init = () => {
     k === 'permissions' ? { state: async () => 'granted' } :
     k === 'user' ? { id: async () => 'u_test', isOwner: async () => true, can: async () => true } : null };
 };
-// fire(page, col): deliver the seed's copy of a collection as a live snapshot (simulates another user's update).
-const fire = (p, col) => p.evaluate((col) => {
+// fire(page, col, mut, fromCache): deliver the seed's collection, with per-id field overrides, as a live snapshot.
+// fromCache=true imitates a copy saved on an earlier visit (not confirmed by the store).
+const fire = (p, col, mut = {}, fromCache = false) => p.evaluate(([col, mut, fc]) => {
   const seed = JSON.parse(document.getElementById('seed').textContent);
-  const docs = (seed[col] || []).map(d => ({ id: d.id, data: () => d }));
-  window.__snap[col] && window.__snap[col]({ docs, metadata: {} });
-}, col);
+  const docs = (seed[col] || []).map(d => (mut[d.id] ? Object.assign({}, d, mut[d.id]) : d)).map(d => ({ id: d.id, data: () => d }));
+  window.__snap[col] && window.__snap[col]({ docs, metadata: { fromCache: fc, hasPendingWrites: false } });
+}, [col, mut, fromCache]);
 module.exports = { wrap, init, fire };

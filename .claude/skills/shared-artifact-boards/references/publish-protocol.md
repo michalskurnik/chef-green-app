@@ -10,7 +10,12 @@ The board republishes itself whenever a user edits, so the live version moves un
 2. **Build** from that dump: `python3 build_seed.py <tpl> dbrealN <out.html>`. Check the build contains the newest edit (grep a title or id).
 3. **Publish** the file with the Artifact tool (same `file_path` as before keeps the URL; pass `url` only from another conversation). Give a short `label`.
 4. **Verify live**: `Artifact action:read url:<url> path:index.html`, then `bash verify_live.sh <out.html> <saved index.html>`. Expect `missing-from-live: 0` and 5 wrapper lines. Grep a marker from this change (for example the versioned CSS comment) in the live file.
-5. Only then tell the user it is live, with the version number.
+5. Run `python3 check_copy_vs_db.py <saved live index.html> <fresh dump>`: the page copy must equal the database (exit 0).
+6. Only then tell the user it is live, with the version number.
+
+## After a database write (yours or another session's)
+
+A write with ArtifactData changes the database but not the page copy. Viewers with a working live connection see it; anyone whose connection fails sees the old copy. Always follow a write with: re-read the docs, fresh dump, rebuild, publish, `verify_live.sh`, `check_copy_vs_db.py`. When you learn that another session wrote to the database, do the same before answering questions about what the board shows.
 
 ## Refusals and remedies
 

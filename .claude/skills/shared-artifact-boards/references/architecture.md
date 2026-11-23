@@ -25,6 +25,12 @@ All snippets are from `assets/board-template.html` (ES5 style, no build step, so
 3. For each collection: `get()` with a 15 s timeout, then `onSnapshot()`. Each snapshot sets `live[col]` and calls `refresh()`. Ignore an empty snapshot that comes from cache when the seed has data (it would blank the board for a moment).
 4. `use('artifact')`: if the local copy holds changes the seed lacks (`localAhead()`), schedule one republish, rate-limited (see 7).
 
+## 3b. Freshness (confirmed vs saved data)
+
+- `liveFresh[col]` is true only after a snapshot with `metadata.fromCache` false. Until then `baseOf(col)` merges the saved copy and the seed per document, newer `updatedAt` wins; local copies and tombstones are cleared only against confirmed data; a saved copy never replaces confirmed data.
+- `updateSyncState()` sets the sync text (logo tooltip) and removes the stale ring; `showStale(why)` adds the gold ring and a one-time toast. A 12 s timer after subscribing calls it if items and releases are not confirmed; a terminal subscription error calls it at once.
+- `sub(col,n)` subscribes and, on a terminal `unavailable` (or unknown) error, resubscribes after 3 s x 2^n (max 5 min) plus jitter. Never subscribe from render code.
+
 ## 4. Merge, local copy, tombstones
 
 ```js

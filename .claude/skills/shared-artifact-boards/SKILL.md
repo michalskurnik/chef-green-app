@@ -53,6 +53,14 @@ Compact, calm, uniform. Patterns and CSS in `references/ui-patterns.md`. The sho
 
 Spacing changes are where users push back most. Change gaps by a few pixels at a time, measure before and after, and report the numbers per screen width.
 
+## Invariant: the page copy always equals the database (never skip)
+
+A viewer whose live connection fails, or who gets an old saved copy, sees the page's embedded copy. Twice a user saw stale data because a database write (by another session, then by Claude) was not followed by a republish. So:
+
+- After ANY database write you make (ArtifactData set/update/batch/delete), in the same turn: re-read the written docs, take a fresh dump, rebuild, publish, then run `scripts/verify_live.sh` AND `scripts/check_copy_vs_db.py <live index.html> <fresh dump>`. Exit 0 from both is the definition of done. Never tell the user a change is visible before both pass.
+- Before telling the user anything about what they "should see", run `check_copy_vs_db.py` against the live page; if it reports a mismatch, rebuild and republish first.
+- The page itself must track freshness (template code, tested by starter test 9): a snapshot with `metadata.fromCache` is merged per document by newer `updatedAt` and never replaces confirmed data or clears local copies; no confirmed data within 12s or a terminal subscription error shows a visible stale warning (gold ring on the logo, no layout shift) and a one-time toast; a terminal `unavailable` error resubscribes with backoff.
+
 ## Publishing (short)
 
 Full protocol and recovery steps: `references/publish-protocol.md`.
@@ -81,6 +89,7 @@ Other sessions (Claude Code in a terminal or IDE) may update items directly with
 - `scripts/measure_layout.js` - per-width JSON: row line counts, gaps, overflow, clipped/squeezed controls; plus screenshots.
 - `scripts/compare_live.py` - page-saved HTML vs build vs dump: data and code equality per collection.
 - `scripts/verify_live.sh` - live file equals build except the platform wrapper.
+- `scripts/check_copy_vs_db.py` - the page's embedded copy vs a fresh database dump; exit 1 on any difference (run after every publish and every database write).
 - `scripts/validate_data.py` - checks a data dump against the template's own enums: valid values, releases and projects exist, unique numbers, log keys, timestamps; lists writes made outside the page.
 - `references/architecture.md` - data layer, merge, tombstones, numbering, self-republish guards, multi-project, Google Docs mirror.
 - `references/publish-protocol.md` - every publish refusal seen and its exact remedy.

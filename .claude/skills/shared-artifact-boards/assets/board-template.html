@@ -806,6 +806,11 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
 #items .card.item .acts>.card-close:hover{border-color:var(--ink-soft);color:var(--ink)}
 #items .card.item.is-open{box-shadow:0 0 0 2px color-mix(in srgb,var(--chef) 55%,transparent),0 6px 18px rgba(0,0,0,.08)!important}
 #items .card.item .ttl-toggle{cursor:pointer}
+
+/* v50: stale-data warning - gold ring on the logo (no layout shift) */
+.ovr-top .logo.stale{outline:3px solid #e0a40f;outline-offset:2px;border-radius:10px;animation:gcStale 1.6s ease-in-out infinite}
+@keyframes gcStale{50%{outline-color:rgba(224,164,15,.35)}}
+@media (prefers-reduced-motion:reduce){.ovr-top .logo.stale{animation:none}}
 </style>
 
 <div class="food" aria-hidden="true">
@@ -965,6 +970,14 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
   var SEED={items:[],releases:[],log:[],projects:[],at:''};try{SEED=Object.assign(SEED,JSON.parse(document.getElementById('seed').textContent))}catch(e){}
   var db=null, assets=null, perms=null, myId=null, canWrite=false, seedShown=false;
   var live={items:null,releases:null,log:null};
+  var liveFresh={},staleShown=false,staleTimer=null;
+  function baseOf(col){var lv=live[col],sd=SEED[col]||[];if(!lv)return sd;if(liveFresh[col])return lv;var m={};sd.forEach(function(d){m[d.id]=d});
+    lv.forEach(function(d){var s=m[d.id];if(!s||String(d.updatedAt||d.at||'')>=String(s.updatedAt||s.at||''))m[d.id]=d});return Object.keys(m).map(function(k){return m[k]})}
+  function updateSyncState(){var fresh=!!(liveFresh.items&&liveFresh.releases);var lg=document.querySelector('.ovr-top .logo');
+    if(fresh){if(staleShown){staleShown=false;step('live data confirmed again')}if(lg){lg.classList.remove('stale')}setSync(artifactApi?'מחובר · מסונכרן':'מחובר')}}
+  function showStale(why){if(liveFresh.items&&liveFresh.releases&&why!=='dead')return;var lg=document.querySelector('.ovr-top .logo');if(lg)lg.classList.add('stale');
+    setSync('לא מתעדכן מהמאגר כרגע - מוצג עותק שמור. שינויים של אחרים יופיעו כשהחיבור יחזור; השינויים שלכם נשמרים');
+    if(!staleShown){staleShown=true;step('stale view ('+why+')');toast('התצוגה לא מתעדכנת מהמאגר כרגע - מוצג עותק שמור. מנסים להתחבר מחדש',7000)}}
   var downloadsApi=null, artifactApi=null, pubTimer=null, pubBusy=false, MICHAL_ID='u_OWNER_ID', ROY_ID='u_PARTNER_ID';
   var items=[], releases=[], logs=[], selRel='', view='board', filter='open', special='', typeFilter='', xf={own:'',sev:'',pkg:'',src:''}, sortBy='urgency', query='', lastNew=null;
   var MIRROR_DOC='', mcpApi=null, mirrorTimer=null, mirrorBusy=false;
@@ -1063,15 +1076,15 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
   function tombstoneRel(id){var l=lsGet();l.deletedRel=l.deletedRel||{};l.deletedRel[id]=now();if(l.releases)delete l.releases[id];lsSet(l)}
   function tombstone(id){var l=lsGet();l.deleted=l.deleted||{};l.deleted[id]=now();if(l.items)delete l.items[id];lsSet(l)}
   function merged(col){
-    var map={},base=live[col]||SEED[col]||[],all=lsGet(),dead=all.deleted||{};
+    var map={},base=baseOf(col),all=lsGet(),dead=all.deleted||{};
     base.forEach(function(d){map[d.id]=Object.assign({},d)});
     var l=all[col]||{},changed=false;
     Object.keys(l).forEach(function(id){var mine=l[id],cur=map[id];
       var cu=cur?String(cur.updatedAt||cur.at||''):'',mu=String(mine.updatedAt||mine.at||''),mb=String(mine._base||'');
-      if(live[col]&&cur&&(cu===mu||(cu!==mb&&cu>=mu))){delete l[id];changed=true;return}
+      if(liveFresh[col]&&cur&&(cu===mu||(cu!==mb&&cu>=mu))){delete l[id];changed=true;return}
       if(!cur||cu===mb||mu>cu){var o=Object.assign({},cur||{},mine);delete o._base;map[id]=o}});
-    if(col==='items')Object.keys(dead).forEach(function(id){if(live.items&&!map[id]){delete dead[id];changed=true}else delete map[id]});
-    var deadR=all.deletedRel||{};if(col==='releases')Object.keys(deadR).forEach(function(id){var cur=map[id];if((live.releases&&!cur)||(cur&&String(cur.createdAt||'')>String(deadR[id]||''))){delete deadR[id];changed=true}else delete map[id]});
+    if(col==='items')Object.keys(dead).forEach(function(id){if(liveFresh.items&&!map[id]){delete dead[id];changed=true}else delete map[id]});
+    var deadR=all.deletedRel||{};if(col==='releases')Object.keys(deadR).forEach(function(id){var cur=map[id];if((liveFresh.releases&&!cur)||(cur&&String(cur.createdAt||'')>String(deadR[id]||''))){delete deadR[id];changed=true}else delete map[id]});
     if(changed){all[col]=l;all.deleted=dead;all.deletedRel=deadR;lsSet(all)}
     return Object.keys(map).map(function(k){return map[k]});
   }
@@ -1626,11 +1639,12 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
 
   /* ---------- loading ---------- */
   function applySnap(col,s){
-    if(s.metadata&&s.metadata.fromCache&&!s.docs.length&&(SEED[col]||[]).length)return;
-    var first=!live[col];live[col]=s.docs.map(function(d){var o=d.data()||{};o.id=d.id;return o});
-    if(first)step('live '+col+': '+live[col].length);
-    refresh();
-    if(live.items&&live.releases)setSync(artifactApi?'מחובר · מסונכרן':'מחובר');
+    var fc=!!(s.metadata&&s.metadata.fromCache);
+    if(fc&&!s.docs.length&&(SEED[col]||[]).length)return;
+    if(fc&&liveFresh[col])return;
+    var first=!live[col];live[col]=s.docs.map(function(d){var o=d.data()||{};o.id=d.id;return o});liveFresh[col]=!fc;
+    if(first||!fc)step('live '+col+': '+live[col].length+(fc?' (saved copy)':''));
+    refresh();updateSyncState();
   }
   async function load(){
     var st=null;
@@ -1639,9 +1653,12 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
     ['items','releases','log','projects'].forEach(function(col){
       withTimeout(db.collection(col).get(),15000).then(function(s){step('get '+col+': '+s.size);applySnap(col,s)},function(e){step('get '+col+': '+((e&&e.code)||'error'));
         if(!seedShown&&col==='items')setStatus('לא הצלחנו לטעון את הנתונים','פתחו את "פרטים טכניים" בתחתית הדף ושלחו לבעלים.')});
-      try{db.collection(col).onSnapshot(function(s){applySnap(col,s)},function(e){step('live '+col+' error: '+((e&&e.code)||'error'))})}catch(e){step('live '+col+' throw: '+e.message)}
+      sub(col,0);
     });
+    clearTimeout(staleTimer);staleTimer=setTimeout(function(){if(!(liveFresh.items&&liveFresh.releases))showStale('no confirmed data after 12s')},12000);
   }
+  function sub(col,n){try{db.collection(col).onSnapshot(function(s){applySnap(col,s)},function(e){var c=(e&&e.code)||'error';step('live '+col+' error: '+c);liveFresh[col]=false;showStale('dead');
+      if(c==='unavailable'||c==='error'){var d=Math.min(300000,3000*Math.pow(2,n))+Math.floor(Math.random()*1000);setTimeout(function(){step('live '+col+' resubscribe #'+(n+1));sub(col,n+1)},d)}})}catch(e){step('live '+col+' throw: '+e.message)}}
   async function start(){
     if(SEED.items.length){seedShown=true;refresh();setSync('עותק מ-'+(SEED.at||''))}
     step('seed '+SEED.items.length+' items, at '+SEED.at);

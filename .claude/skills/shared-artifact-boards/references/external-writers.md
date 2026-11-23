@@ -13,7 +13,9 @@ Other Claude sessions (Claude Code in a terminal or IDE, another chat) may updat
 7. **If the item needs someone's answer**, do not hide it only in `note`: the closed card shows no note, and the "waiting for answer" tab lists only `type:"request"` items. Assign it (`owner`) and move it to a status people look at (for example `fixed` / For review), or create a linked `request` item.
 8. **Verify after writing**: `get` the doc again and check the fields; then run `scripts/validate_data.py <template> <dump>` on a fresh dump. Zero errors expected.
 
+9. **Refresh the page copy.** After the write, rebuild and republish the page from a fresh dump (or ask the board's maintainer session to), then check `check_copy_vs_db.py` reports a match. Without it, a viewer whose live connection fails keeps seeing the old state (this happened twice).
+
 ## What does not need doing
 
-- No republish is needed: open tabs receive the change live within seconds (test 46a), and an external write never triggers a republish loop (46f). The page copy catches up on the next edit made through the page.
+- Open tabs with a working connection receive the change within seconds (test 46a), and an external write never triggers a republish loop (46f). The republish in rule 9 is for viewers whose connection is not working.
 - Older unsynced local copies in users' browsers lose to a newer external write and are cleared automatically (46c).

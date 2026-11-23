@@ -103,6 +103,22 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
     ok(ws.length === 1 && inside && outside && esc && btn, '8 card: one button size ' + JSON.stringify(ws) + ', inner click keeps it open, outside click / Escape / close button close it');
   }
 
+  // 9. live-data health: an older saved copy never overrides newer data; a stale view is flagged; a dead subscription recovers
+  {
+    await ctx.close(); [ctx, p] = await fresh();
+    const id = await p.evaluate(() => document.querySelector('#items .card.item').dataset.id);
+    const pills = () => p.evaluate((id) => [...document.querySelector('#items .card.item[data-id="' + id + '"]').querySelectorAll('.pill')].map(x => x.textContent).join('|'), id);
+    const stale = () => p.evaluate(() => document.querySelector('.ovr-top .logo').classList.contains('stale'));
+    const before = await pills();
+    await fire(p, 'items', { [id]: { status: 'wont', updatedAt: '2000-01-01T00:00:00Z' } }, true); await fire(p, 'releases', {}, true); await p.waitForTimeout(200);
+    const a = (await pills()) === before;
+    await p.waitForTimeout(12300); const bFlag = await stale();
+    await fire(p, 'items', {}, false); await fire(p, 'releases', {}, false); await p.waitForTimeout(200); const cFlag = !(await stale());
+    const s0 = await p.evaluate(() => window.__subs); await p.evaluate(() => window.__snapErr.items({ code: 'unavailable' })); await p.waitForTimeout(200); const dFlag = await stale();
+    await p.waitForTimeout(4500); const s1 = await p.evaluate(() => window.__subs);
+    ok(a && bFlag && cFlag && dFlag && s1 === s0 + 1, '9 live data: saved copy ignored=' + a + ', stale flagged after 12s=' + bFlag + ', cleared on confirmed data=' + cFlag + ', dead subscription flagged=' + dFlag + ', resubscribed=' + (s1 === s0 + 1));
+  }
+
   await ctx.close(); await b.close();
   console.log(fails ? 'FAILURES: ' + fails : 'ALL PASSED');
   process.exit(fails ? 1 : 0);
