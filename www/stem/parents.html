@@ -27,7 +27,7 @@ body{
   padding-bottom:80px;
 }
 
-.page{max-width:600px;margin:0 auto;padding:20px 24px 0}
+.page{max-width:600px;margin:0 auto;padding:calc(env(safe-area-inset-top, 0px) + 20px) 24px 0}
 
 .back-btn{
   display:inline-flex;align-items:center;gap:6px;
@@ -102,7 +102,7 @@ body{
 .recipe-dl-arrow{font-size:18px;color:#F5921E;flex-shrink:0}
 
 @media(min-width:768px){
-  .page{padding:32px 40px 0}
+  .page{padding:calc(env(safe-area-inset-top, 0px) + 32px) 40px 0}
   .chef-logo{width:96px;height:96px}
   .header-title{font-size:32px}
   .section-title{font-size:19px}
