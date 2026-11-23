@@ -790,6 +790,10 @@ body{background-image:var(--geo)!important;background-size:360px 360px!important
 
 /* v47: with an active filter the row stays on one line at 1280-1340 ("clear" becomes an x icon, tabs 2px tighter) */
 @media (min-width:961px) and (max-width:1340px){.fclear{font-size:0!important;padding:0 6px!important}.fclear::before{content:"\2715";font-size:.85rem}.thead .ltab{padding:2px 3px!important}}
+
+/* v48: filter row - typical active filters fit on one line at 1280; extreme values wrap to a second line instead of being clipped */
+@media (min-width:961px){.tasks-head>.thead{flex-wrap:wrap!important}.fbar{flex-wrap:wrap!important;row-gap:6px}}
+@media (min-width:961px) and (max-width:1340px){.fdd-k{padding-inline-start:6px!important}.fdd select{padding-left:19px!important}.fdd::after{left:7px}}
 </style>
 
 <div class="food" aria-hidden="true">
