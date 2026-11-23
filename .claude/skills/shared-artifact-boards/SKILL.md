@@ -1,6 +1,6 @@
 ---
 name: shared-artifact-boards
-description: Build, extend and operate shared, data-backed dashboards and boards as claude.ai Artifacts - task boards, kanban/column views, bug and feedback trackers, release/version trackers, multi-project boards, sign-up or status pages that several people edit together - quickly and without regressions. Covers the single-file HTML + shared database architecture, self-republishing page copies, Playwright test harness with a mocked runtime, layout measurement, safe publishing (conflict merges, live verification), RTL/Hebrew UIs and a proven compact UI kit (uniform toolbar, filter dropdowns, version capsule, project picker). Use this skill whenever the user wants to create or change a dashboard, board, tracker or any interactive Artifact that stores shared data, asks to fix a bug or tweak layout/spacing/filters/buttons on such an Artifact, mentions "the board", "the dashboard", versions/releases, tasks, filters, projects, or pastes a "Publish refused" error - even if they never say "skill" or "Artifact".
+description: Build and run shared, database-backed claude.ai Artifact boards (task, kanban, bug and release trackers). Use for any new board or any change, bug, layout or publish issue on one.
 ---
 
 # Shared Artifact boards
@@ -38,7 +38,7 @@ Full details and code in `references/architecture.md`.
 - **Collections**: `items` (tasks), `releases` (versions), `log` (audit trail), `projects`. Every doc carries `updatedAt`; items carry a `project` field (missing = default project).
 - **Seed**: the page embeds `<script type="application/json" id="seed">` with a recent copy of all data, so it renders instantly and offline; live snapshots replace it.
 - **Local copy** in `localStorage` holds unsynced writes with `_base` (the version they were based on) plus tombstones for deletes; `merged(col)` combines live/seed with local copies.
-- **Self-republish**: after writes, the page rebuilds its own HTML with a fresh seed and publishes it, so the next visitor gets current data. Guard it: skip when the canonical signature of all data equals the seed's; at most one automatic republish per 2 minutes; never trigger from a filtered view.
+- **Self-republish**: after a viewer's write, the page rebuilds its own HTML with a fresh seed and publishes it, so the next visitor gets current data. Guard it: skip when the canonical signature of all data equals the seed's; at most one automatic republish per 2 minutes; never trigger from a filtered view. The platform rule is "publish only after a viewer acts, never on load": the only on-load publish allowed is for that viewer's own unsynced earlier edits (`localAhead()`); never republish because live data differs from the seed - refreshing the copy is Claude's job (see the invariant below).
 - **Views are filters over `all*` arrays** (project, version, type, status, owner...). The publish copy and its signature always use the unfiltered arrays.
 
 ## UI kit that the user approved
@@ -66,7 +66,7 @@ A viewer whose live connection fails, or who gets an old saved copy, sees the pa
 Full protocol and recovery steps: `references/publish-protocol.md`.
 
 - Fetch fresh data (`ArtifactData list ... out_dir`, or a `query` on `updatedAt > last dump`) and rebuild with it before every publish, so the published seed contains the users' latest edits.
-- "Publish refused - newer version saved from inside the page": a user's page republished itself. Run `scripts/compare_live.py` (saved file vs your build vs fresh dump). If the data matches, Read the saved file with the Read tool (the publish gate requires an actual Read; a script reading it does not count), then publish again in a separate turn step (not in parallel with the Read). If the data differs, dump again, rebuild, publish.
+- "Publish refused - newer version saved from inside the page": a user's page republished itself. Run `scripts/compare_live.py` (saved file vs your build vs fresh dump). If the data matches, Read the saved file with the Read tool (the publish gate requires an actual Read; a script reading it does not count), then publish again as a separate step (not in parallel with the Read); if that is refused as "identical content", publish the same file once more. If the data differs, dump again, rebuild, publish.
 - After publishing, `Artifact read path:"index.html"` and run `scripts/verify_live.sh <build> <live>`: zero lines missing from live, only the 5 wrapper lines added.
 
 ## Writing to the database from outside the page
