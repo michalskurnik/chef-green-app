@@ -37,6 +37,8 @@ UI behaviour
 - filter dropdowns: change, highlight, combine, clear resets; open dropdown survives a refresh
 - view toggle from another tab brings the task list into view; typing a search from another tab shows results
 - tabs: each tab shows only its panel
+- expanded card: labelled sections, empty fields hidden, files section with images
+- floating card window: opens from the icon (closed or open card), closes on the board first, never reopens on close; Escape / close button / backdrop click (several points) close it; drag-select from inside does not; Tab stays inside; page behind inert; typing survives live updates; Escape while typing saves first
 
 Layout (at 1280, 1440, 1600, 1920 and 390)
 - top line and filter row each on one line on desktop; nothing clipped (`scrollWidth <= clientWidth` on capsules); no horizontal page scroll

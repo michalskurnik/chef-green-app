@@ -86,6 +86,13 @@ function renderRelPanel(){var reopen=!!$('vb-menu');renderRelPanel0();
 - Closing (W3C APG disclosure pattern and common card guidance): a labelled close button (`aria-label="Close card GC-7"`), Escape, clicking the title again, and clicking anywhere outside the open card. Return focus to the card's summary. Clicks on inner controls never close it; menus and dialogs take Escape first.
 - One open card at a time keeps the board readable and makes "click outside closes" predictable. Highlight the open card with a soft ring.
 
+## 7c. Card fields and the floating card window
+
+- Expanded card fields render as bold-labelled sub-sections (description, screen, device, file, source, note, files, dates). An empty field renders nothing, not even its label. Long text keeps line breaks (`white-space:pre-line`); the note gets a highlighted box; short fields sit in a two-column label/value grid.
+- A small expand icon in every card title opens the card in a floating window (modal). If the card is open on the board it closes there first; closing the window never reopens it.
+- Modal standard (W3C APG dialog-modal, MDN aria-modal): `role=dialog`, `aria-modal`, `aria-labelledby` the title; everything else `inert`; initial focus on the title (content-heavy dialog); Escape, the close button and a click anywhere on the backdrop close it, but only when the press also started on the backdrop (a drag-select ending outside does not close it); focus returns to the icon; body scroll locked; near full screen on phones.
+- Closing blurs a focused field first so its change event saves the text. Live updates re-render the window except while someone types in it (deferred until focus leaves). Inside the window the card's ids get an `fl-` prefix (no duplicate ids with the board card).
+
 ## 8. Archive, restore, delete (general rule)
 
 Any action that hides data needs a visible way back, and any action that removes data needs a confirmation that says what happens to dependent data. Archive is one click and reversible; delete is two steps.
