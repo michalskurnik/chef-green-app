@@ -80,6 +80,15 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
     ok(!r.over && r.squeezed === 0, '6 phone: fits, nothing squeezed ' + JSON.stringify(r));
   }
 
+  // 7. an active filter (the "clear" button shows) keeps the filter row on one line
+  for (const w of [1280, 1440]) {
+    await ctx.close(); [ctx, p] = await fresh(w);
+    await p.selectOption('#flt-type', 'bug'); await p.waitForTimeout(150);
+    const lines = await p.evaluate(() => new Set([...document.querySelectorAll('#fbar .fdd, #flt-clear, #tt-items')].filter(e => e.offsetWidth)
+      .map(e => { const x = e.getBoundingClientRect(); return Math.round((x.top + x.bottom) / 2); })).size);
+    ok(lines === 1, '7 ' + w + ' wide: filter row stays on one line with a filter active (' + lines + ' line(s))');
+  }
+
   await ctx.close(); await b.close();
   console.log(fails ? 'FAILURES: ' + fails : 'ALL PASSED');
   process.exit(fails ? 1 : 0);

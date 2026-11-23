@@ -69,3 +69,7 @@ Fix: build options once; only set value and classes on refresh.
 ## Found while packaging this skill
 
 **Long project names clip the version capsule.** The measurement script caught the capsule cut off at 1440px once the title was "Tasks of <long name>", and the status chips wrapped onto two lines. Fix: in the top line only the title may shrink (`min-width:0; max-width:clamp(150px,17vw,340px); text-overflow:ellipsis`, full name in `title`); the capsule and chips get `flex-shrink:0` and the chips `flex-wrap:nowrap`. Test with the longest realistic name, not the current one.
+
+**A full row wraps as soon as a conditional control appears.** At 1280px the filter row had about 20px of slack; choosing any filter shows the "clear" button and the row broke onto two lines. Found by a comparison run, not by the suite, because every layout test measured the default state. Fix: at narrow widths "clear" becomes an x icon (`font-size:0` + `::before`) with `aria-label` and `title`, and the tabs lose 2px of padding. Test layout in the active states too: a filter set, a menu open, a long name, the clear button visible.
+
+**Hidden elements counted in layout tests.** A hidden chip has a rect at top 0 and turns "1 line" into "2 lines". Filter by `offsetWidth` before measuring.
