@@ -1000,6 +1000,8 @@ body.fl-lock{overflow:hidden}
         <p class="small muted">הוראות ל-Claude שמעדכן את הלוח ישירות דרך המאגר (Claude Code או צ'אט, בלי דפדפן): מעתיקים ומצרפים לבקשה.</p>
         <div class="agent" id="agent-db-text"></div>
         <div class="row"><button type="button" id="copy-agent-db">העתקת ההוראות</button><span class="saved" id="copy-db-ok" role="status"></span></div>
+        <p class="small muted">העותק השמור בדף (מה שמוצג לפני שהמאגר עונה) מתעדכן אחרי עדכונים של Claude. אפשר לעדכן אותו גם מכאן - זה טוען מחדש את הלוח אצל כל מי שפתוח אותו כרגע.</p>
+        <div class="row"><button type="button" id="pub-now">עדכון העותק השמור בדף</button><span class="saved" id="pub-msg" role="status"></span></div>
         <p class="small muted">איך עובדים בלי תקלות:</p>
         <ul class="howto small">
           <li>אחרי שמירה מחכים לשורה "נשמר" לפני שסוגרים את הדף.</li>
@@ -1102,7 +1104,7 @@ body.fl-lock{overflow:hidden}
     lv.forEach(function(d){var s=m[d.id];if(!s||String(d.updatedAt||d.at||'')>=String(s.updatedAt||s.at||''))m[d.id]=d});return Object.keys(m).map(function(k){return m[k]})}
   function updateSyncState(){var fresh=!!(liveFresh.items&&liveFresh.releases);var lg=document.querySelector('.ovr-top .logo');
     if(fresh){if(staleShown){staleShown=false;step('live data confirmed again')}if(lg){lg.classList.remove('stale')}setSync(artifactApi?'מחובר · מסונכרן':'מחובר')}}
-  function showStale(why){if(liveFresh.items&&liveFresh.releases&&why!=='dead')return;var lg=document.querySelector('.ovr-top .logo');if(lg)lg.classList.add('stale');
+  function showStale(why){if(liveFresh.items&&liveFresh.releases)return;var lg=document.querySelector('.ovr-top .logo');if(lg)lg.classList.add('stale');
     setSync('לא מתעדכן מהמאגר כרגע - מוצג עותק שמור. שינויים של אחרים יופיעו כשהחיבור יחזור; עדיף לא לערוך עד אז');
     if(!staleShown){staleShown=true;step('stale view ('+why+')')}}
   var downloadsApi=null, artifactApi=null, pubTimer=null, pubBusy=false, MICHAL_ID='u_OWNER_ID', ROY_ID='u_PARTNER_ID';
@@ -1172,9 +1174,10 @@ body.fl-lock{overflow:hidden}
     var body=PARTS.map(function(h){return /^<script[^>]*id="seed"/.test(h)?'<script type="application/json" id="seed">'+json+'<\/script>':h}).join('\n');
     return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+RESET+'</style></head><body>'+body+'</body></html>';
   }
-  function schedulePublish(){scheduleMirror();if(!artifactApi||!canWrite)return;clearTimeout(pubTimer);setSync('שינויים ממתינים לסנכרון...');pubTimer=setTimeout(doPublish,4000)}
+  function schedulePublish(){scheduleMirror()}
+  function schedulePagePublish(){scheduleMirror();if(!artifactApi||!canWrite)return;clearTimeout(pubTimer);setSync('שינויים ממתינים לסנכרון...');pubTimer=setTimeout(doPublish,4000)}
   async function doPublish(){
-    if(pubBusy){schedulePublish();return}
+    if(pubBusy){schedulePagePublish();return}
     if(anyEditing()){clearTimeout(pubTimer);pubTimer=setTimeout(doPublish,3000);setSync('שינויים ממתינים לסנכרון (ממתין לסיום הקלדה)...');return}
     pubBusy=true;setSync('מסנכרן...');
     var doc=buildDoc();if(SEED_SIG&&buildDoc.sig===SEED_SIG){pubBusy=false;setSync('מסונכרן');step('publish skipped - data same as the page copy');scheduleMirror();return}
@@ -1250,7 +1253,7 @@ body.fl-lock{overflow:hidden}
     if(col==='items'&&!('archived' in data))sticky[id]=viewKey();
     logEvent(action||'עודכן',col,cur||{id:id},details);
     refresh();schedulePublish();
-    try{await db.collection(col).doc(id).update(data);return true}catch(e){toast('השמירה במאגר נכשלה: '+((e&&e.message)||'שגיאה'));step('update '+col+' '+((e&&e.code)||'err'));return false}
+    try{await db.collection(col).doc(id).update(data);return true}catch(e){toast('השמירה במאגר לא הצליחה כרגע - השינוי שמור במכשיר וננסה שוב אוטומטית',5000);step('update '+col+' '+((e&&e.code)||'err'));return false}
   }
   var numFloors={};
   async function createItem(doc,action){
@@ -1843,8 +1846,8 @@ body.fl-lock{overflow:hidden}
   var SYNC_ALERT_MS=60000,syncBad=0,syncAlertOff=false,syncTimer=null;
   function syncOk(){return !!(liveFresh.items&&liveFresh.releases)}
   function seedAtText(){return SEED.atIso?fmt(SEED.atIso):(SEED.at||'')}
-  function syncTick(){if(syncOk()){if(syncBad>=SYNC_ALERT_MS)step('live data confirmed after '+Math.round(syncBad/1000)+'s');syncBad=0;syncAlertOff=false;hideSyncAlert(true);return}
-    if(document.visibilityState==='hidden')return;syncBad+=2000;if(syncBad>=SYNC_ALERT_MS&&!syncAlertOff)showSyncAlert()}
+  function syncTick(){if(++flushTicks>=15){flushTicks=0;if(syncOk())flushLocal('periodic')}if(syncOk()){if(syncBad>=SYNC_ALERT_MS)step('live data confirmed after '+Math.round(syncBad/1000)+'s');syncBad=0;syncAlertOff=false;hideSyncAlert(true);return}
+    if(document.visibilityState==='hidden')return;syncBad+=2000;if(syncBad>=10000)showStale('no confirmed data for '+Math.round(syncBad/1000)+'s');if(syncBad>=SYNC_ALERT_MS&&!syncAlertOff)showSyncAlert()}
   function showSyncAlert(){var a=$('sync-alert');if(!a||!a.hidden)return;a.textContent='';var off=navigator.onLine===false;
     a.appendChild(el('b',null,off?'אין חיבור לאינטרנט - הלוח לא מתעדכן':'הלוח לא מתעדכן מהמאגר כבר יותר מדקה'));
     a.appendChild(el('span',null,'מוצג עותק שמור מ-'+(seedAtText()||'-')+'. שינויים של אחרים לא יופיעו, ועדיף לא לערוך עד שהחיבור יחזור. נסו לרענן את הדף; אם ההודעה חוזרת - שלחו פרטים לבדיקה.'));
@@ -1853,13 +1856,35 @@ body.fl-lock{overflow:hidden}
     c.addEventListener('click',function(){syncAlertOff=true;hideSyncAlert(false)});row.appendChild(d);row.appendChild(c);a.appendChild(row);a.hidden=false;
     step('sync alert shown ('+(off?'offline':'no confirmed data for '+Math.round(syncBad/1000)+'s')+')')}
   function hideSyncAlert(recovered){var a=$('sync-alert');if(!a||a.hidden)return;a.hidden=true;a.textContent='';if(recovered){toast('החיבור למאגר חזר - הלוח מעודכן',4000);step('sync alert cleared')}}
+  /* outbox: edits that never reached the database (a failed or lost write) stay in this browser's local copy.
+     Resend them once live data is confirmed: item/version updates only if the database still holds the version they were
+     based on (never overwrite someone else's newer change), log entries by id (idempotent). Fresh edits get 20s to land first. */
+  var flushBusy=false,flushDue=null,pendingN=0,flushTicks=0;
+  function pendingWrites(){var l=lsGet(),out=[],cutoff=new Date(Date.now()-20000).toISOString();
+    ['items','releases'].forEach(function(col){if(!liveFresh[col])return;var base={};(live[col]||[]).forEach(function(d){base[d.id]=d});var m=l[col]||{};
+      Object.keys(m).forEach(function(id){var mine=m[id],cur=base[id];if(!cur)return;var cu=String(cur.updatedAt||''),mu=String(mine.updatedAt||''),mb=String(mine._base||'');
+        if(cu!==mb||!(mu>cu)||!(mu<cutoff))return;var diff={};Object.keys(mine).forEach(function(k){if(k==='id'||k==='_base'||k==='_n'||k==='_dup')return;if(canon(mine[k])!==canon(cur[k]))diff[k]=mine[k]});
+        if(Object.keys(diff).length)out.push({col:col,id:id,data:diff,base:mb})})});
+    if(liveFresh.log){var have={};(live.log||[]).forEach(function(d){have[d.id]=1});var ml=l.log||{};
+      Object.keys(ml).forEach(function(id){var e=ml[id];if(have[id]||!(String(e.at||'')<cutoff))return;var o=strip(e);delete o.id;out.push({col:'log',id:id,data:o,set:true})})}
+    return out}
+  function scheduleFlush(why,ms){clearTimeout(flushDue);flushDue=setTimeout(function(){flushLocal(why)},ms==null?1500:ms)}
+  async function flushLocal(why){if(flushBusy||!db||!canWrite)return;var p=pendingWrites();pendingN=p.length;if(!p.length)return;flushBusy=true;step('resending '+p.length+' unsaved change(s) ('+why+')');var done=0;
+    for(var i=0;i<p.length;i++){var w=p[i];try{
+      if(w.set){await withTimeout(db.collection(w.col).doc(w.id).set(w.data),15000)}
+      else{var sn=await withTimeout(db.collection(w.col).doc(w.id).get(),15000);var d=sn&&sn.exists?sn.data():null;
+        if(!d||String(d.updatedAt||'')!==w.base){step('not resent: '+w.col+' '+w.id+' was changed by someone else');continue}
+        await withTimeout(db.collection(w.col).doc(w.id).update(w.data),15000)}
+      done++}catch(e){step('resend '+w.col+' '+w.id+' failed: '+((e&&e.code)||(e&&e.message)||'error'))}}
+    flushBusy=false;pendingN=Math.max(0,p.length-done);step('resent '+done+'/'+p.length);
+    if(done)toast(done===1?'שינוי שלא נשמר קודם נשמר עכשיו במאגר':done+' שינויים שלא נשמרו קודם נשמרו עכשיו במאגר',4000)}
   function applySnap(col,s){
     var fc=!!(s.metadata&&s.metadata.fromCache);var sn=snapN[col]=snapN[col]||{saved:0,confirmed:0,last:''};if(fc)sn.saved++;else{sn.confirmed++;sn.last=new Date().toISOString().slice(11,19)}
     if(fc&&!s.docs.length&&(SEED[col]||[]).length)return;
     if(fc&&liveFresh[col])return;
     var first=!live[col];live[col]=s.docs.map(function(d){var o=d.data()||{};o.id=d.id;return o});liveFresh[col]=!fc;
     if(first||!fc)step('live '+col+': '+live[col].length+(fc?' (saved copy)':''));
-    refresh();updateSyncState();
+    refresh();updateSyncState();if(!fc)scheduleFlush('confirmed data');
   }
   async function load(){
     var st=null;
@@ -1870,12 +1895,17 @@ body.fl-lock{overflow:hidden}
         if(!seedShown&&col==='items')setStatus('לא הצלחנו לטעון את הנתונים','פתחו את "פרטים טכניים" בתחתית הדף ושלחו לבעלים.')});
       sub(col,0);
     });
-    clearTimeout(staleTimer);staleTimer=setTimeout(function(){if(!(liveFresh.items&&liveFresh.releases))showStale('no confirmed data after 12s')},12000);
     clearInterval(syncTimer);syncTimer=setInterval(syncTick,2000);
   }
-  function sub(col,n){try{db.collection(col).onSnapshot(function(s){applySnap(col,s)},function(e){var c=(e&&e.code)||'error';step('live '+col+' error: '+c);liveFresh[col]=false;showStale('dead');
-      if(c==='unavailable'||c==='error'){var d=Math.min(300000,3000*Math.pow(2,n))+Math.floor(Math.random()*1000);setTimeout(function(){step('live '+col+' resubscribe #'+(n+1));sub(col,n+1)},d)}})}catch(e){step('live '+col+' throw: '+e.message)}}
+  var subN={},subTimer={};
+  function sub(col,n){subN[col]=n;clearTimeout(subTimer[col]);subTimer[col]=null;
+    try{db.collection(col).onSnapshot(function(s){if(!(s.metadata&&s.metadata.fromCache))subN[col]=0;applySnap(col,s)},function(e){var c=(e&&e.code)||'error';step('live '+col+' error: '+c);liveFresh[col]=false;
+      if(c==='unavailable'||c==='error'){var k=subN[col]||0,d=Math.min(30000,2000*Math.pow(2,k))+Math.floor(Math.random()*1000);clearTimeout(subTimer[col]);subTimer[col]=setTimeout(function(){subTimer[col]=null;step('live '+col+' resubscribe #'+(k+1));sub(col,k+1)},d)}})}catch(e){step('live '+col+' throw: '+e.message)}}
+  function resubNow(why){scheduleFlush(why,3000);Object.keys(subTimer).forEach(function(col){if(subTimer[col]){clearTimeout(subTimer[col]);subTimer[col]=null;step('live '+col+' resubscribe now ('+why+')');sub(col,subN[col]||0)}})}
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')resubNow('tab visible')});
+  window.addEventListener('online',function(){resubNow('back online')});
   (function(){var a=el('div','sync-alert');a.id='sync-alert';a.setAttribute('role','alert');a.hidden=true;document.body.appendChild(a)})();
+  $('pub-now').addEventListener('click',function(){var m=$('pub-msg');if(!artifactApi||!canWrite){m.textContent='אין הרשאה לעדכן את הדף בתצוגה הזאת';return}m.textContent='מעדכן...';clearTimeout(pubTimer);doPublish().then(function(){m.textContent='עודכן'})});
   $('diag-send').addEventListener('click',sendDiag);$('diag-copy').addEventListener('click',copyDiag);
   async function start(){
     if(SEED.items.length){seedShown=true;refresh();setSync('עותק מ-'+seedAtText())}
@@ -1887,7 +1917,7 @@ body.fl-lock{overflow:hidden}
     try{perms=await withTimeout(window.claude.use('permissions'),3000)}catch(e){perms=null}
     load();
     window.claude.use('downloads').then(function(d){downloadsApi=d;step('use downloads: '+(d?'ok':'null'))});
-    window.claude.use('artifact').then(function(a){artifactApi=a;step('use artifact: '+(a?'ok':'null'));if(a&&localAhead()){var lastAp=0;try{lastAp=+localStorage.getItem('gc_autopub')||0}catch(e){}if(Date.now()-lastAp<120000){step('local changes not in page copy - auto republish skipped (ran less than 2 minutes ago)')}else{try{localStorage.setItem('gc_autopub',String(Date.now()))}catch(e){}step('local changes not in page copy - republishing');schedulePublish()}}});
+    window.claude.use('artifact').then(function(a){artifactApi=a;step('use artifact: '+(a?'ok':'null'));if(a&&localAhead())step('local changes not in the page copy - they are resent to the database once live data is confirmed (no page republish)')});
     window.claude.use('assets').then(function(a){assets=a});
     window.claude.use('mcp').then(function(m){mcpApi=m;step('use mcp: '+(m?'ok':'null'));var last='';try{last=localStorage.getItem('gc_mirror_sig')||''}catch(e){}if(m&&last!==signature())scheduleMirror()});
     window.claude.use('user').then(async function(u){if(!u)return;try{myId=await u.id()}catch(e){}

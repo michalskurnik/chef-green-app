@@ -33,6 +33,9 @@ Data
 - projects: create, duplicate symbol rejected, switch, separate numbering and version ids, choice remembered after reload, rename
 
 UI behaviour
+- outbox: a failed save is resent once after 20 s, its log entry re-set by id, nothing resent once the database has it, never pushed over someone else's newer change (mock `doc().get` + `page.clock`)
+- no page publish after ordinary edits (a publish reloads every open view); the manual button publishes once
+- reconnect: every reconnect within ~3 s after short drops; waits capped at ~30 s in a lasting outage; immediate reconnect when the tab becomes visible (use `page.clock`)
 - sync warning: no banner at 30s, banner after 60s of visible time without confirmed data (role=alert, on screen, phone too); hides itself on confirmed data; dead subscription after working -> banner only after a minute; "הבנתי" hides it until a new problem; ten quiet minutes -> nothing; hidden-tab time not counted (use `page.clock.install()` + `clock.runFor()`)
 - phone: versions pane rows packed at the top; every capsule button visible and clickable (`elementFromPoint` at its center)
 - diagnostics: snapshot counts (saved vs confirmed) shown; "send" writes them to the viewer's own `data/users/<id>/diag` and confirms or reports the error

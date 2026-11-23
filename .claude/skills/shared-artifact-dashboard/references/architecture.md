@@ -72,7 +72,10 @@ numFloors[curProj]=maxNum+1;  doc.num=maxNum+1;
 
 `keyOf(i) = symbolOf(project(i)) + '-' + num`. Items without `num` get a temporary display number `_n` (never saved).
 
-## 7. Self-republish and its guards
+## 7. Page republish and its guards
+
+Never publish after ordinary edits: `artifact.publish` reloads every open view of the board (the platform's documented behavior), so a publish per edit kept everyone reconnecting. `schedulePublish()` (called after every write) now only schedules the Google Docs mirror; `schedulePagePublish()` publishes and is used only for the on-load `localAhead()` case and the manual button. Claude sessions refresh the page copy after their own writes (SKILL.md "Updating tickets").
+
 
 ```js
 function buildDoc(){ var data={items:allItems.map(strip),releases:allReleases.map(strip),
@@ -88,6 +91,8 @@ async function doPublish(){
 
 - `sigOf()` is a canonical, key-sorted JSON (`canon()`), ignoring view-only fields (`_n`, `_base`). Compare signatures over ALL data. When the board gained projects, building the copy from the filtered `items` would have made every project switch look like a change and trigger a republish.
 - On load with `localAhead()`, republish at most once per 2 minutes (`localStorage gc_autopub` timestamp).
+- Outbox (writes that did not land): an edit is written to the database once; if that write fails or is lost, the change stays in the browser's local copy. `flushLocal()` resends it after confirmed live data (1.5 s debounce), every ~30 s of visible time, and when the tab or network returns. Item/version updates are resent only if a fresh `get` shows the database still at the version the edit was based on (`_base`), and only the changed fields; log entries are re-`set` by id (idempotent); edits younger than 20 s are left alone so a normal write is never doubled. Creations are not resent. A toast tells the user when a failed save is retried and when it finally lands (tests 55a-d).
+- Live connection: on a terminal `unavailable`, resubscribe after `min(30s, 2s * 2^k)` plus jitter, where `k` counts drops since the last CONFIRMED snapshot (reset to 0 on confirmed data); cancel the wait and resubscribe at once on `visibilitychange` to visible and on `online`. Without the reset the wait grew 3, 6, 12, 24, 48, 96 s... and the board stayed disconnected for minutes after a few drops (tests 54c-e).
 - `schedulePublish()` debounces 4 s; a conflict means another tab won, so reload instead of overwriting.
 - Republishing is visible to you as "Publish refused - newer version saved from inside the page" when you publish next. That is normal; see the publish protocol.
 

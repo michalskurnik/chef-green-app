@@ -114,9 +114,9 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
     const a = (await pills()) === before;
     await p.waitForTimeout(12300); const bFlag = await stale();
     await fire(p, 'items', {}, false); await fire(p, 'releases', {}, false); await p.waitForTimeout(200); const cFlag = !(await stale());
-    const s0 = await p.evaluate(() => window.__subs); await p.evaluate(() => window.__snapErr.items({ code: 'unavailable' })); await p.waitForTimeout(200); const dFlag = await stale();
+    const s0 = await p.evaluate(() => window.__subs); await p.evaluate(() => window.__snapErr.items({ code: 'unavailable' })); await p.waitForTimeout(200); const dFlag = !(await stale());
     await p.waitForTimeout(4500); const s1 = await p.evaluate(() => window.__subs);
-    ok(a && bFlag && cFlag && dFlag && s1 === s0 + 1, '9 live data: saved copy ignored=' + a + ', stale flagged after 12s=' + bFlag + ', cleared on confirmed data=' + cFlag + ', dead subscription flagged=' + dFlag + ', resubscribed=' + (s1 === s0 + 1));
+    ok(a && bFlag && cFlag && dFlag && s1 === s0 + 1, '9 live data: saved copy ignored=' + a + ', stale flagged after 12s=' + bFlag + ', cleared on confirmed data=' + cFlag + ', no flash on a dropped subscription=' + dFlag + ', resubscribed=' + (s1 === s0 + 1));
   }
 
   // 10. sync warning: banner only after a full minute without confirmed data; nothing during quiet time after a confirmed load

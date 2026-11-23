@@ -104,7 +104,7 @@ In-page image viewer (lightbox), per the W3C APG modal dialog pattern: `role=dia
 ## 7e. Sync warning (connection to the database)
 
 Two levels, so nobody misses a real problem and nobody gets a false alarm:
-- **Quiet:** a gold ring on the logo and a status line once no confirmed data arrived within 12 seconds (slow start). No popup.
+- **Quiet:** a gold ring on the logo and a status line after about 10 seconds of visible time without confirmed data. A short drop that reconnects within seconds shows nothing (no flashing). No popup.
 - **Loud:** after a full minute of *visible* time without confirmed data (tab hidden time does not count), a persistent banner fixed at the bottom center, `role="alert"` on a container that exists from page load, yellow with a dark text and a strong start border, dark-mode colors. Text: what is wrong in one line ("הלוח לא מתעדכן מהמאגר כבר יותר מדקה"), the time of the copy shown (viewer's local time), what to do (do not edit, refresh, send diagnostics if it returns). Buttons: "פרטים טכניים" (opens the diagnostics tab with the send button focused) and "הבנתי" (hides it until the problem ends and a new one starts). It hides itself on the first confirmed snapshot and a toast says the connection is back.
 
 Not a modal: the board stays readable and usable while waiting (web.dev offline UX guidelines; SAP Fiori offline banner). Quiet time is not an error: once confirmed, the board is "fresh" until a subscription actually fails, so ten minutes with nobody editing never shows anything (board tests 51a-h). Limit: a listener that silently stops without an error cannot be detected by the page.
