@@ -53,6 +53,7 @@
   ].join('');
 
   var root, frame, imgEl, hdr, titleEl, msgEl, current = null;
+  var opening = null; // promise of a native pv.open() that has not finished yet
   var MEDIA_RE = /\.(pdf|jpe?g|png)(\?|#|$)/i;
   var IMG_RE = /\.(jpe?g|png)(\?|#|$)/i;
 
@@ -151,14 +152,18 @@
     fetch(url).then(function (r) { return r.blob(); }).then(blobToBase64).then(function (b64) {
       if (current !== c) return;
       var top = Math.ceil(hdr.getBoundingClientRect().bottom);
-      return pv.open({
+      var p = pv.open({
         source: b64,
         sourceType: 'base64',
         mode: 'underWebView',
         nativeUi: false,
         scrollMode: 'continuous',
         layout: { x: 0, y: top, width: 0, height: window.innerHeight - top }
-      }).then(function () { msgEl.style.display = 'none'; });
+      });
+      opening = p;
+      return p.then(function () {
+        if (current === c) msgEl.style.display = 'none';
+      });
     }).catch(function () {
       toast('לא הצלחנו להציג את החוברת');
     });
@@ -179,7 +184,13 @@
     if (!root) return Promise.resolve();
     var pv = nativeViewer();
     if (pv && document.documentElement.classList.contains('pv-native')) {
-      return pv.close().catch(function () {}).then(cleanup);
+      // "Back" tapped while the native PDF is still opening: wait for the open
+      // to finish first, otherwise the PDF appears afterwards, hidden behind
+      // the page, and the next open finds it "already open".
+      var pending = opening || Promise.resolve();
+      opening = null;
+      return pending.catch(function () {}).then(function () { return pv.close(); })
+        .catch(function () {}).then(cleanup);
     }
     cleanup();
     return Promise.resolve();

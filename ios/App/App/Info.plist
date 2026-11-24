@@ -64,6 +64,8 @@
 	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>אנו מבקשים גישה למצלמה כדי לצלם תמונה של ילדכם ולהוסיף אותה לתעודת השף האישית שלו</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>אנו מבקשים רשות לשמור את תעודת השף של ילדכם בספריית התמונות</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>אנו מבקשים גישה לספריית התמונות כדי לבחור תמונה של ילדכם ולהוסיף אותה לתעודת השף האישית שלו</string>
 </dict>
