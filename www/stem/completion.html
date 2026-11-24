@@ -78,7 +78,7 @@ body{
 
 .cert-name{
   position:absolute;
-  top:44%;
+  top:34.5%;
   left:50%;
   transform:translateX(-50%);
   font-family:'Fredoka One',cursive;
@@ -96,10 +96,10 @@ body{
 
 .cert-photo-wrap{
   position:absolute;
-  top:63%;
+  top:61%;
   left:50%;
   transform:translate(-50%,-50%);
-  width:31%;
+  width:22%;
   aspect-ratio:1;
   border-radius:50%;
   overflow:hidden;
@@ -284,7 +284,7 @@ body{
 
     <div class="cert-name" id="cert-name"></div>
 
-    <div class="cert-photo-wrap ring" id="cert-photo-wrap">
+    <div class="cert-photo-wrap ring" id="cert-photo-wrap" role="img" aria-label="תמונת הילד">
       <img id="cert-photo-img" class="cert-photo-img" alt="">
       <div class="cert-camera-hint" id="cert-camera-hint">
         <span class="cam-icon">📷</span>
@@ -379,5 +379,6 @@ body{
 </script>
 <script src="../assets/certificate-share.js"></script>
 
+<script src="../assets/pdf-viewer.js"></script>
 </body>
 </html>

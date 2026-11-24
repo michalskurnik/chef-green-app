@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>email_gate</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -399,10 +399,11 @@
     </div>
     <img src="" alt="מתכון ברוסקטות חיפושיות"
       style="width:100%; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.15); cursor:pointer;"
-      onclick="window.open(this.src,'_blank')"
+      onclick="if(this.getAttribute('src'))openMediaViewer(this.src)"
     />
     <div style="font-size:12px; color:#8a9a8e;">או לחצו על התמונה לפתיחה במסך מלא</div>
   </div>
 
+<script src="../assets/pdf-viewer.js"></script>
 </body>
 </html>

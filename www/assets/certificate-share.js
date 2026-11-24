@@ -8,7 +8,9 @@
  *
  * Requires on the page:
  *   - button#btn-wa            (the share button; its innerHTML is used as a loading-state placeholder)
- *   - .cert-achievement        (element whose text is drawn as the caption)
+ *   - .cert-bg                 (the background <img>; the canvas copies the on-screen layout relative to it)
+ *   - .cert-name, .cert-photo-wrap, .cert-achievement (and .cert-title / .cert-subline where present):
+ *                              drawn where they appear on screen (their CSS is the only layout source)
  *   - localStorage 'chefName'  (optional)
  *   - localStorage 'childPhoto' (optional, a data: URL)
  *
@@ -23,8 +25,9 @@
  *     ringColor: '#CF9C33'
  *   };
  * Any package whose background already has a baked-in title/ring (e.g.
- * dinner's) should simply omit title/subline/ring so those draw calls
- * are skipped entirely.
+ * dinner's) should simply omit ring (and have no .cert-title/.cert-subline
+ * element) so those draw calls are skipped entirely. title/subline in the
+ * config are no longer drawn from here: the on-screen elements are copied.
  */
 window.shareCertificate = async function (triggerBtn) {
   // The button that was tapped shows the loading state (the print button
@@ -58,105 +61,112 @@ window.shareCertificate = async function (triggerBtn) {
     var ctx = canvas.getContext('2d');
     ctx.drawImage(bg, 0, 0, W, H);
 
-    // Step 2: draw the title (only if this package's background needs one
-    // drawn - dinner's has it baked into the artwork, so CFG.title is unset).
-    if (CFG.title) {
-      var titleSize = Math.round(W * 0.045);
-      ctx.font = 'bold ' + titleSize + 'px "Fredoka One", sans-serif';
-      ctx.fillStyle = CFG.titleColor || '#93560F';
-      ctx.textAlign = 'center';
-      ctx.direction = 'rtl';
-      ctx.fillText(CFG.title, W * 0.5, H * 0.163);
-    }
+    // Steps 2-7: copy the LIVE layout onto the canvas (GC-45).
+    // The canvas used to have its own hard-coded positions, separate from the
+    // CSS of the page, so the two drifted apart and the photo circle covered
+    // the name and the caption. Now every text and the photo circle are read
+    // from the page with getBoundingClientRect(), relative to .cert-bg, and
+    // scaled to the canvas width. One layout source: the page's CSS.
+    var fontsReady = (document.fonts && document.fonts.ready) || Promise.resolve();
+    // The race keeps a slow web-font load from losing the tap that
+    // navigator.share needs.
+    await Promise.race([fontsReady, new Promise(function (r) { setTimeout(r, 1000); })]);
 
-    // Step 3: draw the sub-line ("awarded with pride to:"), same condition.
-    if (CFG.subline) {
-      var subSize = Math.round(W * 0.022);
-      ctx.font = subSize + 'px "Rubik", sans-serif';
-      ctx.fillStyle = CFG.sublineColor || '#5a3e1b';
-      ctx.textAlign = 'center';
-      ctx.direction = 'rtl';
-      ctx.fillText(CFG.subline, W * 0.5, H * 0.281);
-    }
-
-    // Step 4: draw child's name.
-    // Position/size as percentages of W/H, matching the live CSS overlay
-    // (.cert-name: top 39%, centered, ~5.3% of width font size). Unchanged
-    // by CERT_CONFIG - same position for every package.
+    var bgEl = document.querySelector('.cert-bg');
+    var b = bgEl.getBoundingClientRect();
+    var s = W / b.width;
     var name = localStorage.getItem('chefName') || '';
-    if (name) {
-      ctx.font = 'bold ' + Math.round(W * 0.0533) + 'px "Fredoka One", sans-serif';
-      ctx.fillStyle = '#8B4513';
+
+    // Draws one overlay element's text at the centre of its on-screen box.
+    // Only the name is shortened (with "..."), and only when it does not fit
+    // its box; the other texts end in emoji and must never be sliced.
+    function drawText(selector, truncate) {
+      var el = document.querySelector(selector);
+      if (!el) return;
+      var text = el.textContent.trim();
+      var r = el.getBoundingClientRect();
+      var cs = getComputedStyle(el);
+      if (!text || cs.display === 'none' || r.width === 0 || r.height === 0) return;
+      ctx.font = cs.fontWeight + ' ' + (parseFloat(cs.fontSize) * s) + 'px ' + cs.fontFamily;
+      ctx.fillStyle = cs.color;
       ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
       ctx.direction = 'rtl';
-      ctx.fillText(name, W * 0.5, H * 0.44);
+      if (truncate && ctx.measureText(text).width > r.width * s + 1) {
+        var g = Array.from(text);
+        while (g.length && ctx.measureText(g.join('') + '…').width > r.width * s + 1) g.pop();
+        text = g.join('') + '…';
+      }
+      ctx.fillText(text, (r.left - b.left + r.width / 2) * s, (r.top - b.top + r.height / 2) * s);
     }
 
-    // Step 5: draw the achievement caption.
-    // Read live from the DOM so it always matches this page's own text and
-    // can never drift out of sync (this is what makes the file shareable
-    // across packages without per-package parameters).
-    var capEl = document.querySelector('.cert-achievement');
-    if (capEl && capEl.textContent.trim()) {
-      ctx.font = Math.round(W * 0.02) + 'px "Rubik", sans-serif';
-      ctx.fillStyle = '#5a3e1b';
-      ctx.textAlign = 'center';
-      ctx.direction = 'rtl';
-      ctx.fillText(capEl.textContent.trim(), W * 0.5, H * 0.80);
+    // Photo circle: position and size of .cert-photo-wrap on screen.
+    var wrap = document.querySelector('.cert-photo-wrap');
+    var wr = wrap ? wrap.getBoundingClientRect() : null;
+    var cx = 0, cy = 0, outerRadius = 0, ringStroke = 0;
+    if (wr) {
+      cx = (wr.left - b.left + wr.width / 2) * s;
+      cy = (wr.top - b.top + wr.height / 2) * s;
+      outerRadius = wr.width / 2 * s;
+      ringStroke = parseFloat(getComputedStyle(wrap).borderTopWidth) * s || 0;
     }
 
-    // Step 6: draw a gold ring around the photo circle, only if this
-    // package's background doesn't already have a rope/ring baked in.
-    var outerRadius = W * 0.155;   // 31% diameter, same footprint as before
-    var ringStroke  = W * 0.01;
-    if (CFG.ring) {
+    // Draw order: background (done), title, sub-line, ring, photo, then the
+    // name and the caption on top, so nothing can hide them.
+    drawText('.cert-title', false);
+    drawText('.cert-subline', false);
+
+    // Gold ring, only if this package's background has no rope baked in.
+    if (CFG.ring && wr) {
       ctx.save();
       ctx.lineWidth = ringStroke;
       ctx.strokeStyle = CFG.ringColor || '#CF9C33';
       ctx.beginPath();
-      ctx.arc(W * 0.5, H * 0.63, outerRadius - ringStroke / 2, 0, Math.PI * 2);
+      ctx.arc(cx, cy, outerRadius - ringStroke / 2, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
     }
 
-    // Step 7: draw child's photo clipped to circle (if uploaded).
-    // When a ring is drawn, the photo nests inside it rather than covering
-    // it; otherwise (dinner) the photo fills the full 31%-of-width circle,
-    // exactly as before.
+    // Child's photo clipped to the circle (if uploaded). With a ring it nests
+    // inside it; without one (dinner) it fills the whole circle.
     var photoSrc = localStorage.getItem('childPhoto');
-    if (photoSrc) {
+    if (photoSrc && wr) {
       var photo = new Image();
       photo.src = photoSrc;
-      await new Promise(function (resolve) { photo.onload = resolve; });
+      await new Promise(function (resolve) { photo.onload = resolve; photo.onerror = resolve; });
 
-      var cx = W * 0.5, cy = H * 0.63;
       var radius = CFG.ring ? (outerRadius - ringStroke) : outerRadius;
       var size = radius * 2;
       var imgRatio = photo.width / photo.height;
       var drawW, drawH, drawX, drawY;
 
       if (imgRatio > 1) {
-        // Landscape — fit height, overflow width
+        // Landscape - fit height, overflow width
         drawH = size;
         drawW = size * imgRatio;
         drawX = cx - drawW / 2;
         drawY = cy - radius;
       } else {
-        // Portrait — fit width, overflow height
+        // Portrait - fit width, overflow height
         drawW = size;
         drawH = size / imgRatio;
         drawX = cx - radius;
         drawY = cy - drawH / 2;
       }
 
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
-      ctx.drawImage(photo, drawX, drawY, drawW, drawH);
-      ctx.restore();
+      if (photo.width) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(photo, drawX, drawY, drawW, drawH);
+        ctx.restore();
+      }
     }
+
+    drawText('.cert-name', true);
+    drawText('.cert-achievement', false);
 
     // Step 8: share or download
     var blob = await new Promise(function (resolve) {
