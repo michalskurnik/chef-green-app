@@ -46,7 +46,7 @@ function skipAllAndContinue(){
 // ── CTA actions ───────────────────────────────────────────────
 function sendPhoto(){
   var msg=encodeURIComponent('הנה ארוחת הערב שהכנו עם השף הירוק! 🍽️✨');
-  window.open('https://wa.me/972547836788?text='+msg,'_blank');
+  window.open('https://wa.me/972547826788?text='+msg,'_blank');
 }
 
 function downloadRecipes(){
