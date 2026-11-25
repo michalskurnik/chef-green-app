@@ -42,36 +42,56 @@ body{
   /* image is 2400×1792 → ratio 1.3393 */
 }
 
-/* ── Name overlay ──
-   "ניתנת בגאווה ל:" is at ~35% from top.
-   Name text goes at ~39% — blank strip between that line and the decorative rule. */
-.cert-name{
+/* ── "ניתנת בגאווה ל:" + name, one line (GC-45) ──
+   The background (certificate-bg-dinner-blank.png) is the original artwork
+   with the baked "ניתנת בגאווה ל:" line removed, so the line and the name
+   can sit together: the name comes right after "ל:", as on a real
+   certificate. The row is centred where the baked line was (baseline ~34%
+   of the image height) and may not grow past the clear paper between the
+   confetti on both sides (measured 19.9%..81.2% of the width, minus a
+   1.5% margin). certificate-share.js shrinks the whole row together only when a
+   long name would not fit, so the line keeps its proportions. */
+.cert-name-row{
   position:absolute;
-  top:34.8%;
+  top:28.2%;
   left:50%;
   transform:translateX(-50%);
-  font-family:'Fredoka One',cursive;
-  font-size:clamp(12px,3.4vw,30px);
-  color:#8B4513;
+  max-width:57%;
   white-space:nowrap;
   text-align:center;
-  text-shadow:0 1px 4px rgba(255,255,255,.9);
   pointer-events:none;
+  font-size:clamp(14px,5vw,32px);
+  line-height:1.25;
+}
+.cert-subline{
+  display:inline-block;
+  vertical-align:baseline;
+  font-family:'Rubik',sans-serif;
+  font-weight:700;
+  font-size:.66em;
+  color:#310A02;
+}
+.cert-name{
+  display:inline-block;
+  vertical-align:baseline;
+  margin-inline-start:.3em;
+  font-family:'Fredoka One',cursive;
+  color:#8B4513;
+  text-shadow:0 1px 4px rgba(255,255,255,.9);
   letter-spacing:.5px;
-  max-width:55%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  line-height:1.15;
 }
 
 /* ── Photo upload circle ──
-   Rope circle in image: center ~63% from top, ~50% from left, diameter ~31% of width. */
+   Sits inside the rope circle of the artwork (GC-45). Measured on the image:
+   rope centre 61.6% from top, rope inner diameter ~28.5% of the width
+   (outer ~31%). The old 63% / 31% box covered the whole rope and ran past
+   its bottom. */
 .cert-photo-wrap{
   position:absolute;
-  top:63%;
+  top:61.6%;
   left:50%;
   transform:translate(-50%,-50%);
-  width:31%;
+  width:28.6%;
   aspect-ratio:1;
   border-radius:50%;
   overflow:hidden;
@@ -95,7 +115,11 @@ body{
   border-radius:50%;
   display:none;
 }
+/* GC-45: not shown on this certificate. The artwork already has its own
+   "[הכנס תמונה]" placeholder and chef icon inside the rope, and the hint
+   sat right on top of them. Tapping the circle still opens the photo picker. */
 .cert-camera-hint{
+  visibility:hidden;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -113,21 +137,24 @@ body{
 }
 
 /* ── Achievement text ──
-   Overlays "[הכנס תמונה]" placeholder inside the rope circle at ~79%. */
+   Right under the name line, where the artwork's decorative rule was (the
+   rule is removed in certificate-bg-dinner-blank.png, clear paper from 36%
+   to 41% of the height, above the rope). Below the rope there is no clear
+   paper at all (flourish and scrolls), so it cannot go there (GC-45). */
 .cert-achievement{
   position:absolute;
-  top:84.5%;
+  top:36.4%;
   left:50%;
   transform:translateX(-50%);
   font-family:'Rubik',sans-serif;
-  font-size:clamp(7px,1.9vw,13px);
+  font-size:clamp(9px,2.4vw,15px);
   font-weight:600;
   color:#5a3e1b;
   white-space:nowrap;
   text-align:center;
   pointer-events:none;
   text-shadow:0 1px 3px rgba(255,255,255,.8);
-  max-width:44%;
+  max-width:57%;
 }
 
 /* ── Share button loading state ── */
@@ -210,8 +237,8 @@ body{
 /* ── iPad ── */
 @media(min-width:768px){
   .cert-wrap{max-width:640px;margin:0 auto}
-  .cert-name{font-size:clamp(16px,2.6vw,34px)}
-  .cert-achievement{font-size:clamp(9px,1.2vw,15px)}
+  .cert-name-row{font-size:clamp(18px,3.2vw,34px)}
+  .cert-achievement{font-size:clamp(11px,1.6vw,17px)}
   .cam-icon{font-size:clamp(24px,3.5vw,52px)}
   .cam-label{font-size:clamp(9px,1.2vw,15px)}
   .buttons-section{max-width:520px;padding:24px 24px 56px}
@@ -226,12 +253,12 @@ body{
   <div class="cert-wrap" id="certificate-card">
 
     <!-- Background image -->
-    <img src="../assets/images/certificate-bg.png"
+    <img src="../assets/images/certificate-bg-dinner-blank.png"
          class="cert-bg"
          alt="תעודת שף מתחיל">
 
-    <!-- Child's name (read from localStorage) -->
-    <div class="cert-name" id="cert-name"></div>
+    <!-- "ניתנת בגאווה ל:" + child's name (read from localStorage), one line -->
+    <div class="cert-name-row" data-fit><span class="cert-subline">ניתנת בגאווה ל:</span><span class="cert-name" id="cert-name"></span></div>
 
     <!-- Photo upload circle (over rope-bordered avatar area) -->
     <div class="cert-photo-wrap" id="cert-photo-wrap" role="img" aria-label="תמונת הילד">
@@ -243,8 +270,8 @@ body{
       <input type="file" id="photo-input" accept="image/*" style="display:none">
     </div>
 
-    <!-- Achievement text (below photo area inside circle) -->
-    <div class="cert-achievement">על השלמת הרפתקת ארוחת הערב 🍽️</div>
+    <!-- Achievement text (under the name line, above the photo) -->
+    <div class="cert-achievement" data-fit>על השלמת הרפתקת ארוחת הערב 🍽️</div>
 
   </div>
 </div>
@@ -316,7 +343,7 @@ body{
 <script>
   // This background already has its title and rope circle baked into the
   // artwork - no title/subline/ring should be drawn on top.
-  window.CERT_CONFIG = { bg: '../assets/images/certificate-bg.png' };
+  window.CERT_CONFIG = { bg: '../assets/images/certificate-bg-dinner-blank.png' };
 </script>
 <script src="../assets/certificate-share.js"></script>
 

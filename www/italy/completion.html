@@ -55,6 +55,9 @@ body{
   text-align:center;
   text-shadow:0 1px 4px rgba(255,255,255,.85);
   pointer-events:none;
+  /* GC-45: clear paper on the title rows is 24.4%..74.7%; shrunk to fit
+     (data-fit) so the title never touches the artwork. */
+  max-width:46%;
 }
 
 .cert-subline{
@@ -85,17 +88,19 @@ body{
   text-shadow:0 1px 4px rgba(255,255,255,.9);
   pointer-events:none;
   letter-spacing:.5px;
-  max-width:55%;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  /* GC-45: the clear paper on this row of the artwork is 23.5%..74.2% of the
+     width; this box stays inside it (centred, 1.5% margin). A long name
+     is shrunk to fit by certificate-share.js (data-fit), never cut. */
+  max-width:45%;
 }
 
 .cert-photo-wrap{
   position:absolute;
-  top:60%;
+  /* GC-45: moved down to make room for the caption under the name. */
+  top:62.6%;
   left:50%;
   transform:translate(-50%,-50%);
-  width:24%;
+  width:23%;
   aspect-ratio:1;
   border-radius:50%;
   overflow:hidden;
@@ -147,7 +152,10 @@ body{
 
 .cert-achievement{
   position:absolute;
-  top:79%;
+  /* GC-45: right under the name, above the photo. Under the photo it sat
+     on the bottom artwork (ribbon, leaves, lab tools). */
+  top:40.6%;
+  max-width:42%;
   left:50%;
   transform:translateX(-50%);
   font-family:'Rubik',sans-serif;
@@ -301,11 +309,11 @@ body{
          alt="תעודת מומחה לבישול איטלקי">
 
     <!-- Title + sub-line (not baked into this artwork, unlike the shared dinner background) -->
-    <div class="cert-title">תעודת מומחה לבישול איטלקי</div>
+    <div class="cert-title" data-fit>תעודת מומחה לבישול איטלקי</div>
     <div class="cert-subline">מוענקת בגאווה ל:</div>
 
     <!-- Child's name (read from localStorage) -->
-    <div class="cert-name" id="cert-name"></div>
+    <div class="cert-name" id="cert-name" data-fit></div>
 
     <!-- Photo upload circle with a drawn gold ring (artwork has no rope circle) -->
     <div class="cert-photo-wrap ring" id="cert-photo-wrap" role="img" aria-label="תמונת הילד">
@@ -318,7 +326,7 @@ body{
     </div>
 
     <!-- Achievement text (below photo area inside circle) -->
-    <div class="cert-achievement">על השלמת הרפתקת איטליה 🇮🇹🍝</div>
+    <div class="cert-achievement" data-fit>על השלמת הרפתקת איטליה 🇮🇹🍝</div>
 
   </div>
 </div>

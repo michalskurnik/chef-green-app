@@ -29,16 +29,48 @@
  * element) so those draw calls are skipped entirely. title/subline in the
  * config are no longer drawn from here: the on-screen elements are copied.
  */
-window.shareCertificate = async function (triggerBtn) {
-  // The button that was tapped shows the loading state (the print button
-  // passes itself in); default is the WhatsApp button as before.
-  var btn = (triggerBtn && triggerBtn.nodeType === 1) ? triggerBtn : document.getElementById('btn-wa');
-  var originalHTML = btn.innerHTML;
-  btn.innerHTML = '⏳ מכין תמונה...';
-  btn.disabled = true;
+/**
+ * Fit long names into their place on the certificate (GC-45).
+ * Every element marked data-fit (the name, or on dinner the whole
+ * "ניתנת בגאווה ל: <name>" line) keeps its design font size from the CSS
+ * and is shrunk only when its text is wider than its CSS max-width - that
+ * max-width is the clear paper between the artwork on both sides. The name
+ * is never cut with "...". Re-runs when the web fonts arrive (they change
+ * the widths) and on resize.
+ */
+window.fitCertificateText = function () {
+  var els = document.querySelectorAll('[data-fit]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    el.style.fontSize = '';
+    var design = parseFloat(getComputedStyle(el).fontSize);
+    var need = el.scrollWidth, room = el.clientWidth;
+    if (need > room + 0.5) {
+      el.style.fontSize = (design * room / need * 0.98) + 'px';
+      // A second pass absorbs rounding in the browser's text measuring.
+      need = el.scrollWidth; room = el.clientWidth;
+      if (need > room + 0.5) el.style.fontSize = (parseFloat(el.style.fontSize) * room / need * 0.98) + 'px';
+    }
+  }
+};
+(function () {
+  var run = function () { window.fitCertificateText(); };
+  run();
+  if (document.fonts) {
+    if (document.fonts.ready) document.fonts.ready.then(run);
+    if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', run);
+  }
+  window.addEventListener('load', run);
+  window.addEventListener('resize', run);
+})();
 
-  try {
+/**
+ * Draws the certificate exactly as it is laid out on screen onto a canvas
+ * and returns the canvas. Used by the share and print buttons.
+ */
+window.renderCertificateCanvas = async function () {
     var CFG = window.CERT_CONFIG || {};
+    window.fitCertificateText();
 
     // Step 1: draw certificate background.
     // Canvas size is derived from the background's real natural dimensions
@@ -71,32 +103,32 @@ window.shareCertificate = async function (triggerBtn) {
     // The race keeps a slow web-font load from losing the tap that
     // navigator.share needs.
     await Promise.race([fontsReady, new Promise(function (r) { setTimeout(r, 1000); })]);
+    // A web font that arrived during the wait changes the widths: fit again.
+    window.fitCertificateText();
 
     var bgEl = document.querySelector('.cert-bg');
     var b = bgEl.getBoundingClientRect();
     var s = W / b.width;
-    var name = localStorage.getItem('chefName') || '';
 
     // Draws one overlay element's text at the centre of its on-screen box.
-    // Only the name is shortened (with "..."), and only when it does not fit
-    // its box; the other texts end in emoji and must never be sliced.
-    function drawText(selector, truncate) {
+    // The text is never cut: if the canvas measures it a little wider than
+    // its box on screen, the font is shrunk to the box width instead.
+    function drawText(selector) {
       var el = document.querySelector(selector);
       if (!el) return;
       var text = el.textContent.trim();
       var r = el.getBoundingClientRect();
       var cs = getComputedStyle(el);
       if (!text || cs.display === 'none' || r.width === 0 || r.height === 0) return;
-      ctx.font = cs.fontWeight + ' ' + (parseFloat(cs.fontSize) * s) + 'px ' + cs.fontFamily;
+      var px = parseFloat(cs.fontSize) * s;
+      var font = function () { return cs.fontWeight + ' ' + px + 'px ' + cs.fontFamily; };
+      ctx.font = font();
       ctx.fillStyle = cs.color;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.direction = 'rtl';
-      if (truncate && ctx.measureText(text).width > r.width * s + 1) {
-        var g = Array.from(text);
-        while (g.length && ctx.measureText(g.join('') + '…').width > r.width * s + 1) g.pop();
-        text = g.join('') + '…';
-      }
+      var tw = ctx.measureText(text).width, box = r.width * s;
+      if (tw > box + 1) { px = px * box / tw; ctx.font = font(); }
       ctx.fillText(text, (r.left - b.left + r.width / 2) * s, (r.top - b.top + r.height / 2) * s);
     }
 
@@ -113,8 +145,8 @@ window.shareCertificate = async function (triggerBtn) {
 
     // Draw order: background (done), title, sub-line, ring, photo, then the
     // name and the caption on top, so nothing can hide them.
-    drawText('.cert-title', false);
-    drawText('.cert-subline', false);
+    drawText('.cert-title');
+    drawText('.cert-subline');
 
     // Gold ring, only if this package's background has no rope baked in.
     if (CFG.ring && wr) {
@@ -165,8 +197,22 @@ window.shareCertificate = async function (triggerBtn) {
       }
     }
 
-    drawText('.cert-name', true);
-    drawText('.cert-achievement', false);
+    drawText('.cert-name');
+    drawText('.cert-achievement');
+    return canvas;
+};
+
+window.shareCertificate = async function (triggerBtn) {
+  // The button that was tapped shows the loading state (the print button
+  // passes itself in); default is the WhatsApp button as before.
+  var btn = (triggerBtn && triggerBtn.nodeType === 1) ? triggerBtn : document.getElementById('btn-wa');
+  var originalHTML = btn.innerHTML;
+  btn.innerHTML = '⏳ מכין תמונה...';
+  btn.disabled = true;
+
+  try {
+    var name = localStorage.getItem('chefName') || '';
+    var canvas = await window.renderCertificateCanvas();
 
     // Step 8: share or download
     var blob = await new Promise(function (resolve) {
