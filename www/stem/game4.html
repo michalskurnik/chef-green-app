@@ -53,7 +53,7 @@ body{background:#F5F0DC;display:flex;justify-content:center;padding:16px 10px 36
 #hbtn{background:none;border:none;color:#aaa;font-size:13px;font-weight:800;margin-top:12px;cursor:pointer;font-family:'Assistant',sans-serif;text-decoration:underline}
 
 #recipe-screen{display:none;position:fixed;inset:0;z-index:300;background:#12332B;flex-direction:column;overflow:hidden}
-#recipe-screen-hdr{background:linear-gradient(135deg,#C62839,#E0546B);color:#fff;text-align:center;padding:18px 16px 14px;flex-shrink:0}
+#recipe-screen-hdr{background:linear-gradient(135deg,#C62839,#E0546B);color:#fff;text-align:center;padding:calc(env(safe-area-inset-top,0px) + 18px) 16px 14px;flex-shrink:0}
 #recipe-screen-title{font-family:'Fredoka One',cursive;font-size:22px}
 #recipe-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 #recipe-scroll img{width:100%;display:block}

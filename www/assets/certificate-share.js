@@ -8,7 +8,9 @@
  *
  * Requires on the page:
  *   - button#btn-wa            (the share button; its innerHTML is used as a loading-state placeholder)
- *   - .cert-achievement        (element whose text is drawn as the caption)
+ *   - .cert-bg                 (the background <img>; the canvas copies the on-screen layout relative to it)
+ *   - .cert-name, .cert-photo-wrap, .cert-achievement (and .cert-title / .cert-subline where present):
+ *                              drawn where they appear on screen (their CSS is the only layout source)
  *   - localStorage 'chefName'  (optional)
  *   - localStorage 'childPhoto' (optional, a data: URL)
  *
@@ -23,17 +25,52 @@
  *     ringColor: '#CF9C33'
  *   };
  * Any package whose background already has a baked-in title/ring (e.g.
- * dinner's) should simply omit title/subline/ring so those draw calls
- * are skipped entirely.
+ * dinner's) should simply omit ring (and have no .cert-title/.cert-subline
+ * element) so those draw calls are skipped entirely. title/subline in the
+ * config are no longer drawn from here: the on-screen elements are copied.
  */
-window.shareCertificate = async function () {
-  var btn = document.getElementById('btn-wa');
-  var originalHTML = btn.innerHTML;
-  btn.innerHTML = '⏳ מכין תמונה...';
-  btn.disabled = true;
+/**
+ * Fit long names into their place on the certificate (GC-45).
+ * Every element marked data-fit (the name, or on dinner the whole
+ * "ניתנת בגאווה ל: <name>" line) keeps its design font size from the CSS
+ * and is shrunk only when its text is wider than its CSS max-width - that
+ * max-width is the clear paper between the artwork on both sides. The name
+ * is never cut with "...". Re-runs when the web fonts arrive (they change
+ * the widths) and on resize.
+ */
+window.fitCertificateText = function () {
+  var els = document.querySelectorAll('[data-fit]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    el.style.fontSize = '';
+    var design = parseFloat(getComputedStyle(el).fontSize);
+    var need = el.scrollWidth, room = el.clientWidth;
+    if (need > room + 0.5) {
+      el.style.fontSize = (design * room / need * 0.98) + 'px';
+      // A second pass absorbs rounding in the browser's text measuring.
+      need = el.scrollWidth; room = el.clientWidth;
+      if (need > room + 0.5) el.style.fontSize = (parseFloat(el.style.fontSize) * room / need * 0.98) + 'px';
+    }
+  }
+};
+(function () {
+  var run = function () { window.fitCertificateText(); };
+  run();
+  if (document.fonts) {
+    if (document.fonts.ready) document.fonts.ready.then(run);
+    if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', run);
+  }
+  window.addEventListener('load', run);
+  window.addEventListener('resize', run);
+})();
 
-  try {
+/**
+ * Draws the certificate exactly as it is laid out on screen onto a canvas
+ * and returns the canvas. Used by the share and print buttons.
+ */
+window.renderCertificateCanvas = async function () {
     var CFG = window.CERT_CONFIG || {};
+    window.fitCertificateText();
 
     // Step 1: draw certificate background.
     // Canvas size is derived from the background's real natural dimensions
@@ -56,105 +93,126 @@ window.shareCertificate = async function () {
     var ctx = canvas.getContext('2d');
     ctx.drawImage(bg, 0, 0, W, H);
 
-    // Step 2: draw the title (only if this package's background needs one
-    // drawn - dinner's has it baked into the artwork, so CFG.title is unset).
-    if (CFG.title) {
-      var titleSize = Math.round(W * 0.045);
-      ctx.font = 'bold ' + titleSize + 'px "Fredoka One", sans-serif';
-      ctx.fillStyle = CFG.titleColor || '#93560F';
+    // Steps 2-7: copy the LIVE layout onto the canvas (GC-45).
+    // The canvas used to have its own hard-coded positions, separate from the
+    // CSS of the page, so the two drifted apart and the photo circle covered
+    // the name and the caption. Now every text and the photo circle are read
+    // from the page with getBoundingClientRect(), relative to .cert-bg, and
+    // scaled to the canvas width. One layout source: the page's CSS.
+    var fontsReady = (document.fonts && document.fonts.ready) || Promise.resolve();
+    // The race keeps a slow web-font load from losing the tap that
+    // navigator.share needs.
+    await Promise.race([fontsReady, new Promise(function (r) { setTimeout(r, 1000); })]);
+    // A web font that arrived during the wait changes the widths: fit again.
+    window.fitCertificateText();
+
+    var bgEl = document.querySelector('.cert-bg');
+    var b = bgEl.getBoundingClientRect();
+    var s = W / b.width;
+
+    // Draws one overlay element's text at the centre of its on-screen box.
+    // The text is never cut: if the canvas measures it a little wider than
+    // its box on screen, the font is shrunk to the box width instead.
+    function drawText(selector) {
+      var el = document.querySelector(selector);
+      if (!el) return;
+      var text = el.textContent.trim();
+      var r = el.getBoundingClientRect();
+      var cs = getComputedStyle(el);
+      if (!text || cs.display === 'none' || r.width === 0 || r.height === 0) return;
+      var px = parseFloat(cs.fontSize) * s;
+      var font = function () { return cs.fontWeight + ' ' + px + 'px ' + cs.fontFamily; };
+      ctx.font = font();
+      ctx.fillStyle = cs.color;
       ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
       ctx.direction = 'rtl';
-      ctx.fillText(CFG.title, W * 0.5, H * 0.163);
+      var tw = ctx.measureText(text).width, box = r.width * s;
+      if (tw > box + 1) { px = px * box / tw; ctx.font = font(); }
+      ctx.fillText(text, (r.left - b.left + r.width / 2) * s, (r.top - b.top + r.height / 2) * s);
     }
 
-    // Step 3: draw the sub-line ("awarded with pride to:"), same condition.
-    if (CFG.subline) {
-      var subSize = Math.round(W * 0.022);
-      ctx.font = subSize + 'px "Rubik", sans-serif';
-      ctx.fillStyle = CFG.sublineColor || '#5a3e1b';
-      ctx.textAlign = 'center';
-      ctx.direction = 'rtl';
-      ctx.fillText(CFG.subline, W * 0.5, H * 0.281);
+    // Photo circle: position and size of .cert-photo-wrap on screen.
+    var wrap = document.querySelector('.cert-photo-wrap');
+    var wr = wrap ? wrap.getBoundingClientRect() : null;
+    var cx = 0, cy = 0, outerRadius = 0, ringStroke = 0;
+    if (wr) {
+      cx = (wr.left - b.left + wr.width / 2) * s;
+      cy = (wr.top - b.top + wr.height / 2) * s;
+      outerRadius = wr.width / 2 * s;
+      ringStroke = parseFloat(getComputedStyle(wrap).borderTopWidth) * s || 0;
     }
 
-    // Step 4: draw child's name.
-    // Position/size as percentages of W/H, matching the live CSS overlay
-    // (.cert-name: top 39%, centered, ~5.3% of width font size). Unchanged
-    // by CERT_CONFIG - same position for every package.
-    var name = localStorage.getItem('chefName') || '';
-    if (name) {
-      ctx.font = 'bold ' + Math.round(W * 0.0533) + 'px "Fredoka One", sans-serif';
-      ctx.fillStyle = '#8B4513';
-      ctx.textAlign = 'center';
-      ctx.direction = 'rtl';
-      ctx.fillText(name, W * 0.5, H * 0.44);
-    }
+    // Draw order: background (done), title, sub-line, ring, photo, then the
+    // name and the caption on top, so nothing can hide them.
+    drawText('.cert-title');
+    drawText('.cert-subline');
 
-    // Step 5: draw the achievement caption.
-    // Read live from the DOM so it always matches this page's own text and
-    // can never drift out of sync (this is what makes the file shareable
-    // across packages without per-package parameters).
-    var capEl = document.querySelector('.cert-achievement');
-    if (capEl && capEl.textContent.trim()) {
-      ctx.font = Math.round(W * 0.02) + 'px "Rubik", sans-serif';
-      ctx.fillStyle = '#5a3e1b';
-      ctx.textAlign = 'center';
-      ctx.direction = 'rtl';
-      ctx.fillText(capEl.textContent.trim(), W * 0.5, H * 0.80);
-    }
-
-    // Step 6: draw a gold ring around the photo circle, only if this
-    // package's background doesn't already have a rope/ring baked in.
-    var outerRadius = W * 0.155;   // 31% diameter, same footprint as before
-    var ringStroke  = W * 0.01;
-    if (CFG.ring) {
+    // Gold ring, only if this package's background has no rope baked in.
+    if (CFG.ring && wr) {
       ctx.save();
       ctx.lineWidth = ringStroke;
       ctx.strokeStyle = CFG.ringColor || '#CF9C33';
       ctx.beginPath();
-      ctx.arc(W * 0.5, H * 0.63, outerRadius - ringStroke / 2, 0, Math.PI * 2);
+      ctx.arc(cx, cy, outerRadius - ringStroke / 2, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
     }
 
-    // Step 7: draw child's photo clipped to circle (if uploaded).
-    // When a ring is drawn, the photo nests inside it rather than covering
-    // it; otherwise (dinner) the photo fills the full 31%-of-width circle,
-    // exactly as before.
+    // Child's photo clipped to the circle (if uploaded). With a ring it nests
+    // inside it; without one (dinner) it fills the whole circle.
     var photoSrc = localStorage.getItem('childPhoto');
-    if (photoSrc) {
+    if (photoSrc && wr) {
       var photo = new Image();
       photo.src = photoSrc;
-      await new Promise(function (resolve) { photo.onload = resolve; });
+      await new Promise(function (resolve) { photo.onload = resolve; photo.onerror = resolve; });
 
-      var cx = W * 0.5, cy = H * 0.63;
       var radius = CFG.ring ? (outerRadius - ringStroke) : outerRadius;
       var size = radius * 2;
       var imgRatio = photo.width / photo.height;
       var drawW, drawH, drawX, drawY;
 
       if (imgRatio > 1) {
-        // Landscape — fit height, overflow width
+        // Landscape - fit height, overflow width
         drawH = size;
         drawW = size * imgRatio;
         drawX = cx - drawW / 2;
         drawY = cy - radius;
       } else {
-        // Portrait — fit width, overflow height
+        // Portrait - fit width, overflow height
         drawW = size;
         drawH = size / imgRatio;
         drawX = cx - radius;
         drawY = cy - drawH / 2;
       }
 
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
-      ctx.drawImage(photo, drawX, drawY, drawW, drawH);
-      ctx.restore();
+      if (photo.width) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(photo, drawX, drawY, drawW, drawH);
+        ctx.restore();
+      }
     }
+
+    drawText('.cert-name');
+    drawText('.cert-achievement');
+    return canvas;
+};
+
+window.shareCertificate = async function (triggerBtn) {
+  // The button that was tapped shows the loading state (the print button
+  // passes itself in); default is the WhatsApp button as before.
+  var btn = (triggerBtn && triggerBtn.nodeType === 1) ? triggerBtn : document.getElementById('btn-wa');
+  var originalHTML = btn.innerHTML;
+  btn.innerHTML = '⏳ מכין תמונה...';
+  btn.disabled = true;
+
+  try {
+    var name = localStorage.getItem('chefName') || '';
+    var canvas = await window.renderCertificateCanvas();
 
     // Step 8: share or download
     var blob = await new Promise(function (resolve) {
@@ -185,5 +243,21 @@ window.shareCertificate = async function () {
   } finally {
     btn.innerHTML = originalHTML;
     btn.disabled = false;
+  }
+};
+
+/**
+ * "Print" button on the completion pages (GC-5).
+ * window.print() does nothing in the iOS app's web view, so inside the app
+ * the button opens the same share sheet as the WhatsApp button (it offers
+ * Print, Save Image, Save to Files, WhatsApp...). In a normal browser the
+ * regular print dialog still works.
+ */
+window.printCertificate = function (btn) {
+  var C = window.Capacitor;
+  if (C && C.isNativePlatform && C.isNativePlatform()) {
+    window.shareCertificate(btn);
+  } else {
+    window.print();
   }
 };

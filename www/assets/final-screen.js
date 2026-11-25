@@ -50,15 +50,8 @@ function sendPhoto(){
 }
 
 function downloadRecipes(){
-  // The PDF used to be inlined here as a 1MB base64 string that was parsed
-  // on every visit to the final screen; now it is fetched only on tap.
-  fetch('/assets/dinner-recipes.pdf').then(function(r){return r.blob();}).then(function(blob){
-    var url=URL.createObjectURL(blob);
-    var a=document.createElement('a');
-    a.href=url;a.download='מתכוני_השף_הירוק.pdf';
-    document.body.appendChild(a);a.click();
-    document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(url);},1000);
-  });
+  // Opens the in-app viewer (back + share). pdf-viewer.js is included on the page.
+  openPdfViewer('/assets/dinner-recipes.pdf', 'מתכוני השף הירוק.pdf');
 }
 
 function goHub(){

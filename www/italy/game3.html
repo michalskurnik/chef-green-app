@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <script src="../assets/rc-config.js"></script>
 <script src="access-guard.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>ברוסקטה חיפושית – תפסו מרכיבים</title>
 <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 <style>
@@ -20,7 +20,7 @@ body {
 /* HEADER */
 .header {
   background:linear-gradient(135deg,var(--green-dark),var(--green));
-  padding:10px 16px; display:flex; align-items:center; justify-content:space-between;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px; display:flex; align-items:center; justify-content:space-between;
   box-shadow:0 3px 12px rgba(0,0,0,0.2); flex-shrink:0; z-index:100;
 }
 .header-left { display:flex; align-items:center; gap:8px; color:white; }
@@ -34,7 +34,7 @@ body {
 
 /* INTRO — covers everything below header */
 #introScreen {
-  position:absolute; top:52px; left:0; right:0; bottom:0;
+  position:absolute; top:calc(env(safe-area-inset-top,0px) + 52px); left:0; right:0; bottom:0;
   background:linear-gradient(160deg,#1a5e35,#2d8a4e,#57c97a);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   padding:20px 24px; text-align:center; z-index:50;

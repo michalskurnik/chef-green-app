@@ -101,6 +101,20 @@ html,body{
   animation:spin .8s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Tap-to-play (shown only when autoplay is blocked) ── */
+#play-btn{
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  z-index:15;
+  width:84px;height:84px;border-radius:50%;
+  border:3px solid rgba(255,255,255,.85);
+  background:rgba(0,0,0,.45);
+  color:#fff;font-size:34px;
+  display:none;align-items:center;justify-content:center;
+  cursor:pointer;touch-action:manipulation;
+}
+#play-btn.visible{display:flex}
 </style>
 </head>
 <body>
@@ -120,6 +134,8 @@ html,body{
   </div>
 </div>
 
+<button id="play-btn" aria-label="הפעל">▶</button>
+
 <button id="skip-btn" onclick="goNext()">דלג ←</button>
 
 <div id="progress-bar-wrap">
@@ -133,6 +149,7 @@ html,body{
   var video    = document.getElementById('intro-video');
   var bar      = document.getElementById('progress-bar');
   var loader   = document.getElementById('loader');
+  var playBtn  = document.getElementById('play-btn');
   var gone     = false;
 
   function goNext() {
@@ -141,19 +158,40 @@ html,body{
     video.pause();
     window.location.href = 'packages.html';
   }
-  window.goNext = goNext;
 
-  // Hide loader once video can play
-  video.addEventListener('canplay', function() {
+  // Tapping the video skips while it plays; if autoplay was blocked,
+  // the first tap starts it instead of skipping straight past it.
+  window.goNext = function() {
+    if (playBtn.classList.contains('visible')) { startVideo(); return; }
+    goNext();
+  };
+
+  function startVideo() {
+    playBtn.classList.remove('visible');
+    var p = video.play();
+    if (p && p.catch) {
+      p.catch(function() {
+        loader.classList.add('hidden');
+        playBtn.classList.add('visible');
+      });
+    }
+  }
+
+  playBtn.addEventListener('click', startVideo);
+
+  // iOS WebKit often ignores preload, so 'canplay' may never fire until
+  // play() is called. Start playback right away instead of waiting for it.
+  video.addEventListener('playing', function() {
     loader.classList.add('hidden');
-    video.play().catch(function() {
-      // Autoplay blocked — show tap-to-play state
-      loader.classList.add('hidden');
-    });
+    playBtn.classList.remove('visible');
   });
+  startVideo();
 
-  // Fallback: hide loader after 3s regardless
-  setTimeout(function() { loader.classList.add('hidden'); }, 3000);
+  // Fallback: if nothing is playing after 3s, drop the loader and offer play
+  setTimeout(function() {
+    loader.classList.add('hidden');
+    if (video.paused && !gone) playBtn.classList.add('visible');
+  }, 3000);
 
   // Update progress bar
   video.addEventListener('timeupdate', function() {
