@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>השף הירוק – הורדה</title>
+<style>
+  body{margin:0;font-family:"Rubik",system-ui,sans-serif;background:#F2F5F0;color:#16251B;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:24px}
+  main{max-width:420px}
+  h1{font-size:1.6rem;margin:0 0 8px}
+  p{color:#56685C;margin:0 0 20px}
+  .btns{display:flex;flex-direction:column;gap:10px}
+  a.b{display:block;padding:14px 18px;border-radius:12px;background:#1E6B3A;color:#fff;text-decoration:none;font-weight:700}
+  a.s{color:#1E6B3A}
+  @media (prefers-color-scheme:dark){body{background:#0E1511;color:#E4ECE5}p{color:#9BAE9F}a.b{background:#5DBE7A;color:#0E1511}a.s{color:#5DBE7A}}
+</style>
+</head>
+<body>
+<main>
+  <h1>🌿 השף הירוק</h1>
+  <p id="msg">פותח את החנות…</p>
+  <div class="btns">
+    <a class="b" id="ios" href="https://apps.apple.com/app/id6760778442">להורדה באייפון</a>
+    <a class="b" id="android" href="https://play.google.com/store/apps/details?id=com.michalskurnik.chefapp">להורדה באנדרואיד</a>
+    <a class="s" id="site" href="/">לאתר השף הירוק</a>
+  </div>
+</main>
+<script>
+// Smart short link: greenchef.foodgames.co.il/g/<code>
+// Records the visit in GA4 with the channel's UTM tags, then sends phones straight to their store
+// with the same campaign attached (Play: referrer UTM; App Store: ct, when the provider token is set).
+(function () {
+  'use strict';
+  // App Store Connect provider token (pt). Fill in from App Analytics > Campaigns to get per-campaign iOS numbers.
+  var APPLE_PT = '';
+  var CHANNELS = {
+    'fb-groups':   ['facebook', 'group', 'group_comments'],
+    'fb-post':     ['facebook', 'group', 'value_post'],
+    'fb-shavot':   ['facebook', 'group', 'shavot_haemek'],
+    'fb-local':    ['facebook', 'group', 'local_groups'],
+    'fb-profile':  ['facebook', 'profile', 'personal'],
+    'fb-johnny':   ['facebook', 'group', 'johnny_hezi'],
+    'ig':          ['instagram', 'bio', 'profile'],
+    'ig-story':    ['instagram', 'story', 'stories'],
+    'tiktok':      ['tiktok', 'bio', 'profile'],
+    'yt':          ['youtube', 'video', 'app_preview'],
+    'wa-status':   ['whatsapp', 'status', 'status'],
+    'wa-msg':      ['whatsapp', 'message', 'personal'],
+    'gannot':      ['whatsapp', 'message', 'gannot'],
+    'workshop':    ['workshop', 'qr', 'card'],
+    'birthday':    ['workshop', 'qr', 'birthday'],
+    'press':       ['press', 'article', 'press'],
+    'influencer':  ['instagram', 'influencer', 'influencer'],
+    'site':        ['site', 'button', 'site']
+  };
+  var code = (location.pathname.split('/g/')[1] || '').replace(/[^a-z0-9-]/gi, '').toLowerCase() || 'direct';
+  var ch = CHANNELS[code] || ['other', 'link', code];
+  var utm = 'utm_source=' + ch[0] + '&utm_medium=' + ch[1] + '&utm_campaign=' + ch[2];
+  try { history.replaceState(null, '', location.pathname + '?' + utm); } catch (e) {}
+
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isAndroid = /Android/i.test(ua);
+  var iosUrl = 'https://apps.apple.com/app/apple-store/id6760778442' + (APPLE_PT ? '?pt=' + APPLE_PT + '&ct=' + encodeURIComponent(code) + '&mt=8' : '');
+  var playUrl = 'https://play.google.com/store/apps/details?id=com.michalskurnik.chefapp&referrer=' + encodeURIComponent(utm);
+  document.getElementById('ios').href = iosUrl;
+  document.getElementById('android').href = playUrl;
+  document.getElementById('site').href = '/?' + utm;
+
+  var GA_ID = 'G-2KMDQX2WND';
+  window.dataLayer = window.dataLayer || [];
+  var gtag = window.gtag = function () { window.dataLayer.push(arguments); };
+  gtag('js', new Date());
+  gtag('config', GA_ID, { anonymize_ip: true });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a.b');
+    if (a) gtag('event', 'store_click', { store: a.id === 'ios' ? 'app_store' : 'google_play', button_location: 'short_link', link_code: code, transport_type: 'beacon' });
+  });
+
+  var target = isIOS ? iosUrl : (isAndroid ? playUrl : null);
+  if (!target) { document.getElementById('msg').textContent = 'בחרו את החנות שלכם:'; return; }
+  var gone = false;
+  var go = function () {
+    if (gone) return; gone = true;
+    gtag('event', 'store_redirect', { store: isIOS ? 'app_store' : 'google_play', link_code: code, transport_type: 'beacon' });
+    setTimeout(function () { location.replace(target); }, 250);
+  };
+  var s = document.createElement('script');
+  s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+  s.onload = function () { setTimeout(go, 300); };
+  s.onerror = go;
+  document.head.appendChild(s);
+  setTimeout(go, 1800);
+})();
+</script>
+</body>
+</html>

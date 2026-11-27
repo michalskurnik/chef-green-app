@@ -144,6 +144,16 @@
       }
     },
     {
+      "src": "/g/([a-zA-Z0-9-]+)",
+      "has": [
+        {
+          "type": "host",
+          "value": "greenchef.foodgames.co.il"
+        }
+      ],
+      "dest": "/site/get.html"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/$1"
     },
